@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Gerar WebP";
+}
+
+@if (ViewBag.WebPImage != null)
+{
+    <h3>Imagem Convertida:</h3>
+    <img src="data:image/webp;base64,@(Convert.ToBase64String(ViewBag.WebPImage))" alt="Converted Image" />
+}
+
+<form asp-action="Convert" asp-controller="Conversor" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label for="file">Selecione sua imagem em PNG:</label>
+        <input type="file" name="file" id="file" class="form-control" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Gerar WebP</button>
+</form>
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="alert alert-info" role="alert">@ViewBag.Message</div>
+}
