@@ -3,16 +3,19 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+#EXPOSE 8080
+#EXPOSE 8081
+ENV ASPNETCORE_HTTP_PORTS=80
+EXPOSE 80
+
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["conversor/GeraWebP.csproj", "conversor/"]
-RUN dotnet restore "./conversor/./GeraWebP.csproj"
+COPY ["GeraWebP.csproj", "src/"]
+RUN dotnet restore "GeraWebP.csproj"
 COPY . .
-WORKDIR "/src/conversor"
+WORKDIR "/src/"
 RUN dotnet build "./GeraWebP.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
