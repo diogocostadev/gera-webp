@@ -15,7 +15,7 @@ WORKDIR /src
 COPY ["GeraWebP.csproj", "src/"]
 RUN dotnet restore "GeraWebP.csproj"
 COPY . .
-WORKDIR "/src/"
+WORKDIR "/src"
 RUN dotnet build "./GeraWebP.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
