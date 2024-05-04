@@ -28,7 +28,7 @@ namespace conversor.Controllers
             }
             else
             {
-                ModelState.AddModelError("file", "Please select a file.");
+                ModelState.AddModelError("file", "Selecione um arquivo.");
             }
 
            
@@ -44,12 +44,12 @@ namespace conversor.Controllers
                 {
                     using (var output = new MemoryStream())
                     {
-                        // Configure o encoder qualidade e opções aqui
+                       
                         var encoder = ImageCodecInfo.GetImageEncoders()[1];
                         var parameters = new EncoderParameters(1);
                         parameters.Param[0] = new EncoderParameter(Encoder.Quality, 50L); // Ajuste a qualidade conforme necessário
 
-                        // Convertendo a imagem para o formato WebP
+                        
                         image.Save(output, encoder, parameters);
 
                         return output.ToArray();
