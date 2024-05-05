@@ -1,26 +1,50 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Gerar WebP";
 }
 
-@if (ViewBag.WebPImage != null)
-{
-    <h3>Imagem Convertida:</h3>
-    <img src="data:image/webp;base64,@(Convert.ToBase64String(ViewBag.WebPImage))" alt="Converted Image" />
-}
-
-<form asp-action="Convert" asp-controller="Conversor" method="post" enctype="multipart/form-data">
+<form asp-action="Converter" asp-controller="Home" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
     <div class="form-group">
-        <label for="file">Selecione sua imagem em PNG:</label>
-        <input type="file" name="file" id="file" class="form-control" />
+        <label for="arquivos">Carrega suas imagens:</label>
+        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="form-control" />
     </div>
+    
+    <div class="form-group">
+        <label for="qualidade">Qualidade:</label>
+        <input type="range" name="qualidade" id="qualidade" class="form-control-range" value="80" min="0" max="100" oninput="atualizarValorDaQuantidade(this.value)" />
+        <span id="qualidadeValue">80</span>%
+    </div>
+    
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var item in ViewData.ModelState.Values)
+            {
+                @foreach (var error in item.Errors)
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            }
+        </div>
+    }
+    
+    @if (ViewBag.DownloadLink != null)
+    {
+        <a href="@ViewBag.DownloadLink">Baixar Arquivos Convertidos</a>
+    }
+    
     <br />
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="alert alert-info" role="alert">@ViewBag.Message</div>
+    }
+    
+    <br />
+    
     <button type="submit" class="btn btn-primary">Gerar WebP</button>
+    
 </form>
 
-@if (!string.IsNullOrEmpty(ViewBag.Message))
-{
-    <div class="alert alert-info" role="alert">@ViewBag.Message</div>
-}
+
+

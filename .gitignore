@@ -4,3 +4,11 @@
 
 /src/conversor/GeraWebP.csproj.user
 /src/.vs/conversor/config/applicationhost.config
+
+src/.idea/
+
+src/conversor/wwwroot/convertidos/
+
+src/conversor/wwwroot/uploads/
+
+src/conversor/wwwroot/images/

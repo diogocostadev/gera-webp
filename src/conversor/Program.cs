@@ -1,27 +1,34 @@
+using GeraWebP.Hub;
+using GeraWebP.Worker;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddHostedService<LimparArquivos>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
 
+//TODO: não está funcionando
+// app.UseEndpoints(endpoints =>
+// {
+//     endpoints.MapHub<ProgressHub>("/progressHub");
+// });
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Conversor}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

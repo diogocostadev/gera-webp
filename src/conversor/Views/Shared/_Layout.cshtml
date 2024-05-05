@@ -6,7 +6,6 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/conversor.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
@@ -34,12 +33,51 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - Gerar WebP - <a asp-area="" asp-controller="Home" asp-action="Privacy"></a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2024 - Gerar WebP - <a asp-area="" asp-controller="Home" asp-action="Privacidade"></a>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('arquivos').addEventListener('change', function(event) {
+        var validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        for (var i = 0; i < this.files.length; i++) {
+            if (!validTypes.includes(this.files[i].type)) {
+                alert('Somente são permitidos arquivos de imagem.');
+                this.value = ''; 
+                break;
+            }
+        }
+    });
+</script>
+
+<script>
+    function atualizarValorDaQuantidade(value) {
+        document.getElementById('qualidadeValue').textContent = value;
+    }
+</script>
+
+@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script> *@
+@* *@
+@* <script type="text/javascript"> *@
+@*     var connection = new signalR.HubConnectionBuilder().withUrl("/progressHub").build(); *@
+@*      *@
+@*     connection.on("ReceiveProgress", function(progress) { *@
+@*         var progressBar = document.getElementById("progressBar"); *@
+@*         if (progressBar) { *@
+@*             progressBar.value = progress; *@
+@*             document.getElementById("progressContainer").style.display = 'block'; *@
+@*         } *@
+@*     }); *@
+@*      *@
+@*     connection.start().catch(function (err) { *@
+@*         return console.error(err.toString()); *@
+@*     }); *@
+@* </script> *@
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
