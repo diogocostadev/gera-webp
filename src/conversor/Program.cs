@@ -22,10 +22,10 @@ app.UseRouting();
 app.UseAuthorization();
 
 //TODO: não está funcionando
-// app.UseEndpoints(endpoints =>
-// {
-//     endpoints.MapHub<ProgressHub>("/progressHub");
-// });
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ProgressHub>("/progressHub");
+});
 
 app.MapControllerRoute(
     name: "default",

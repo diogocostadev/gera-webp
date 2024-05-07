@@ -1,50 +1,68 @@
 ﻿@{
     ViewBag.Title = "Gerar WebP";
 }
+<div class="main-content">
+    <div class="container" style="padding-left:30px; padding-right:30px;">
+        <div class="content-area">
+            <form asp-action="Converter" asp-controller="Home" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
 
-<form asp-action="Converter" asp-controller="Home" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
+                <div class="form-group d-flex justify-content-center align-items-center">
+                    <label for="arquivos">Carregue suas imagens:</label>
+                    <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="form-control" />
+                </div>
 
-    <div class="form-group">
-        <label for="arquivos">Carrega suas imagens:</label>
-        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="form-control" />
-    </div>
-    
-    <div class="form-group">
-        <label for="qualidade">Qualidade:</label>
-        <input type="range" name="qualidade" id="qualidade" class="form-control-range" value="80" min="0" max="100" oninput="atualizarValorDaQuantidade(this.value)" />
-        <span id="qualidadeValue">80</span>%
-    </div>
-    
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="alert alert-danger">
-            @foreach (var item in ViewData.ModelState.Values)
-            {
-                @foreach (var error in item.Errors)
+                <div class="form-group">
+                    <label for="qualidade">Selecione a Qualidade:</label>
+                    <input type="range" name="qualidade" id="qualidade" class="form-control-range" value="80" min="0" max="100" oninput="atualizarValorDaQuantidade(this.value)" />
+                    <span id="qualidadeValue">80</span>%
+                </div>
+
+                <div class="d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary">Gerar WebP</button>
+                </div>
+
+
+                @if (!ViewData.ModelState.IsValid)
                 {
-                    <p>@error.ErrorMessage</p>
+                    <div class="alert alert-danger">
+                        @foreach (var item in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in item.Errors)
+                            {
+                                <p>@error.ErrorMessage</p>
+                            }
+                        }
+                    </div>
                 }
-            }
+
+               <br/>
+                <br />
+                <div class="progress">
+                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                </div>
+                <br />
+                <br />
+                @if (ViewBag.DownloadLink != null)
+                {
+                    <a type="button" href="@ViewBag.DownloadLink">Baixar Arquivos Convertidos</a>
+                }
+
+                <br />
+                @if (!string.IsNullOrEmpty(ViewBag.Message))
+                {
+                   
+                        <div class="alert alert-info" role="alert">@ViewBag.Message</div>
+                    
+                   
+                }
+
+                <br />
+
+                
+
+            </form>
         </div>
-    }
-    
-    @if (ViewBag.DownloadLink != null)
-    {
-        <a href="@ViewBag.DownloadLink">Baixar Arquivos Convertidos</a>
-    }
-    
-    <br />
-    @if (!string.IsNullOrEmpty(ViewBag.Message))
-    {
-        <div class="alert alert-info" role="alert">@ViewBag.Message</div>
-    }
-    
-    <br />
-    
-    <button type="submit" class="btn btn-primary">Gerar WebP</button>
-    
-</form>
-
-
+    </div>
+</div>
 
