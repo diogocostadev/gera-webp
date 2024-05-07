@@ -9,12 +9,11 @@ using SixLabors.ImageSharp.Formats.Webp;
 
 namespace GeraWebP.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger
-        //, IHubContext<ProgressHub> progressHub
+    public class HomeController(ILogger<HomeController> logger, IHubContext<ProgressHub> progressHub
         ) : Controller
     {
         private readonly ILogger<HomeController> _logger = logger;
-        //private readonly IHubContext<ProgressHub> _progressHub = progressHub;
+        private readonly IHubContext<ProgressHub> _progressHub = progressHub;
 
         private const string PastaRaiz = "wwwroot";
         private const string PastaConvertidos = "convertidos";
@@ -63,10 +62,10 @@ namespace GeraWebP.Controllers
                 Directory.CreateDirectory(caminhoConvertido);
             }
 
-            //int totalFiles = arquivos.Count;
-            //int arquivosProcessados = 0;
-            
-            List<Task> tasks = new List<Task>();
+            int totalFiles = arquivos.Count;
+            int arquivosProcessados = 0;
+
+            List<Task> tasks = [];
             foreach (var arquivo in arquivos)
             {
                 var task = Task.Run(async () =>
@@ -85,11 +84,11 @@ namespace GeraWebP.Controllers
 
                         byte[] webPImage = await ConvertToWebP(arquivo, qualidade);
                         await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, webPImage);
-                        
-                        //TODO: não tá funcionando
-                        //arquivosProcessados++;
-                        //int progress = (int)((float)arquivosProcessados / totalFiles * 100);
-                        //await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
+
+
+                        arquivosProcessados++;
+                        int progress = (int)((float)arquivosProcessados / totalFiles * 100);
+                        await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
                     }
                 });
                 tasks.Add(task);
@@ -97,13 +96,13 @@ namespace GeraWebP.Controllers
 
             await Task.WhenAll(tasks);
 
-            ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId = sessionId })!;
+            ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
 
             return View("Index");
             
         }
 
-        private async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
+        private static async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
         {
             await using var imageStream = file.OpenReadStream();
             using var image = await Image.LoadAsync(imageStream);

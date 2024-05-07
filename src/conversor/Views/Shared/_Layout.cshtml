@@ -58,24 +58,27 @@
     }
 </script>
 
-@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script> *@
-@* *@
-@* <script type="text/javascript"> *@
-@*     var connection = new signalR.HubConnectionBuilder().withUrl("/progressHub").build(); *@
-@*      *@
-@*     connection.on("ReceiveProgress", function(progress) { *@
-@*         var progressBar = document.getElementById("progressBar"); *@
-@*         if (progressBar) { *@
-@*             progressBar.value = progress; *@
-@*             document.getElementById("progressContainer").style.display = 'block'; *@
-@*         } *@
-@*     }); *@
-@*      *@
-@*     connection.start().catch(function (err) { *@
-@*         return console.error(err.toString()); *@
-@*     }); *@
-@* </script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
 
+    <script type="text/javascript">
+        var connection = new signalR.HubConnectionBuilder().withUrl("/progressHub").build();
+        connection.on("ReceiveProgress", function (progress) {
+            var progressBar = document.getElementById("progress-bar");
+            if (progressBar) {
+                progressBar.style.width = progress + "%";
+                progressBar.setAttribute("aria-valuenow", progress);
+                document.getElementById("progressContainer").style.display = 'block';
+            }
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+    </script>
+
+
+
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
