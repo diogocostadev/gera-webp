@@ -17,9 +17,11 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
+      - cd src/conversor
+      - ls
 
       - dotnet sonarscanner begin /k:"codigocentral_gerawebp_AY8rX7ZGUVYcF1wWm801" /d:sonar.host.url="https://sonar.codigocentral.com.br"  /d:sonar.token="sqp_24f1da5ac89c65197ff2f799c96d72324585864b"
-      - cd src/conversor/
+     
       - dotnet build
       - dotnet sonarscanner end /d:sonar.token="sqp_24f1da5ac89c65197ff2f799c96d72324585864b"
 
