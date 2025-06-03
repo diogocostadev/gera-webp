@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
+using SixLabors.ImageSharp.Processing;
 
 namespace GeraWebP.Controllers
 {
@@ -30,7 +31,7 @@ namespace GeraWebP.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Converter(List<IFormFile>? arquivos, int qualidade = 75)
+        public async Task<IActionResult> Converter(List<IFormFile>? arquivos, int qualidade = 75, int maxWidth = 1920, int maxHeight = 1080, bool manterProporção = true)
         {   
             if (arquivos == null || arquivos.Count == 0)
             {
@@ -82,9 +83,8 @@ namespace GeraWebP.Controllers
                             await arquivo.CopyToAsync(fileStream);
                         }
 
-                        byte[] webPImage = await ConvertToWebP(arquivo, qualidade);
+                        byte[] webPImage = await ConvertToWebP(arquivo, qualidade, maxWidth, maxHeight, manterProporção);
                         await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, webPImage);
-
 
                         arquivosProcessados++;
                         int progress = (int)((float)arquivosProcessados / totalFiles * 100);
@@ -102,17 +102,97 @@ namespace GeraWebP.Controllers
             
         }
 
-        private static async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
+        private static async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade, int maxWidth = 1920, int maxHeight = 1080, bool manterProporção = true)
         {
             await using var imageStream = file.OpenReadStream();
             using var image = await Image.LoadAsync(imageStream);
+            
+            // Otimização automática baseada no tamanho do arquivo
+            var tamanhoOriginalMB = file.Length / (1024.0 * 1024.0);
+            var perfilOtimizacao = DeterminarPerfilOtimizacao(tamanhoOriginalMB, qualidade);
+            
+            // Redimensionar a imagem se necessário
+            if (image.Width > maxWidth || image.Height > maxHeight)
+            {
+                var resizeOptions = new ResizeOptions
+                {
+                    Size = new Size(maxWidth, maxHeight),
+                    Mode = manterProporção ? ResizeMode.Max : ResizeMode.Stretch,
+                    Sampler = KnownResamplers.Lanczos3 // Melhor qualidade de redimensionamento
+                };
+                
+                image.Mutate(x => x.Resize(resizeOptions));
+            }
+            
+            // Aplicar filtros adicionais para reduzir ruído se a imagem for muito grande
+            if (tamanhoOriginalMB > 5)
+            {
+                image.Mutate(x => x.GaussianSharpen(0.5f)); // Leve sharpening para compensar compressão
+            }
+            
             using var output = new MemoryStream();
+            
+            // Configurações avançadas do WebP encoder baseadas no perfil
             var encoder = new WebpEncoder
             {
-                Quality = qualidade //nos testes nao notei diferença de qualidades 
+                Quality = perfilOtimizacao.Quality,
+                Method = perfilOtimizacao.Method,
+                FileFormat = perfilOtimizacao.FileFormat,
+                FilterStrength = perfilOtimizacao.FilterStrength,
+                SpatialNoiseShaping = perfilOtimizacao.SpatialNoiseShaping,
+                NearLossless = perfilOtimizacao.NearLossless,
+                TransparentColorMode = WebpTransparentColorMode.Clear
             };
+            
             await image.SaveAsWebpAsync(output, encoder);
             return output.ToArray();
+        }
+
+        private static WebPOptimizationProfile DeterminarPerfilOtimizacao(double tamanhoMB, int qualidadeBase)
+        {
+            return tamanhoMB switch
+            {
+                // Arquivos muito grandes (>10MB) - Compressão máxima
+                > 10 => new WebPOptimizationProfile
+                {
+                    Quality = Math.Max(qualidadeBase - 15, 40),
+                    Method = WebpEncodingMethod.BestQuality,
+                    FileFormat = WebpFileFormatType.Lossy,
+                    FilterStrength = 80,
+                    SpatialNoiseShaping = 70,
+                    NearLossless = false
+                },
+                // Arquivos grandes (5-10MB) - Compressão alta
+                > 5 => new WebPOptimizationProfile
+                {
+                    Quality = Math.Max(qualidadeBase - 10, 50),
+                    Method = WebpEncodingMethod.BestQuality,
+                    FileFormat = WebpFileFormatType.Lossy,
+                    FilterStrength = 70,
+                    SpatialNoiseShaping = 60,
+                    NearLossless = false
+                },
+                // Arquivos médios (1-5MB) - Compressão balanceada
+                > 1 => new WebPOptimizationProfile
+                {
+                    Quality = Math.Max(qualidadeBase - 5, 60),
+                    Method = WebpEncodingMethod.BestQuality,
+                    FileFormat = WebpFileFormatType.Lossy,
+                    FilterStrength = 60,
+                    SpatialNoiseShaping = 50,
+                    NearLossless = false
+                },
+                // Arquivos pequenos (<1MB) - Compressão suave
+                _ => new WebPOptimizationProfile
+                {
+                    Quality = qualidadeBase,
+                    Method = WebpEncodingMethod.BestQuality,
+                    FileFormat = WebpFileFormatType.Lossy,
+                    FilterStrength = 40,
+                    SpatialNoiseShaping = 30,
+                    NearLossless = false
+                }
+            };
         }
 
         public IActionResult DownloadFiles(string sessionId)
@@ -132,5 +212,16 @@ namespace GeraWebP.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+    }
+
+    // Classe para definir perfis de otimização
+    public class WebPOptimizationProfile
+    {
+        public int Quality { get; set; }
+        public WebpEncodingMethod Method { get; set; }
+        public WebpFileFormatType FileFormat { get; set; }
+        public int FilterStrength { get; set; }
+        public int SpatialNoiseShaping { get; set; }
+        public bool NearLossless { get; set; }
     }
 }

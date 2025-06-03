@@ -18,8 +18,29 @@
                 <br />
                 <div>
                     <label style=" color: blue;" for="qualidade">Selecione a Qualidade:</label>
-                    <input style=" color: blue;" type="range" name="qualidade" id="qualidade" class="form-control-range" value="80" min="0" max="100" oninput="atualizarValorDaQuantidade(this.value)" />
-                    <span style=" color: blue;" id="qualidadeValue">80</span>%
+                    <input style=" color: blue;" type="range" name="qualidade" id="qualidade" class="form-control-range" value="75" min="0" max="100" oninput="atualizarValorDaQuantidade(this.value)" />
+                    <span style=" color: blue;" id="qualidadeValue">75</span>%
+                </div>
+                
+                <br />
+                <div>
+                    <label style=" color: blue;" for="maxWidth">Largura Máxima (px):</label>
+                    <input style=" color: blue;" type="number" name="maxWidth" id="maxWidth" class="form-control" value="1920" min="100" max="4000" />
+                </div>
+                
+                <br />
+                <div>
+                    <label style=" color: blue;" for="maxHeight">Altura Máxima (px):</label>
+                    <input style=" color: blue;" type="number" name="maxHeight" id="maxHeight" class="form-control" value="1080" min="100" max="4000" />
+                </div>
+                
+                <br />
+                <div>
+                    <label style=" color: blue;">
+                        <input type="checkbox" name="manterProporção" value="true" checked="checked" />
+                        Manter proporção da imagem
+                    </label>
+                    <input name="manterProporção" type="hidden" value="false" />
                 </div>
                 
                 <br />
