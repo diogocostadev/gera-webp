@@ -1,21 +1,16 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+USER $APP_UID
 WORKDIR /app
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8080
+EXPOSE 8081
 
-
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["GeraWebP.csproj", "/src"]
-RUN dotnet restore "GeraWebP.csproj"
+COPY ["conversor/GeraWebP.csproj", "conversor/"]
+RUN dotnet restore "conversor/GeraWebP.csproj"
 COPY . .
-WORKDIR "/src"
+WORKDIR "/src/conversor"
 RUN dotnet build "./GeraWebP.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

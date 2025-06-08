@@ -14,7 +14,7 @@ namespace GeraWebP.Controllers
                 // Página principal em português (padrão)
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/", 
+                    Url = "https://wepper.vip4.link/", 
                     Priority = "1.0", 
                     ChangeFreq = "weekly" 
                 },
@@ -22,31 +22,31 @@ namespace GeraWebP.Controllers
                 // Páginas secundárias em português
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/privacidade", 
+                    Url = "https://wepper.vip4.link/privacidade", 
                     Priority = "0.5", 
                     ChangeFreq = "monthly" 
                 },
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/converter-jpg-para-webp", 
+                    Url = "https://wepper.vip4.link/converter-jpg-para-webp", 
                     Priority = "0.8", 
                     ChangeFreq = "weekly" 
                 },
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/converter-png-para-webp", 
+                    Url = "https://wepper.vip4.link/converter-png-para-webp", 
                     Priority = "0.8", 
                     ChangeFreq = "weekly" 
                 },
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/converter-gif-para-webp", 
+                    Url = "https://wepper.vip4.link/converter-gif-para-webp", 
                     Priority = "0.8", 
                     ChangeFreq = "weekly" 
                 },
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/compressor-imagem", 
+                    Url = "https://wepper.vip4.link/compressor-imagem", 
                     Priority = "0.8", 
                     ChangeFreq = "weekly" 
                 },
@@ -54,25 +54,25 @@ namespace GeraWebP.Controllers
                 // Versões internacionais
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/en/", 
+                    Url = "https://wepper.vip4.link/en/", 
                     Priority = "0.9", 
                     ChangeFreq = "weekly" 
                 },
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/es/", 
+                    Url = "https://wepper.vip4.link/es/", 
                     Priority = "0.9", 
                     ChangeFreq = "weekly" 
                 },
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/en/privacy", 
+                    Url = "https://wepper.vip4.link/en/privacy", 
                     Priority = "0.4", 
                     ChangeFreq = "monthly" 
                 },
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/es/privacidad", 
+                    Url = "https://wepper.vip4.link/es/privacidad", 
                     Priority = "0.4", 
                     ChangeFreq = "monthly" 
                 }

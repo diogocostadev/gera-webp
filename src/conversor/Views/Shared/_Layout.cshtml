@@ -8,7 +8,7 @@
     <title>@ViewData["Title"]</title>
     <meta name="description" content="@ViewData["Description"]" />
     <meta name="keywords" content="conversor webp, converter para webp, webp online, comprimir imagem, otimizar imagem web, jpg para webp, png para webp, gif para webp, reduzir tamanho imagem" />
-    <meta name="author" content="WebP Converter" />
+    <meta name="author" content="Wepper" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow" />
     
@@ -17,29 +17,29 @@
         var currentLanguage = ViewData["Language"]?.ToString();
         var canonicalUrl = currentLanguage switch
         {
-            "en" => "https://webpconverter.com.br/en/",
-            "es" => "https://webpconverter.com.br/es/",
-            _ => "https://webpconverter.com.br/"
+            "en" => "https://wepper.vip4.link/en/",
+            "es" => "https://wepper.vip4.link/es/",
+            _ => "https://wepper.vip4.link/"
         };
     }
     <link rel="canonical" href="@canonicalUrl" />
     
     <!-- Hreflang para SEO Internacional -->
-    <link rel="alternate" hreflang="pt-br" href="https://webpconverter.com.br/" />
-    <link rel="alternate" hreflang="en" href="https://webpconverter.com.br/en/" />
-    <link rel="alternate" hreflang="es" href="https://webpconverter.com.br/es/" />
-    <link rel="alternate" hreflang="x-default" href="https://webpconverter.com.br/" />
+    <link rel="alternate" hreflang="pt-br" href="https://wepper.vip4.link/" />
+    <link rel="alternate" hreflang="en" href="https://wepper.vip4.link/en/" />
+    <link rel="alternate" hreflang="es" href="https://wepper.vip4.link/es/" />
+    <link rel="alternate" hreflang="x-default" href="https://wepper.vip4.link/" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@canonicalUrl" />
     <meta property="og:title" content="@ViewData["Title"]" />
     <meta property="og:description" content="@ViewData["Description"]" />
-    <meta property="og:image" content="https://webpconverter.com.br/images/webp-converter-preview.jpg" />
+    <meta property="og:image" content="https://wepper.vip4.link/images/wepper-preview.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="WebP Converter - Converta suas imagens para formato WebP" />
-    <meta property="og:site_name" content="WebP Converter" />
+    <meta property="og:image:alt" content="Wepper - Converta suas imagens para formato WebP" />
+    <meta property="og:site_name" content="Wepper" />
     <meta property="og:locale" content="@(ViewData["Culture"]?.ToString()?.Replace("-", "_") ?? "pt_BR")" />
     
     <!-- Twitter Card -->
@@ -47,9 +47,9 @@
     <meta name="twitter:url" content="@canonicalUrl" />
     <meta name="twitter:title" content="@ViewData["Title"]" />
     <meta name="twitter:description" content="@ViewData["Description"]" />
-    <meta name="twitter:image" content="https://webpconverter.com.br/images/webp-converter-preview.jpg" />
-    <meta name="twitter:image:alt" content="WebP Converter - Ferramenta online para converter imagens" />
-    <meta name="twitter:creator" content="@@webpconverter" />
+    <meta name="twitter:image" content="https://wepper.vip4.link/images/wepper-preview.jpg" />
+    <meta name="twitter:image:alt" content="Wepper - Ferramenta online para converter imagens" />
+    <meta name="twitter:creator" content="@@wepper" />
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#2563eb" />
@@ -76,9 +76,9 @@
     @Html.Raw(@"{
         ""@context"": ""https://schema.org"",
         ""@type"": ""WebApplication"",
-        ""name"": ""WebP Converter"",
+        ""name"": ""Wepper"",
         ""alternateName"": ""Conversor WebP Online"",
-        ""url"": ""https://webpconverter.com.br"",
+        ""url"": ""https://wepper.vip4.link"",
         ""description"": ""Conversor WebP online gratuito para otimizar imagens JPG, PNG, GIF. Reduza o tamanho dos arquivos em até 90% mantendo a qualidade."",
         ""applicationCategory"": ""PhotoApplication"",
         ""operatingSystem"": ""Web Browser"",
@@ -90,8 +90,8 @@
         },
         ""creator"": {
             ""@type"": ""Organization"",
-            ""name"": ""WebP Converter"",
-            ""url"": ""https://webpconverter.com.br""
+            ""name"": ""Wepper"",
+            ""url"": ""https://wepper.vip4.link""
         },
         ""featureList"": [
             ""Conversão gratuita JPG para WebP"",
@@ -103,7 +103,7 @@
             ""Download em ZIP"",
             ""100% online e seguro""
         ],
-        ""screenshot"": ""https://webpconverter.com.br/images/webp-converter-screenshot.jpg"",
+        ""screenshot"": ""https://wepper.vip4.link/images/wepper-screenshot.jpg"",
         ""aggregateRating"": {
             ""@type"": ""AggregateRating"",
             ""ratingValue"": ""4.9"",
@@ -170,13 +170,13 @@
                 ""@type"": ""ListItem"",
                 ""position"": 1,
                 ""name"": ""Home"",
-                ""item"": ""https://webpconverter.com.br/""
+                ""item"": ""https://wepper.vip4.link/""
             },
             {
                 ""@type"": ""ListItem"", 
                 ""position"": 2,
                 ""name"": ""Conversor WebP"",
-                ""item"": ""https://webpconverter.com.br/""
+                ""item"": ""https://wepper.vip4.link/""
             }
         ]
     }")

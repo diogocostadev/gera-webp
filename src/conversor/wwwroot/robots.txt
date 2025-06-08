@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://webpconverter.com.br/sitemap.xml
+Sitemap: https://wepper.vip4.link/sitemap.xml
 
 # Crawl-delay para bots mais lentos
 User-agent: Bingbot
@@ -38,4 +38,4 @@ Allow: /en/privacy
 Allow: /es/privacidad
 
 # Host preferido
-Host: webpconverter.com.br 
+Host: wepper.vip4.link 
