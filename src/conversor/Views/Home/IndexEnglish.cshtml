@@ -37,6 +37,32 @@
     <div class="converter-container">
         <form id="converterForm" method="post" action="/Home/Converter" enctype="multipart/form-data">
             
+            <!-- Error Messages Section -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <div class="alert-header">
+                        <i data-feather="alert-circle"></i>
+                        <strong>Error!</strong>
+                    </div>
+                    <ul class="error-list">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(x => x.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+            
+            <!-- Client-side Error Messages Section -->
+            <div id="clientErrors" class="alert alert-danger" role="alert" style="display: none;">
+                <div class="alert-header">
+                    <i data-feather="alert-circle"></i>
+                    <strong>Error!</strong>
+                </div>
+                <ul id="clientErrorsList" class="error-list"></ul>
+            </div>
+            
             <!-- Breadcrumbs -->
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
                 <ol class="breadcrumb">
@@ -72,8 +98,9 @@
                     <div id="selectedFiles" class="selected-files" style="display: none;">
                         <div class="files-header">
                             <i data-feather="check-circle"></i>
-                            <span id="fileCount">0</span> arquivo(s) selecionado(s)
+                            <span id="fileCount">0</span> file(s) selected
                         </div>
+                        <div id="filesList" class="files-list"></div>
                     </div>
                 </div>
 
@@ -97,7 +124,7 @@
                                max="100" 
                                value="75" 
                                class="quality-slider"
-                               oninput="atualizarValorDaQuantidade(this.value)"
+                               oninput="updateQualityValue(this.value)"
                                aria-label="Ajustar qualidade da conversão WebP" />
                         
                         <div class="quality-labels">
@@ -446,49 +473,151 @@
 </section>
 
 <!-- Scripts -->
-<script src="https://unpkg.com/@@microsoft/signalr@latest/dist/browser/signalr.js"></script>
+<script src="https://unpkg.com/@@microsoft/signalr@@latest/dist/browser/signalr.js"></script>
 <script>
-    // Inicializar ícones
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Initialize icons
     feather.replace();
 
-    // Função para atualizar qualidade
-    function atualizarValorDaQuantidade(value) {
+    // Functions to manage errors in HTML
+    function showError(message) {
+        const clientErrors = document.getElementById('clientErrors');
+        const clientErrorsList = document.getElementById('clientErrorsList');
+        
+        clientErrorsList.innerHTML = `<li>${message}</li>`;
+        clientErrors.style.display = 'block';
+        feather.replace();
+        
+        // Scroll to error
+        clientErrors.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function clearErrors() {
+        const clientErrors = document.getElementById('clientErrors');
+        clientErrors.style.display = 'none';
+    }
+
+    // Function to update quality
+    function updateQualityValue(value) {
         document.getElementById('qualidadeValue').textContent = value;
         
-        // Atualizar estimativa de compressão
+        // Update compression estimate
         const compressionEstimate = document.getElementById('compressionEstimate');
         if (compressionEstimate) {
             let estimate;
-            if (value <= 30) estimate = '~85% menor';
-            else if (value <= 50) estimate = '~75% menor';
-            else if (value <= 70) estimate = '~65% menor';
-            else if (value <= 85) estimate = '~55% menor';
-            else estimate = '~45% menor';
+            if (value <= 30) estimate = '~85% smaller';
+            else if (value <= 50) estimate = '~75% smaller';
+            else if (value <= 70) estimate = '~65% smaller';
+            else if (value <= 85) estimate = '~55% smaller';
+            else estimate = '~45% smaller';
             
             compressionEstimate.textContent = estimate;
         }
     }
 
-    // File upload handling
+    // Make function global for HTML oninput
+    window.updateQualityValue = updateQualityValue;
+
+    // File upload handling - SIMPLIFIED
     const fileInput = document.getElementById('arquivos');
     const selectedFiles = document.getElementById('selectedFiles');
     const fileCount = document.getElementById('fileCount');
     const uploadArea = document.getElementById('uploadArea');
 
+    if (!fileInput || !selectedFiles || !fileCount || !uploadArea) {
+        showError('Internal error: Page elements were not loaded correctly. Please reload the page.');
+        return;
+    }
+
+    // BLOCK CLICK EVENTS on problematic elements
+    const stepHeaders = document.querySelectorAll('.step-header');
+    const stepNumbers = document.querySelectorAll('.step-number');
+    const workflowSteps = document.querySelectorAll('.workflow-step');
+    
+    // Block clicks on step headers
+    stepHeaders.forEach(header => {
+        header.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        });
+    });
+    
+    // Block clicks on step numbers
+    stepNumbers.forEach(number => {
+        number.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        });
+    });
+    
+    // SPECIFIC UPLOAD AREA CONTROL
+    uploadArea.addEventListener('click', function(e) {
+        const target = e.target;
+        
+        // IF it's the file input itself, DON'T block - let it work normally
+        if (target === fileInput || target.type === 'file') {
+            return; // Let the file input work normally
+        }
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Elements that CAN activate the file input
+        const isUploadButton = target.classList.contains('upload-button') || target.closest('.upload-button');
+        const isUploadIcon = target.classList.contains('upload-icon') || target.closest('.upload-icon');
+        const isUploadText = target.tagName.toLowerCase() === 'p' && target.closest('.upload-area');
+        const isFeatherIcon = target.tagName.toLowerCase() === 'i' && target.hasAttribute('data-feather');
+        
+        // Only activate file input if it's an allowed element
+        if (isUploadButton || isUploadIcon || isUploadText || isFeatherIcon) {
+            clearErrors();
+            fileInput.click();
+        }
+    });
+    
+    // Block clicks on general workflow step areas
+    workflowSteps.forEach(step => {
+        step.addEventListener('click', function(e) {
+            // Only allow clicks on specific elements
+            const allowedElements = [
+                'button', 'input', 'a', 'label'
+            ];
+            
+            const allowedClasses = [
+                'quality-slider', 'convert-button'
+            ];
+            
+            const target = e.target;
+            const isAllowedElement = allowedElements.includes(target.tagName.toLowerCase());
+            const hasAllowedClass = allowedClasses.some(className => 
+                target.classList.contains(className)
+            );
+            const isInUploadArea = target.closest('.upload-area');
+            
+            // If not allowed element AND not in upload area, block
+            if (!isAllowedElement && !hasAllowedClass && !isInUploadArea) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+            }
+        });
+    });
+
     // File input change
     fileInput.addEventListener('change', function(event) {
+        clearErrors();
         const files = event.target.files;
         updateFileDisplay(files);
         validateFiles(files);
     });
 
-    // Click to select files
-    uploadArea.addEventListener('click', function(e) {
-        if (e.target === fileInput) return;
-        fileInput.click();
-    });
+    // Click to select files - CONTROLLED BY UPLOAD AREA
+    // Removed individual listeners - now controlled by uploadArea.addEventListener above
 
-    // Drag and drop
+    // Drag and drop functionality
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
         uploadArea.classList.add('dragover');
@@ -502,6 +631,7 @@
     uploadArea.addEventListener('drop', function(e) {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
+        clearErrors();
         const files = e.dataTransfer.files;
         
         const dt = new DataTransfer();
@@ -515,16 +645,73 @@
     });
 
     function updateFileDisplay(files) {
+        console.log('updateFileDisplay called with', files.length, 'files'); // Debug
+        
         if (files.length > 0) {
             let totalSize = 0;
+            let fileNames = [];
+            
+            // Show loading feedback
+            selectedFiles.style.display = 'block';
+            uploadArea.classList.add('has-files');
+            
             for (let i = 0; i < files.length; i++) {
                 totalSize += files[i].size;
+                fileNames.push(files[i].name);
             }
             const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
             
-            fileCount.textContent = `${files.length} arquivo(s) • ${totalMB}MB total`;
-            selectedFiles.style.display = 'block';
-            uploadArea.classList.add('has-files');
+            console.log('Files processed:', fileNames); // Debug
+            
+            fileCount.textContent = `${files.length} file(s) • ${totalMB}MB total`;
+            
+            const filesList = document.getElementById('filesList');
+            if (!filesList) {
+                console.error('filesList element not found!');
+                return;
+            }
+            
+            filesList.innerHTML = '';
+            
+            const maxDisplayFiles = 5;
+            const filesToShow = Math.min(files.length, maxDisplayFiles);
+            const remainingFiles = files.length - filesToShow;
+            
+            for (let i = 0; i < filesToShow; i++) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.style.pointerEvents = 'none';
+                
+                const truncatedName = fileNames[i].length > 30 
+                    ? fileNames[i].substring(0, 27) + '...' 
+                    : fileNames[i];
+                
+                fileItem.innerHTML = `
+                    <i data-feather="file-image"></i>
+                    <span class="file-name" title="${fileNames[i]}">${truncatedName}</span>
+                    <span class="file-size">${(files[i].size / (1024 * 1024)).toFixed(1)}MB</span>
+                    <span class="file-status">✓</span>
+                `;
+                filesList.appendChild(fileItem);
+            }
+            
+            if (remainingFiles > 0) {
+                const moreFilesItem = document.createElement('div');
+                moreFilesItem.className = 'file-item more-files';
+                moreFilesItem.style.pointerEvents = 'none';
+                moreFilesItem.innerHTML = `
+                    <i data-feather="plus-circle"></i>
+                    <span class="file-name">and ${remainingFiles} more file(s)...</span>
+                    <span class="file-size">Total: ${totalMB}MB</span>
+                `;
+                filesList.appendChild(moreFilesItem);
+            }
+            
+            setTimeout(() => {
+                feather.replace();
+                console.log('Icons updated'); // Debug
+            }, 100);
+            
         } else {
             selectedFiles.style.display = 'none';
             uploadArea.classList.remove('has-files');
@@ -615,6 +802,7 @@
         button.disabled = true;
         feather.replace();
     });
+});
 </script>
 
 @section Scripts {
