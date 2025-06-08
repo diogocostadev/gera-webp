@@ -1,6 +1,6 @@
 {
-    "name": "WebP Converter - Conversor de Imagens Online",
-    "short_name": "WebP Converter",
+    "name": "Wepper - Conversor de Imagens Online",
+    "short_name": "Wepper",
     "description": "Converta JPG, PNG, GIF para WebP gratuitamente. Reduza até 90% do tamanho das imagens.",
     "start_url": "/",
     "display": "standalone",
@@ -65,16 +65,12 @@
         {
             "src": "/images/screenshot-wide.png",
             "sizes": "1280x720",
-            "type": "image/png",
-            "form_factor": "wide",
-            "label": "Conversor WebP em tela ampla"
+            "type": "image/png"
         },
         {
             "src": "/images/screenshot-narrow.png", 
             "sizes": "750x1334",
-            "type": "image/png",
-            "form_factor": "narrow",
-            "label": "Conversor WebP em mobile"
+            "type": "image/png"
         }
     ],
     
