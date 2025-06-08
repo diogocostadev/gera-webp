@@ -66,7 +66,7 @@
                             Escolher Arquivos @formatType
                         </div>
                         <div class="upload-info">
-                            <small>Apenas @formatType • Máx: 50MB por arquivo ou 50MB total</small>
+                            <small>Apenas @formatType • Máx: 100MB por arquivo ou 100MB total</small>
                         </div>
                         <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" 
                                accept="@(formatType?.ToLower() == "jpg" ? "image/jpeg,image/jpg" : formatType?.ToLower() == "png" ? "image/png" : "image/gif")" />
