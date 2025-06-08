@@ -185,7 +185,7 @@
                             <i data-feather="download"></i>
                             Baixar Imagens WebP
                         </a>
-                        <small>Arquivo ZIP com todas as imagens otimizadas</small>
+                        <small>Single file or ZIP with all optimized images</small>
                     </div>
                 </div>
             }
@@ -691,20 +691,92 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Form submission
+    // Form submission via AJAX
     document.getElementById('converterForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Always prevent default submit
+        
         const files = fileInput.files;
         if (files.length === 0) {
-            e.preventDefault();
-            alert('Por favor, selecione pelo menos um arquivo.');
+            alert('Please select at least one file.');
             return;
         }
         
         const button = document.getElementById('convertButton');
-        button.innerHTML = '<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Processando...';
+        const originalButtonText = button.innerHTML;
+        button.innerHTML = '<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Processing...';
         button.disabled = true;
         feather.replace();
+
+        // Prepare FormData for AJAX
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append('arquivos', files[i]);
+        }
+        
+        const qualidade = document.getElementById('qualidade').value;
+        formData.append('qualidade', qualidade);
+
+        // Make AJAX request
+        fetch('/api/converter', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Success - show download button
+                showDownloadSection(data.downloadLink, data.filesCount);
+            } else {
+                // Error - show message
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Conversion error:', error);
+            alert('Connection error. Please try again.');
+        })
+        .finally(() => {
+            // Restore button
+            button.innerHTML = originalButtonText;
+            button.disabled = false;
+            feather.replace();
+        });
     });
+
+    // Function to show download section dynamically
+    function showDownloadSection(downloadLink, filesCount) {
+        // Remove existing section if any
+        const existingSection = document.querySelector('.download-section');
+        if (existingSection) {
+            existingSection.remove();
+        }
+
+        // Create new download section
+        const downloadSection = document.createElement('div');
+        downloadSection.className = 'download-section';
+        downloadSection.innerHTML = `
+            <div class="download-success">
+                <i data-feather="check-circle"></i>
+                <h3>Conversion Completed Successfully!</h3>
+                <p>Your images have been converted to WebP with maximum optimization.</p>
+                <a href="${downloadLink}" class="download-button" download aria-label="Download converted WebP images">
+                    <i data-feather="download"></i>
+                    Download WebP Images
+                </a>
+                <small>Single file or ZIP with all optimized images</small>
+            </div>
+        `;
+
+        // Insert after form
+        const form = document.getElementById('converterForm');
+        form.parentNode.insertBefore(downloadSection, form.nextSibling);
+        
+        // Replace icons
+        feather.replace();
+
+        // Smooth scroll to download section
+        downloadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 });
 </script>
 
