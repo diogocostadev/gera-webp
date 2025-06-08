@@ -72,6 +72,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Configurar páginas de erro customizadas
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
 app.UseCors();
 app.UseStaticFiles();
 app.UseWebSockets(); // Importante para SignalR
