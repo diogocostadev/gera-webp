@@ -224,12 +224,12 @@ html, body {
 /* File Input Global */
 .file-input {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -9999px;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
     opacity: 0;
-    cursor: pointer;
+    pointer-events: none;
 }
 
 /* Progress Global */
@@ -1753,8 +1753,15 @@ a[href],
 /* ESPECÍFICO - Garantir que step headers não tenham cursor pointer */
 .workflow-step .step-header,
 .workflow-step .step-header *,
-.workflow-step .step-number {
+.workflow-step .step-number,
+.workflow-step .step-header h2,
+.workflow-step .step-header h3,
+.step-header,
+.step-number,
+div.step-header,
+div.step-number {
     cursor: default !important;
+    pointer-events: none !important;
 }
 
 /* Upload area container */

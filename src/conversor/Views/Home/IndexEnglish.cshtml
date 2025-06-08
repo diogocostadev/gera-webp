@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make function global for HTML oninput
     window.updateQualityValue = updateQualityValue;
 
-    // File upload handling - SIMPLIFIED
+    // File upload handling - SIMPLE AND FUNCTIONAL
     const fileInput = document.getElementById('arquivos');
     const selectedFiles = document.getElementById('selectedFiles');
     const fileCount = document.getElementById('fileCount');
@@ -530,92 +530,59 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // BLOCK CLICK EVENTS on problematic elements
-    const stepHeaders = document.querySelectorAll('.step-header');
-    const stepNumbers = document.querySelectorAll('.step-number');
-    const workflowSteps = document.querySelectorAll('.workflow-step');
-    
-    // Block clicks on step headers
-    stepHeaders.forEach(header => {
-        header.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        });
-    });
-    
-    // Block clicks on step numbers
-    stepNumbers.forEach(number => {
-        number.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        });
-    });
-    
-    // SPECIFIC UPLOAD AREA CONTROL
-    uploadArea.addEventListener('click', function(e) {
-        const target = e.target;
+    // Function to update file display
+    function updateFileDisplay() {
+        const files = fileInput.files;
         
-        // IF it's the file input itself, DON'T block - let it work normally
-        if (target === fileInput || target.type === 'file') {
-            return; // Let the file input work normally
+        if (files.length === 0) {
+            selectedFiles.style.display = 'none';
+            fileCount.textContent = '';
+            return;
         }
+
+        let html = '<h4>Selected files:</h4><ul>';
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const size = (file.size / 1024 / 1024).toFixed(2);
+            html += `<li>${file.name} (${size} MB)</li>`;
+        }
+        html += '</ul>';
         
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Elements that CAN activate the file input
-        const isUploadButton = target.classList.contains('upload-button') || target.closest('.upload-button');
-        const isUploadIcon = target.classList.contains('upload-icon') || target.closest('.upload-icon');
-        const isUploadText = target.tagName.toLowerCase() === 'p' && target.closest('.upload-area');
-        const isFeatherIcon = target.tagName.toLowerCase() === 'i' && target.hasAttribute('data-feather');
-        
-        // Only activate file input if it's an allowed element
-        if (isUploadButton || isUploadIcon || isUploadText || isFeatherIcon) {
+        selectedFiles.innerHTML = html;
+        selectedFiles.style.display = 'block';
+        fileCount.textContent = `${files.length} file(s) selected`;
+    }
+
+    // File input change event
+    fileInput.addEventListener('change', function() {
+        updateFileDisplay();
+    });
+
+    // Upload area click - ONLY specific elements
+    const uploadButton = uploadArea.querySelector('.upload-button');
+    const uploadIcon = uploadArea.querySelector('.upload-icon');
+    const uploadText = uploadArea.querySelector('p');
+    
+    if (uploadButton) {
+        uploadButton.addEventListener('click', function() {
             clearErrors();
             fileInput.click();
-        }
-    });
-    
-    // Block clicks on general workflow step areas
-    workflowSteps.forEach(step => {
-        step.addEventListener('click', function(e) {
-            // Only allow clicks on specific elements
-            const allowedElements = [
-                'button', 'input', 'a', 'label'
-            ];
-            
-            const allowedClasses = [
-                'quality-slider', 'convert-button'
-            ];
-            
-            const target = e.target;
-            const isAllowedElement = allowedElements.includes(target.tagName.toLowerCase());
-            const hasAllowedClass = allowedClasses.some(className => 
-                target.classList.contains(className)
-            );
-            const isInUploadArea = target.closest('.upload-area');
-            
-            // If not allowed element AND not in upload area, block
-            if (!isAllowedElement && !hasAllowedClass && !isInUploadArea) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-            }
         });
-    });
-
-    // File input change
-    fileInput.addEventListener('change', function(event) {
-        clearErrors();
-        const files = event.target.files;
-        updateFileDisplay(files);
-        validateFiles(files);
-    });
-
-    // Click to select files - CONTROLLED BY UPLOAD AREA
-    // Removed individual listeners - now controlled by uploadArea.addEventListener above
+    }
+    
+    if (uploadIcon) {
+        uploadIcon.addEventListener('click', function() {
+            clearErrors();
+            fileInput.click();
+        });
+    }
+    
+    if (uploadText) {
+        uploadText.addEventListener('click', function() {
+            clearErrors();
+            fileInput.click();
+        });
+    }
 
     // Drag and drop functionality
     uploadArea.addEventListener('dragover', function(e) {
@@ -640,125 +607,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         fileInput.files = dt.files;
         
-        updateFileDisplay(files);
-        validateFiles(files);
+        updateFileDisplay();
     });
-
-    function updateFileDisplay(files) {
-        console.log('updateFileDisplay called with', files.length, 'files'); // Debug
-        
-        if (files.length > 0) {
-            let totalSize = 0;
-            let fileNames = [];
-            
-            // Show loading feedback
-            selectedFiles.style.display = 'block';
-            uploadArea.classList.add('has-files');
-            
-            for (let i = 0; i < files.length; i++) {
-                totalSize += files[i].size;
-                fileNames.push(files[i].name);
-            }
-            const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
-            
-            console.log('Files processed:', fileNames); // Debug
-            
-            fileCount.textContent = `${files.length} file(s) • ${totalMB}MB total`;
-            
-            const filesList = document.getElementById('filesList');
-            if (!filesList) {
-                console.error('filesList element not found!');
-                return;
-            }
-            
-            filesList.innerHTML = '';
-            
-            const maxDisplayFiles = 5;
-            const filesToShow = Math.min(files.length, maxDisplayFiles);
-            const remainingFiles = files.length - filesToShow;
-            
-            for (let i = 0; i < filesToShow; i++) {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.style.pointerEvents = 'none';
-                
-                const truncatedName = fileNames[i].length > 30 
-                    ? fileNames[i].substring(0, 27) + '...' 
-                    : fileNames[i];
-                
-                fileItem.innerHTML = `
-                    <i data-feather="file-image"></i>
-                    <span class="file-name" title="${fileNames[i]}">${truncatedName}</span>
-                    <span class="file-size">${(files[i].size / (1024 * 1024)).toFixed(1)}MB</span>
-                    <span class="file-status">✓</span>
-                `;
-                filesList.appendChild(fileItem);
-            }
-            
-            if (remainingFiles > 0) {
-                const moreFilesItem = document.createElement('div');
-                moreFilesItem.className = 'file-item more-files';
-                moreFilesItem.style.pointerEvents = 'none';
-                moreFilesItem.innerHTML = `
-                    <i data-feather="plus-circle"></i>
-                    <span class="file-name">and ${remainingFiles} more file(s)...</span>
-                    <span class="file-size">Total: ${totalMB}MB</span>
-                `;
-                filesList.appendChild(moreFilesItem);
-            }
-            
-            setTimeout(() => {
-                feather.replace();
-                console.log('Icons updated'); // Debug
-            }, 100);
-            
-        } else {
-            selectedFiles.style.display = 'none';
-            uploadArea.classList.remove('has-files');
-        }
-    }
-
-    function validateFiles(files) {
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-        let totalSize = 0;
-        const maxTotalSize = 50 * 1024 * 1024; // 50MB total
-        const maxFileSize = 50 * 1024 * 1024; // 50MB por arquivo
-
-        // Primeiro, calcular o tamanho total
-        for (let i = 0; i < files.length; i++) {
-            totalSize += files[i].size;
-        }
-
-        // Verificar se o total excede 50MB
-        if (totalSize > maxTotalSize) {
-            const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
-            alert(`Tamanho total dos arquivos (${totalMB}MB) excede o limite de 50MB. Por favor, selecione menos arquivos ou arquivos menores.`);
-            fileInput.value = '';
-            selectedFiles.style.display = 'none';
-            uploadArea.classList.remove('has-files');
-            return false;
-        }
-
-        // Validar cada arquivo individualmente
-        for (let i = 0; i < files.length; i++) {
-            if (!validTypes.includes(files[i].type)) {
-                alert('Apenas arquivos de imagem são permitidos (JPEG, PNG, GIF).');
-                fileInput.value = '';
-                selectedFiles.style.display = 'none';
-                uploadArea.classList.remove('has-files');
-                return false;
-            }
-            if (files[i].size > maxFileSize) {
-                alert('Arquivo muito grande. Máximo 50MB por arquivo.');
-                fileInput.value = '';
-                selectedFiles.style.display = 'none';
-                uploadArea.classList.remove('has-files');
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     // SignalR for progress
     const connection = new signalR.HubConnectionBuilder()

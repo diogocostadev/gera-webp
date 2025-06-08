@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tornar a função global para o oninput do HTML
     window.atualizarValorDaQuantidade = atualizarValorDaQuantidade;
 
-    // File upload handling - SIMPLIFICADO
+    // File upload handling - SIMPLES E FUNCIONAL
     const fileInput = document.getElementById('arquivos');
     const selectedFiles = document.getElementById('selectedFiles');
     const fileCount = document.getElementById('fileCount');
@@ -570,233 +570,61 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // BLOQUEAR EVENTOS DE CLIQUE em elementos problemáticos
-    const stepHeaders = document.querySelectorAll('.step-header');
-    const stepNumbers = document.querySelectorAll('.step-number');
-    const workflowSteps = document.querySelectorAll('.workflow-step');
-    
-    // Bloquear cliques nos step headers
-    stepHeaders.forEach(header => {
-        header.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        });
-    });
-    
-    // Bloquear cliques nos step numbers
-    stepNumbers.forEach(number => {
-        number.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        });
-    });
-    
-    // CONTROLE ESPECÍFICO DO UPLOAD AREA
-    uploadArea.addEventListener('click', function(e) {
-        const target = e.target;
+    // Function to update file display
+    function updateFileDisplay() {
+        const files = fileInput.files;
         
-        // SE for o próprio file input, NÃO bloquear - deixar funcionar normalmente
-        if (target === fileInput || target.type === 'file') {
-            return; // Deixa o file input funcionar normalmente
+        if (files.length === 0) {
+            selectedFiles.style.display = 'none';
+            fileCount.textContent = '';
+            return;
         }
+
+        let html = '<h4>Arquivos selecionados:</h4><ul>';
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const size = (file.size / 1024 / 1024).toFixed(2);
+            html += `<li>${file.name} (${size} MB)</li>`;
+        }
+        html += '</ul>';
         
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Elementos que PODEM ativar o file input
-        const isUploadButton = target.classList.contains('upload-button') || target.closest('.upload-button');
-        const isUploadIcon = target.classList.contains('upload-icon') || target.closest('.upload-icon');
-        const isUploadText = target.tagName.toLowerCase() === 'p' && target.closest('.upload-area');
-        const isFeatherIcon = target.tagName.toLowerCase() === 'i' && target.hasAttribute('data-feather');
-        
-        // Só ativar file input se for um elemento permitido
-        if (isUploadButton || isUploadIcon || isUploadText || isFeatherIcon) {
+        selectedFiles.innerHTML = html;
+        selectedFiles.style.display = 'block';
+        fileCount.textContent = `${files.length} arquivo(s) selecionado(s)`;
+    }
+
+    // File input change event
+    fileInput.addEventListener('change', function() {
+        updateFileDisplay();
+    });
+
+    // Upload area click - APENAS os elementos específicos
+    const uploadButton = uploadArea.querySelector('.upload-button');
+    const uploadIcon = uploadArea.querySelector('.upload-icon');
+    const uploadText = uploadArea.querySelector('p');
+    
+    if (uploadButton) {
+        uploadButton.addEventListener('click', function() {
             clearErrors();
             fileInput.click();
-        }
-    });
-    
-    // Bloquear cliques na área geral dos workflow steps
-    workflowSteps.forEach(step => {
-        step.addEventListener('click', function(e) {
-            // Só permitir cliques em elementos específicos
-            const allowedElements = [
-                'button', 'input', 'a', 'label'
-            ];
-            
-            const allowedClasses = [
-                'quality-slider', 'convert-button'
-            ];
-            
-            const target = e.target;
-            const isAllowedElement = allowedElements.includes(target.tagName.toLowerCase());
-            const hasAllowedClass = allowedClasses.some(className => 
-                target.classList.contains(className)
-            );
-            const isInUploadArea = target.closest('.upload-area');
-            
-            // Se não for elemento permitido E não estiver na upload area, bloquear
-            if (!isAllowedElement && !hasAllowedClass && !isInUploadArea) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-            }
         });
-    });
-
-    // File input change
-    fileInput.addEventListener('change', function(event) {
-        clearErrors();
-        const files = event.target.files;
-        updateFileDisplay(files);
-        validateFiles(files);
-    });
+    }
+    
+    if (uploadIcon) {
+        uploadIcon.addEventListener('click', function() {
+            clearErrors();
+            fileInput.click();
+        });
+    }
+    
+    if (uploadText) {
+        uploadText.addEventListener('click', function() {
+            clearErrors();
+            fileInput.click();
+        });
+    }
 
     // Drag and drop functionality
-    uploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-
-    uploadArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        clearErrors();
-        const files = e.dataTransfer.files;
-        
-        const dt = new DataTransfer();
-        for (let i = 0; i < files.length; i++) {
-            dt.items.add(files[i]);
-        }
-        fileInput.files = dt.files;
-        
-        updateFileDisplay(files);
-        validateFiles(files);
-    });
-
-    function updateFileDisplay(files) {
-        if (files.length > 0) {
-            let totalSize = 0;
-            let fileNames = [];
-            
-            // Mostrar feedback de carregamento
-            selectedFiles.style.display = 'block';
-            uploadArea.classList.add('has-files');
-            
-            for (let i = 0; i < files.length; i++) {
-                totalSize += files[i].size;
-                fileNames.push(files[i].name);
-            }
-            const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
-            
-            const countText = `${files.length} arquivo(s) • ${totalMB}MB total`;
-            fileCount.textContent = countText;
-            fileCount.classList.add('file-count-updated');
-            setTimeout(() => fileCount.classList.remove('file-count-updated'), 300);
-            
-            let filesList = document.getElementById('filesList');
-            
-            if (!filesList) {
-                const newFilesList = document.createElement('div');
-                newFilesList.id = 'filesList';
-                newFilesList.className = 'files-list';
-                selectedFiles.appendChild(newFilesList);
-                filesList = newFilesList;
-            }
-            
-            filesList.innerHTML = '';
-            
-            const maxDisplayFiles = 5;
-            const filesToShow = Math.min(files.length, maxDisplayFiles);
-            const remainingFiles = files.length - filesToShow;
-            
-            for (let i = 0; i < filesToShow; i++) {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.style.animationDelay = `${i * 0.1}s`;
-                fileItem.style.pointerEvents = 'none';
-                
-                const truncatedName = fileNames[i].length > 30 
-                    ? fileNames[i].substring(0, 27) + '...' 
-                    : fileNames[i];
-                
-                fileItem.innerHTML = `
-                    <i data-feather="file-image"></i>
-                    <span class="file-name" title="${fileNames[i]}">${truncatedName}</span>
-                    <span class="file-size">${(files[i].size / (1024 * 1024)).toFixed(1)}MB</span>
-                    <span class="file-status">✓</span>
-                `;
-                filesList.appendChild(fileItem);
-            }
-            
-            if (remainingFiles > 0) {
-                const moreFilesItem = document.createElement('div');
-                moreFilesItem.className = 'file-item more-files';
-                moreFilesItem.style.pointerEvents = 'none';
-                moreFilesItem.innerHTML = `
-                    <i data-feather="plus-circle"></i>
-                    <span class="file-name">e mais ${remainingFiles} arquivo(s)...</span>
-                    <span class="file-size">Total: ${totalMB}MB</span>
-                `;
-                filesList.appendChild(moreFilesItem);
-            }
-            
-            setTimeout(() => {
-                feather.replace();
-            }, 100);
-            
-        } else {
-            selectedFiles.style.display = 'none';
-            uploadArea.classList.remove('has-files');
-        }
-    }
-
-    function validateFiles(files) {
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-        let totalSize = 0;
-        const maxTotalSize = 50 * 1024 * 1024; // 50MB total
-        const maxFileSize = 50 * 1024 * 1024; // 50MB por arquivo
-
-        for (let i = 0; i < files.length; i++) {
-            totalSize += files[i].size;
-        }
-
-        if (totalSize > maxTotalSize) {
-            const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
-            showError(`Tamanho total dos arquivos (${totalMB}MB) excede o limite de 50MB. Por favor, selecione menos arquivos ou arquivos menores.`);
-            fileInput.value = '';
-            selectedFiles.style.display = 'none';
-            uploadArea.classList.remove('has-files');
-            return false;
-        }
-
-        for (let i = 0; i < files.length; i++) {
-            if (!validTypes.includes(files[i].type)) {
-                showError('Apenas arquivos de imagem são permitidos (JPEG, PNG, GIF).');
-                fileInput.value = '';
-                selectedFiles.style.display = 'none';
-                uploadArea.classList.remove('has-files');
-                return false;
-            }
-            if (files[i].size > maxFileSize) {
-                const fileMB = (files[i].size / (1024 * 1024)).toFixed(1);
-                showError(`Arquivo '${files[i].name}' (${fileMB}MB) excede o limite de 50MB por arquivo.`);
-                fileInput.value = '';
-                selectedFiles.style.display = 'none';
-                uploadArea.classList.remove('has-files');
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     // SignalR for progress
     const connection = new signalR.HubConnectionBuilder()
