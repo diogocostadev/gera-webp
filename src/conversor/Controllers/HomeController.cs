@@ -22,7 +22,7 @@ namespace GeraWebP.Controllers
         private const string PastaRaiz = "wwwroot";
         private const string PastaConvertidos = "convertidos";
         private const string PastaUploads = "uploads";
-        private const string ContadorPath = "wwwroot/contador.json";
+        private const string ContadorPath = "data/contador.json";
         
         public ActionResult Index(string? culture = null)
         {
@@ -389,6 +389,13 @@ namespace GeraWebP.Controllers
         {
             try
             {
+                // Criar diretório se não existir
+                var directoryPath = Path.GetDirectoryName(ContadorPath);
+                if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+                
                 if (!System.IO.File.Exists(ContadorPath))
                     return 0;
                 var json = System.IO.File.ReadAllText(ContadorPath);
@@ -403,11 +410,26 @@ namespace GeraWebP.Controllers
 
         private void IncrementarContadorGlobal(int quantidade)
         {
-            int atual = LerContadorGlobal();
-            int novo = atual + quantidade;
-            var obj = new Dictionary<string, int> { { "total", novo } };
-            var json = System.Text.Json.JsonSerializer.Serialize(obj);
-            System.IO.File.WriteAllText(ContadorPath, json);
+            try
+            {
+                // Criar diretório se não existir
+                var directoryPath = Path.GetDirectoryName(ContadorPath);
+                if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+                
+                int atual = LerContadorGlobal();
+                int novo = atual + quantidade;
+                var obj = new Dictionary<string, int> { { "total", novo } };
+                var json = System.Text.Json.JsonSerializer.Serialize(obj);
+                System.IO.File.WriteAllText(ContadorPath, json);
+            }
+            catch (Exception ex)
+            {
+                // Log erro mas não falhar a conversão por causa do contador
+                Console.WriteLine($"Erro ao incrementar contador: {ex.Message}");
+            }
         }
     }
 
