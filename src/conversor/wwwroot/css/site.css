@@ -1033,14 +1033,14 @@ html, body {
     display: flex;
     align-items: stretch;
     justify-content: center;
-    gap: 2.5rem;
+    gap: 2rem;
     padding: 2.5rem;
     background: white;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
     margin: 0 auto;
     max-width: 1400px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .format-card {
@@ -1049,15 +1049,15 @@ html, body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 1.5rem;
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     border: 2px solid var(--border-color);
     transition: all 0.3s ease;
-    min-width: 200px;
+    min-width: 180px;
     min-height: 180px;
-    flex: 1;
-    max-width: 220px;
+    flex: 1 1 0;
+    max-width: 200px;
 }
 
 .format-card:hover {
@@ -1109,6 +1109,10 @@ html, body {
 
 .format-card.webp-result .format-text small {
     color: rgba(255, 255, 255, 0.9);
+}
+
+.format-card.webp-result .format-text strong {
+    color: white !important;
 }
 
 .format-arrow {
@@ -1351,12 +1355,14 @@ html, body {
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
     .format-cards {
+        display: flex;
+        flex-wrap: wrap;
         gap: 1.5rem;
         padding: 2rem;
-        flex-wrap: wrap;
         justify-content: center;
+        align-items: stretch;
     }
     
     .format-arrow {
@@ -1370,12 +1376,11 @@ html, body {
     }
     
     .format-card.webp-result {
-        margin-top: 0;
-        width: auto;
+        min-width: 200px;
         max-width: 250px;
-        margin-left: 0;
-        margin-right: 0;
-        flex: 0 1 auto;
+        background: linear-gradient(135deg, var(--success-color), #059669) !important;
+        color: white !important;
+        border-color: var(--success-color) !important;
     }
 }
 
@@ -1406,10 +1411,11 @@ html, body {
     }
     
     .format-cards {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
         padding: 1.5rem;
-        align-items: center;
+        justify-items: center;
     }
     
     .format-card {
@@ -1420,8 +1426,10 @@ html, body {
     }
     
     .format-card.webp-result {
-        margin-top: 0;
         max-width: 280px;
+        background: linear-gradient(135deg, var(--success-color), #059669) !important;
+        color: white !important;
+        border-color: var(--success-color) !important;
     }
     
     .features-grid {
@@ -1491,3 +1499,4 @@ input:focus {
         break-inside: avoid;
     }
 }
+/* Cache bust: 1749393763 */
