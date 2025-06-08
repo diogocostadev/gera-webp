@@ -61,18 +61,21 @@ namespace GeraWebP.Controllers
                     ViewData["Description"] = "Free and fast online WebP converter. Convert JPG, PNG, GIF images to WebP format with up to 90% size reduction. Optimize your images for web in seconds!";
                     ViewData["Language"] = "en";
                     ViewData["Culture"] = "en-US";
+                    ViewData["DebugLang"] = "EN_SET"; // Debug temporário
                     break;
                 case "es":
                     ViewData["Title"] = "Convertidor WebP Online Gratuito";
                     ViewData["Description"] = "Convertidor WebP online gratuito y rápido. Convierte imágenes JPG, PNG, GIF a formato WebP con hasta 90% de reducción de tamaño. ¡Optimiza tus imágenes para web en segundos!";
                     ViewData["Language"] = "es";
                     ViewData["Culture"] = "es-ES";
+                    ViewData["DebugLang"] = "ES_SET"; // Debug temporário
                     break;
                 default:
                     ViewData["Title"] = "Conversor WebP Online Gratuito";
                     ViewData["Description"] = "Conversor WebP online gratuito e rápido. Converta imagens JPG, PNG, GIF para formato WebP com até 90% de redução no tamanho. Otimize suas imagens para web em segundos!";
                     ViewData["Language"] = "pt";
                     ViewData["Culture"] = "pt-BR";
+                    ViewData["DebugLang"] = "PT_SET"; // Debug temporário
                     break;
             }
         }
