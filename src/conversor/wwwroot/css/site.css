@@ -1070,7 +1070,7 @@ html, body {
     background: linear-gradient(135deg, var(--success-color), #059669);
     color: white;
     border-color: var(--success-color);
-    align-self: center;
+    align-self: stretch;
 }
 
 .format-icon {
@@ -1370,11 +1370,12 @@ html, body {
     }
     
     .format-card.webp-result {
-        margin-top: 1rem;
-        width: 100%;
+        margin-top: 0;
+        width: auto;
         max-width: 250px;
-        margin-left: auto;
-        margin-right: auto;
+        margin-left: 0;
+        margin-right: 0;
+        flex: 0 1 auto;
     }
 }
 
@@ -1419,7 +1420,7 @@ html, body {
     }
     
     .format-card.webp-result {
-        margin-top: 0.5rem;
+        margin-top: 0;
         max-width: 280px;
     }
     

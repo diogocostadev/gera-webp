@@ -22,7 +22,7 @@ namespace GeraWebP.Controllers
                 // Páginas secundárias em português
                 new SitemapUrl 
                 { 
-                    Url = "https://webpconverter.com.br/Home/Privacidade", 
+                    Url = "https://webpconverter.com.br/privacidade", 
                     Priority = "0.5", 
                     ChangeFreq = "monthly" 
                 },

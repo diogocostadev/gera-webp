@@ -44,6 +44,13 @@ namespace GeraWebP.Controllers
             SetCultureContent(culture ?? "pt");
             return View();
         }
+        
+        [HttpGet("privacidade")]
+        public IActionResult PrivacidadeSimples()
+        {
+            SetCultureContent("pt");
+            return View("Privacidade");
+        }
 
         private void SetCultureContent(string culture)
         {
@@ -308,25 +315,29 @@ namespace GeraWebP.Controllers
         [HttpGet("en")]
         public IActionResult IndexEnglish()
         {
-            return Index("en");
+            SetCultureContent("en");
+            return View("Index");
         }
 
         [HttpGet("es")]  
         public IActionResult IndexSpanish()
         {
-            return Index("es");
+            SetCultureContent("es");
+            return View("Index");
         }
 
-        [HttpGet("en/privacidade")]
-        public IActionResult PrivacidadeEnglish()
+        [HttpGet("en/privacy")]
+        public IActionResult PrivacyEnglish()
         {
-            return Privacidade("en");
+            SetCultureContent("en");
+            return View("Privacy");
         }
 
-        [HttpGet("es/privacidade")]
-        public IActionResult PrivacidadeSpanish()
+        [HttpGet("es/privacidad")]
+        public IActionResult PrivacidadSpanish()
         {
-            return Privacidade("es");
+            SetCultureContent("es");
+            return View("Privacidad");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
