@@ -1,0 +1,100 @@
+{
+    "name": "WebP Converter - Conversor de Imagens Online",
+    "short_name": "WebP Converter",
+    "description": "Converta JPG, PNG, GIF para WebP gratuitamente. Reduza até 90% do tamanho das imagens.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2563eb",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "pt-BR",
+    
+    "icons": [
+        {
+            "src": "/images/icon-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/images/icon-96x96.png", 
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/images/icon-128x128.png",
+            "sizes": "128x128", 
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/images/icon-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/images/icon-152x152.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/images/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/images/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/images/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ],
+    
+    "screenshots": [
+        {
+            "src": "/images/screenshot-wide.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Conversor WebP em tela ampla"
+        },
+        {
+            "src": "/images/screenshot-narrow.png", 
+            "sizes": "750x1334",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Conversor WebP em mobile"
+        }
+    ],
+    
+    "categories": ["productivity", "photo", "utilities"],
+    "prefer_related_applications": false,
+    
+    "shortcuts": [
+        {
+            "name": "Converter JPG para WebP",
+            "short_name": "JPG → WebP",
+            "description": "Converta imagens JPG para formato WebP",
+            "url": "/converter-jpg-para-webp",
+            "icons": [{"src": "/images/shortcut-jpg.png", "sizes": "96x96"}]
+        },
+        {
+            "name": "Converter PNG para WebP", 
+            "short_name": "PNG → WebP",
+            "description": "Converta imagens PNG para formato WebP",
+            "url": "/converter-png-para-webp",
+            "icons": [{"src": "/images/shortcut-png.png", "sizes": "96x96"}]
+        }
+    ]
+} 

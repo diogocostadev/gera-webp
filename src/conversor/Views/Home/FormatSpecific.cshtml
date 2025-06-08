@@ -1,0 +1,408 @@
+@{
+    var formatType = ViewData["FormatType"]?.ToString();
+    var formatIcon = ViewData["FormatIcon"]?.ToString();
+    var formatColor = ViewData["FormatColor"]?.ToString();
+}
+
+<!-- SEO Hero Section -->
+<section class="hero-seo">
+    <div class="container">
+        <header class="hero-content">
+            <h1>Converter @formatType para WebP Online Gratuito</h1>
+            <p class="hero-description">
+                Converta suas imagens <strong>@formatType para WebP</strong> gratuitamente. 
+                Reduza o tamanho dos arquivos em <strong>até 90%</strong> mantendo a qualidade perfeita. 
+                Ferramenta online especializada em conversão <strong>@formatType → WebP</strong>.
+            </p>
+            <div class="hero-features">
+                <span class="feature-badge">✅ Especializado em @formatType</span>
+                <span class="feature-badge">🚀 Conversão Instantânea</span>
+                <span class="feature-badge">🔒 100% Seguro</span>
+                <span class="feature-badge">💾 Download Direto</span>
+            </div>
+        </header>
+    </div>
+</section>
+
+<!-- Service Notice -->
+<div class="free-service-notice">
+    <div class="container">
+        <div class="notice-content">
+            <i data-feather="zap"></i>
+            <span><strong>Conversão @formatType → WebP</strong> • Processamento Rápido • Qualidade Preservada</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Converter -->
+<main class="main-converter">
+    <div class="converter-container">
+        <form id="converterForm" method="post" action="/Home/Converter" enctype="multipart/form-data">
+            
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/">Conversor WebP</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@formatType para WebP</li>
+                </ol>
+            </nav>
+            
+            <!-- Format-Specific Converter -->
+            <div class="converter-workflow">
+                <!-- Step 1: Upload -->
+                <div class="workflow-step upload-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h2>Selecionar Imagens @formatType</h2>
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon" style="color: @formatColor;">
+                            <i data-feather="upload-cloud"></i>
+                        </div>
+                        <p>Arraste arquivos @formatType ou clique para selecionar</p>
+                        <div class="upload-button" style="background: @formatColor;">
+                            <i data-feather="folder"></i>
+                            Escolher Arquivos @formatType
+                        </div>
+                        <div class="upload-info">
+                            <small>Apenas @formatType • Máx: 50MB por arquivo ou 50MB total</small>
+                        </div>
+                        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" 
+                               accept="@(formatType?.ToLower() == "jpg" ? "image/jpeg,image/jpg" : formatType?.ToLower() == "png" ? "image/png" : "image/gif")" />
+                    </div>
+                    
+                    <!-- Selected Files Display -->
+                    <div id="selectedFiles" class="selected-files" style="display: none;">
+                        <div class="files-header">
+                            <i data-feather="check-circle"></i>
+                            <span id="fileCount">0</span> arquivo(s) @formatType selecionado(s)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Settings -->
+                <div class="workflow-step settings-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h2>Otimizar para WebP</h2>
+                    </div>
+                    
+                    <div class="quality-control">
+                        <div class="quality-info">
+                            <label for="qualidade" class="quality-label">Qualidade WebP:</label>
+                            <span class="quality-value" id="qualidadeValue">75</span>%
+                        </div>
+                        
+                        <input type="range" 
+                               id="qualidade" 
+                               name="qualidade" 
+                               min="10" 
+                               max="100" 
+                               value="75" 
+                               class="quality-slider"
+                               oninput="atualizarValorDaQuantidade(this.value)"
+                               aria-label="Ajustar qualidade da conversão @formatType para WebP" />
+                        
+                        <div class="quality-labels">
+                            <small>Menor tamanho</small>
+                            <small>Melhor qualidade</small>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-preview">
+                        <div class="preview-item">
+                            <div class="preview-icon">
+                                <i data-feather="trending-down"></i>
+                            </div>
+                            <div class="preview-text">
+                                <strong>@formatType → WebP</strong>
+                                <small id="compressionEstimate">~65% menor</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Convert -->
+                <div class="workflow-step convert-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h2>Converter @formatType</h2>
+                    </div>
+                    
+                    <button type="submit" class="convert-button" id="convertButton" aria-label="Converter @formatType para WebP">
+                        <i data-feather="zap"></i>
+                        Converter @formatType para WebP
+                    </button>
+                    
+                    <div class="convert-info">
+                        <small>Conversão especializada @formatType → WebP</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress & Download Sections -->
+            <div id="progressContainer" class="progress-section" style="display: none;">
+                <h3>Convertendo @formatType para WebP...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progressText">0%</p>
+            </div>
+
+            @if (ViewBag.DownloadLink != null)
+            {
+                <div class="download-section">
+                    <div class="download-success">
+                        <i data-feather="check-circle"></i>
+                        <h3>@formatType Convertido para WebP com Sucesso!</h3>
+                        <p>Suas imagens @formatType foram convertidas para WebP com otimização máxima.</p>
+                        <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar @formatType convertido para WebP">
+                            <i data-feather="download"></i>
+                            Baixar WebP Otimizado
+                        </a>
+                        <small>Arquivo ZIP com todas as imagens convertidas</small>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
+</main>
+
+<!-- SEO Content -->
+<section class="seo-content">
+    <div class="container">
+        <!-- Format-Specific Benefits -->
+        <section class="format-benefits" aria-labelledby="benefits-title">
+            <h2 id="benefits-title" class="section-title">Por que Converter @formatType para WebP?</h2>
+            
+            <div class="benefits-grid">
+                @if (formatType == "JPG")
+                {
+                    <article class="benefit-item">
+                        <div class="benefit-icon">
+                            <i data-feather="image"></i>
+                        </div>
+                        <h3>JPG para WebP: Otimização para Fotos</h3>
+                        <p>Converta suas fotos JPEG/JPG para WebP e reduza até 90% do tamanho mantendo a qualidade visual perfeita. Ideal para fotografias e imagens complexas.</p>
+                    </article>
+                    
+                    <article class="benefit-item">
+                        <div class="benefit-icon">
+                            <i data-feather="zap"></i>
+                        </div>
+                        <h3>Performance Web Melhorada</h3>
+                        <p>Sites carregam 3x mais rápido com imagens WebP. Google prioriza sites rápidos no ranking, melhorando seu SEO automaticamente.</p>
+                    </article>
+                }
+                else if (formatType == "PNG")
+                {
+                    <article class="benefit-item">
+                        <div class="benefit-icon">
+                            <i data-feather="layers"></i>
+                        </div>
+                        <h3>PNG para WebP: Transparência Preservada</h3>
+                        <p>Converta PNG para WebP mantendo canal alfa (transparência). Reduza até 85% do tamanho sem perder qualidade ou transparência.</p>
+                    </article>
+                    
+                    <article class="benefit-item">
+                        <div class="benefit-icon">
+                            <i data-feather="trending-down"></i>
+                        </div>
+                        <h3>Compressão Superior</h3>
+                        <p>WebP oferece compressão sem perda (lossless) melhor que PNG, mantendo qualidade perfeita com arquivos menores.</p>
+                    </article>
+                }
+                else if (formatType == "GIF")
+                {
+                    <article class="benefit-item">
+                        <div class="benefit-icon">
+                            <i data-feather="play-circle"></i>
+                        </div>
+                        <h3>GIF para WebP: Animações Otimizadas</h3>
+                        <p>Converta GIFs animados para WebP e reduza drasticamente o tamanho. Mantenha animações suaves com qualidade superior.</p>
+                    </article>
+                    
+                    <article class="benefit-item">
+                        <div class="benefit-icon">
+                            <i data-feather="wifi"></i>
+                        </div>
+                        <h3>Economia de Banda</h3>
+                        <p>GIFs convertidos para WebP consomem até 95% menos banda, ideais para redes móveis e sites responsivos.</p>
+                    </article>
+                }
+            </div>
+        </section>
+
+        <!-- How-to Section -->
+        <section class="howto-section" aria-labelledby="howto-title">
+            <h2 id="howto-title" class="section-title">Como Converter @formatType para WebP</h2>
+            
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3>Selecione Arquivos @formatType</h3>
+                    <p>Clique em "Escolher Arquivos" ou arraste suas imagens @formatType para a área de upload. Suporta múltiplos arquivos.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3>Ajuste a Qualidade</h3>
+                    <p>Configure o nível de compressão WebP. 75% oferece ótimo equilíbrio entre qualidade e tamanho para @formatType.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3>Converta para WebP</h3>
+                    <p>Clique em "Converter" e aguarde o processamento. Suas imagens @formatType serão otimizadas para WebP em segundos.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h3>Baixe os Arquivos WebP</h3>
+                    <p>Download automático em ZIP com todas as imagens convertidas. Arquivos prontos para usar em seu site ou projeto.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Converta @formatType para WebP Agora!</h2>
+                <p>
+                    Otimize suas imagens @formatType com nossa ferramenta gratuita e profissional. 
+                    Milhares de usuários já converteram seus arquivos com excelência.
+                </p>
+                <a href="#converterForm" class="cta-button" aria-label="Converter @formatType para WebP">
+                    <i data-feather="arrow-up"></i>
+                    Converter Meus @formatType
+                </a>
+            </div>
+        </section>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Reutilizar scripts do Index principal
+        feather.replace();
+        
+        function atualizarValorDaQuantidade(value) {
+            document.getElementById('qualidadeValue').textContent = value;
+            const compressionEstimate = document.getElementById('compressionEstimate');
+            if (compressionEstimate) {
+                let estimate;
+                if (value <= 30) estimate = '~85% menor';
+                else if (value <= 50) estimate = '~75% menor';
+                else if (value <= 70) estimate = '~65% menor';
+                else if (value <= 85) estimate = '~55% menor';
+                else estimate = '~45% menor';
+                
+                compressionEstimate.textContent = estimate;
+            }
+        }
+
+        // File upload handling (simplificado para formato específico)
+        const fileInput = document.getElementById('arquivos');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileCount = document.getElementById('fileCount');
+        const uploadArea = document.getElementById('uploadArea');
+        const formatType = '@formatType';
+
+        fileInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+            updateFileDisplay(files);
+        });
+
+        uploadArea.addEventListener('click', function(e) {
+            if (e.target === fileInput) return;
+            fileInput.click();
+        });
+
+        function updateFileDisplay(files) {
+            if (files.length > 0) {
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSize += files[i].size;
+                }
+                const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+                
+                fileCount.textContent = `${files.length} arquivo(s) ${formatType} • ${totalMB}MB total`;
+                selectedFiles.style.display = 'block';
+                uploadArea.classList.add('has-files');
+            } else {
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+            }
+        }
+    </script>
+    
+    <style>
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .benefit-item {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .benefit-icon {
+            width: 4rem;
+            height: 4rem;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .step-item {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        
+        .step-number {
+            width: 3rem;
+            height: 3rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin: 0 auto 1rem;
+        }
+        
+        @@media (max-width: 768px) {
+            .benefits-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .steps-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+} 

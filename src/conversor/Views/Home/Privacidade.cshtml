@@ -1,0 +1,207 @@
+@{
+    ViewBag.Title = "Política de Privacidade - WebP Converter";
+    Layout = null; // Não usar layout, página auto-contida
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Política de privacidade do WebP Converter. Saiba como tratamos seus dados e garantimos a segurança de suas imagens." />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">W</div>
+                WebP Converter
+            </a>
+            <nav>
+                <a href="/" style="color: var(--text-secondary); text-decoration: none; margin-left: 1rem;">Início</a>
+                <a href="/Home/Privacidade" style="color: var(--primary-color); text-decoration: none; margin-left: 1rem; font-weight: 600;">Privacidade</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Container Principal -->
+    <div class="main-container fade-in-up">
+        
+        <!-- Espaço para Anúncio Lateral Esquerdo -->
+        <aside class="ad-space" style="display: none;">
+            <div class="ad-placeholder">
+                <div style="text-align: center;">
+                    <i data-feather="dollar-sign" style="width: 2rem; height: 2rem; margin-bottom: 0.5rem;"></i>
+                    <p><strong>Espaço para Anúncio</strong></p>
+                    <p>Google AdSense<br/>300x250 ou 300x600</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="converter-card">
+            <div class="card-header">
+                <h1><i data-feather="shield" style="width: 2.5rem; height: 2.5rem; margin-right: 0.5rem; vertical-align: middle;"></i>Política de Privacidade</h1>
+                <p>Transparência e segurança no tratamento dos seus dados</p>
+            </div>
+
+            <div class="card-body" style="text-align: left;">
+                <div style="color: var(--text-primary); line-height: 1.8;">
+                    
+                    <section style="margin-bottom: 2rem;">
+                        <h2 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i data-feather="info" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;"></i>
+                            Resumo Executivo
+                        </h2>
+                        <div style="background: var(--secondary-color); padding: 1.5rem; border-radius: var(--radius-lg); border-left: 4px solid var(--primary-color);">
+                            <p><strong>Seus arquivos são seguros:</strong> Todas as imagens são processadas localmente em nossos servidores e removidas automaticamente após 30 minutos.</p>
+                            <p><strong>Não coletamos dados pessoais:</strong> Não solicitamos cadastro, email ou informações pessoais.</p>
+                            <p><strong>Uso de cookies:</strong> Utilizamos apenas cookies essenciais para o funcionamento do site e Google Analytics.</p>
+                        </div>
+                    </section>
+
+                    <section style="margin-bottom: 2rem;">
+                        <h2 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i data-feather="upload" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;"></i>
+                            Como Tratamos Suas Imagens
+                        </h2>
+                        <ul style="margin-left: 1rem;">
+                            <li><strong>Processamento Local:</strong> Todas as imagens são processadas em nossos servidores seguros.</li>
+                            <li><strong>Remoção Automática:</strong> Todos os arquivos (originais e convertidos) são removidos automaticamente após 5 minutos.</li>
+                            <li><strong>Limpeza Frequente:</strong> Sistema de limpeza automática executa a cada 2 minutos para manter o armazenamento otimizado.</li>
+                            <li><strong>Sem Backup:</strong> Não mantemos cópias ou backups de suas imagens.</li>
+                            <li><strong>Sem Visualização:</strong> Nossos administradores não acessam ou visualizam suas imagens.</li>
+                            <li><strong>Sistema Gratuito:</strong> Limpeza automática garante disponibilidade contínua do serviço.</li>
+                        </ul>
+                    </section>
+
+                    <section style="margin-bottom: 2rem;">
+                        <h2 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i data-feather="cookie" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;"></i>
+                            Cookies e Tecnologias
+                        </h2>
+                        <div style="background: rgba(99, 102, 241, 0.05); padding: 1.5rem; border-radius: var(--radius-lg);">
+                            <h3 style="margin-bottom: 0.5rem;">Cookies Essenciais</h3>
+                            <p>Utilizados para manter a sessão durante a conversão e garantir a segurança.</p>
+                            
+                            <h3 style="margin: 1rem 0 0.5rem 0;">Google Analytics</h3>
+                            <p>Coletamos dados anônimos de uso para melhorar nosso serviço:</p>
+                            <ul style="margin-left: 1rem;">
+                                <li>Páginas visitadas</li>
+                                <li>Tempo de permanência</li>
+                                <li>Tipo de dispositivo e navegador</li>
+                                <li>País de origem (sem identificação pessoal)</li>
+                            </ul>
+                            
+                            <h3 style="margin: 1rem 0 0.5rem 0;">Google AdSense</h3>
+                            <p>Utilizamos anúncios contextuais do Google para manter o serviço gratuito. O Google pode utilizar cookies para personalização de anúncios.</p>
+                        </div>
+                    </section>
+
+                    <section style="margin-bottom: 2rem;">
+                        <h2 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i data-feather="database" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;"></i>
+                            Dados que NÃO Coletamos
+                        </h2>
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: var(--radius-lg); border-left: 4px solid var(--success-color);">
+                            <ul style="margin-left: 1rem;">
+                                <li>✅ Nome, email ou informações de contato</li>
+                                <li>✅ Endereço IP identificável</li>
+                                <li>✅ Localização precisa</li>
+                                <li>✅ Informações bancárias ou financeiras</li>
+                                <li>✅ Dados biométricos das imagens</li>
+                                <li>✅ Metadados EXIF das fotos</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section style="margin-bottom: 2rem;">
+                        <h2 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i data-feather="lock" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;"></i>
+                            Segurança e Proteção
+                        </h2>
+                        <ul style="margin-left: 1rem;">
+                            <li><strong>HTTPS:</strong> Toda comunicação é criptografada com SSL/TLS.</li>
+                            <li><strong>Servidores Seguros:</strong> Infraestrutura protegida contra acessos não autorizados.</li>
+                            <li><strong>Sem Logs:</strong> Não mantemos registros detalhados de atividades.</li>
+                            <li><strong>Limpeza Automática:</strong> Sistema automatizado de remoção de arquivos.</li>
+                        </ul>
+                    </section>
+
+                    <section style="margin-bottom: 2rem;">
+                        <h2 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i data-feather="users" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;"></i>
+                            Seus Direitos
+                        </h2>
+                        <p>Como não coletamos dados pessoais identificáveis, você tem direito a:</p>
+                        <ul style="margin-left: 1rem;">
+                            <li>Usar o serviço sem criar conta</li>
+                            <li>Ter suas imagens removidas automaticamente</li>
+                            <li>Desabilitar cookies não essenciais no navegador</li>
+                            <li>Solicitar esclarecimentos sobre nossa política</li>
+                        </ul>
+                    </section>
+
+                    <section style="margin-bottom: 2rem;">
+                        <h2 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i data-feather="refresh-cw" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;"></i>
+                            Atualizações
+                        </h2>
+                        <p>Esta política pode ser atualizada ocasionalmente. Mudanças significativas serão notificadas na página inicial do site.</p>
+                        <p><strong>Última atualização:</strong> Dezembro de 2024</p>
+                    </section>
+
+                    <section style="background: var(--secondary-color); padding: 1.5rem; border-radius: var(--radius-lg); text-align: center;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Dúvidas sobre Privacidade?</h3>
+                        <p>Se você tem alguma dúvida sobre como tratamos seus dados, nossa política está sempre disponível nesta página.</p>
+                        <a href="/" style="display: inline-flex; align-items: center; color: var(--primary-color); text-decoration: none; font-weight: 600; margin-top: 1rem;">
+                            <i data-feather="arrow-left" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i>
+                            Voltar ao Conversor
+                        </a>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <!-- Espaço para Anúncio Lateral Direito -->
+        <aside class="ad-space" style="display: none;">
+            <div class="ad-placeholder">
+                <div style="text-align: center;">
+                    <i data-feather="dollar-sign" style="width: 2rem; height: 2rem; margin-bottom: 0.5rem;"></i>
+                    <p><strong>Espaço para Anúncio</strong></p>
+                    <p>Google AdSense<br/>300x250 ou 300x600</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 WebP Converter. Processamento seguro e privado de imagens.</p>
+            <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.8;">
+                <a href="/Home/Privacidade" style="color: rgba(255,255,255,0.8); text-decoration: none;">Política de Privacidade</a> • 
+                Arquivos removidos automaticamente • 100% seguro
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Inicializar ícones Feather
+        feather.replace();
+
+        // Mostrar áreas de anúncio no desktop
+        if (window.innerWidth >= 1024) {
+            document.querySelectorAll('.ad-space').forEach(el => {
+                if (el.style.display === 'none') {
+                    el.style.display = 'flex';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://webpconverter.com.br/sitemap.xml
+
+# Crawl-delay para bots mais lentos
+User-agent: Bingbot
+Crawl-delay: 1
+
+User-agent: Slurp
+Crawl-delay: 1
+
+# Bloquear diretórios desnecessários
+Disallow: /lib/
+Disallow: /css/
+Disallow: /js/
+Disallow: /uploads/
+Disallow: /convertidos/
+Disallow: /bin/
+Disallow: /obj/
+
+# Permitir arquivos CSS e JS para renderização
+Allow: /css/site.css
+Allow: /js/site.js
+
+# Páginas importantes para indexação
+Allow: /
+Allow: /privacidade
+Allow: /converter-jpg-para-webp
+Allow: /converter-png-para-webp  
+Allow: /converter-gif-para-webp
+
+# Páginas internacionais
+Allow: /en/
+Allow: /es/
+Allow: /en/privacy
+Allow: /es/privacidad
+
+# Host preferido
+Host: webpconverter.com.br 
