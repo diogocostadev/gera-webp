@@ -1,0 +1,151 @@
+@{
+    ViewData["Title"] = "Erro - " + ViewContext.HttpContext.Response.StatusCode;
+    ViewData["Description"] = "Ocorreu um erro inesperado. Tente novamente em alguns instantes.";
+}
+
+<style>
+    .error-container {
+        text-align: center;
+        padding: 60px 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        min-height: 60vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .error-code {
+        font-size: 120px;
+        font-weight: bold;
+        color: #f59e0b;
+        margin: 0;
+        line-height: 1;
+        text-shadow: 2px 2px 4px rgba(245, 158, 11, 0.1);
+    }
+
+    .error-title {
+        font-size: 2.5rem;
+        color: #1f2937;
+        margin: 20px 0 15px;
+        font-weight: 600;
+    }
+
+    .error-description {
+        font-size: 1.2rem;
+        color: #6b7280;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+    }
+
+    .btn-error {
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary-error {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-primary-error:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary-error {
+        background: white;
+        color: #374151;
+        border: 2px solid #e5e7eb;
+    }
+
+    .btn-secondary-error:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+        transform: translateY(-1px);
+        color: #374151;
+        text-decoration: none;
+    }
+
+    .warning-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .error-code {
+            font-size: 80px;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+        }
+        
+        .error-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn-error {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="error-container">
+    <div class="warning-icon">
+        <i data-feather="alert-triangle"></i>
+    </div>
+    
+    <h1 class="error-code">@ViewContext.HttpContext.Response.StatusCode</h1>
+    <h2 class="error-title">Algo deu errado</h2>
+    <p class="error-description">
+        Ocorreu um erro inesperado. Por favor, tente novamente ou entre em contato 
+        se o problema persistir.
+    </p>
+
+    <div class="error-actions">
+        <a href="/" class="btn-error btn-primary-error">
+            <i data-feather="home"></i>
+            Ir para Início
+        </a>
+        <a href="javascript:history.back()" class="btn-error btn-secondary-error">
+            <i data-feather="arrow-left"></i>
+            Voltar
+        </a>
+    </div>
+</div>
+
+<script>
+    // Ativar ícones Feather
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+</script> 

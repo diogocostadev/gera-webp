@@ -73,6 +73,7 @@
     <!-- CSS Principal -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/consent.css" asp-append-version="true" />
     
     <!-- Structured Data / Schema.org -->
     <script type="application/ld+json">
@@ -149,14 +150,23 @@
     }")
     </script>
     
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) com Consent Mode -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0CBPD9N9FK"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        gtag('config', 'G-0CBPD9N9FK');
+        // Configurar modo de consentimento padrão
+        gtag('consent', 'default', {
+            'analytics_storage': 'denied',
+            'ad_storage': 'denied',
+            'wait_for_update': 500
+        });
+
+        gtag('config', 'G-0CBPD9N9FK', {
+            'anonymize_ip': true
+        });
     </script>
 
 </head>
@@ -199,6 +209,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/consent.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
