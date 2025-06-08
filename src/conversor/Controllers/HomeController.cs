@@ -204,17 +204,174 @@ namespace GeraWebP.Controllers
             }
 
             await Task.WhenAll(tasks);
-
-            // Incrementa o contador global
-            IncrementarContadorGlobal(totalFiles);
+            
+            IncrementarContadorGlobal(arquivos.Count);
 
             ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
-
-            // Atualizar contador global para exibição após conversão
-            ViewBag.ContadorGlobal = LerContadorGlobal();
-
             return View("Index");
-            
+        }
+
+        [HttpPost("api/converter")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ConverterApi(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            try
+            {
+                if (arquivos == null || arquivos.Count == 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Por favor, selecione um ou mais arquivos."
+                    });
+                }
+
+                // Validar tipos de arquivo
+                var tiposPermitidos = new HashSet<string> { "image/jpeg", "image/png", "image/gif" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidos.Contains(arquivo.ContentType))
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"Tipo de arquivo não permitido: {arquivo.ContentType}"
+                        });
+                    }
+                }
+
+                // Validar dimensões das imagens antes da conversão
+                const int maxWebPWidth = 16383;
+                const int maxWebPHeight = 16383;
+
+                foreach (var arquivo in arquivos)
+                {
+                    try
+                    {
+                        using var imageStream = arquivo.OpenReadStream();
+                        using var image = await Image.LoadAsync(imageStream);
+
+                        if (image.Width > maxWebPWidth || image.Height > maxWebPHeight)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = $"A imagem '{arquivo.FileName}' ({image.Width}x{image.Height}) excede o limite máximo de {maxWebPWidth}x{maxWebPHeight} pixels suportado pelo formato WebP."
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"Erro ao processar a imagem '{arquivo.FileName}': {ex.Message}"
+                        });
+                    }
+                }
+
+                // Validar tamanho total dos arquivos (100MB máximo)
+                const long maxTotalSize = 100 * 1024 * 1024; // 100MB
+                const long maxFileSize = 100 * 1024 * 1024;  // 100MB por arquivo
+
+                long totalSize = arquivos.Sum(f => f.Length);
+                if (totalSize > maxTotalSize)
+                {
+                    var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB. Por favor, selecione menos arquivos ou arquivos menores."
+                    });
+                }
+
+                // Validar tamanho individual dos arquivos
+                foreach (var arquivo in arquivos)
+                {
+                    if (arquivo.Length > maxFileSize)
+                    {
+                        var fileMB = Math.Round(arquivo.Length / (1024.0 * 1024.0), 1);
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"Arquivo '{arquivo.FileName}' ({fileMB}MB) excede o limite de 100MB por arquivo."
+                        });
+                    }
+                }
+
+                var sessionId = Guid.NewGuid().ToString();
+                var caminhoUpload = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaUploads, sessionId);
+                var caminhoConvertido = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
+
+                if (!Directory.Exists(caminhoUpload))
+                {
+                    Directory.CreateDirectory(caminhoUpload);
+                }
+
+                if (!Directory.Exists(caminhoConvertido))
+                {
+                    Directory.CreateDirectory(caminhoConvertido);
+                }
+
+                int totalFiles = arquivos.Count;
+                int arquivosProcessados = 0;
+
+                List<Task> tasks = [];
+                foreach (var arquivo in arquivos)
+                {
+                    var task = Task.Run(async () =>
+                    {
+                        if (arquivo.Length > 0)
+                        {
+                            var caminhoOriginal = Path.Combine(caminhoUpload, arquivo.FileName);
+                            var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
+
+                            var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".webp");
+
+                            using (var fileStream = new FileStream(caminhoOriginal, FileMode.Create))
+                            {
+                                await arquivo.CopyToAsync(fileStream);
+                            }
+
+                            byte[] webPImage = await ConvertToWebP(arquivo, qualidade);
+                            await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, webPImage);
+
+                            arquivosProcessados++;
+                            int progress = (int)((float)arquivosProcessados / totalFiles * 100);
+                            await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
+                        }
+                    });
+                    tasks.Add(task);
+                }
+
+                await Task.WhenAll(tasks);
+
+                IncrementarContadorGlobal(arquivos.Count);
+
+                var downloadLink = Url.Action("DownloadFiles", new { sessionId });
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Conversão concluída com sucesso!",
+                    downloadLink = downloadLink,
+                    sessionId = sessionId,
+                    filesCount = arquivos.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro na conversão de arquivos");
+                return Json(new
+                {
+                    success = false,
+                    message = "Erro interno na conversão: " + ex.Message
+                });
+            }
         }
 
         private static async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
@@ -300,7 +457,37 @@ namespace GeraWebP.Controllers
         public IActionResult DownloadFiles(string sessionId)
         {
             var caminhoConvertidos = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
+            
+            if (!Directory.Exists(caminhoConvertidos))
+            {
+                return NotFound("Arquivos não encontrados.");
+            }
+
+            var arquivos = Directory.GetFiles(caminhoConvertidos);
+            
+            if (arquivos.Length == 0)
+            {
+                return NotFound("Nenhum arquivo encontrado.");
+            }
+            
+            // Se houver apenas um arquivo, baixar diretamente
+            if (arquivos.Length == 1)
+            {
+                var arquivo = arquivos[0];
+                var nomeArquivo = Path.GetFileName(arquivo);
+                var bytes = System.IO.File.ReadAllBytes(arquivo);
+                
+                return File(bytes, "image/webp", nomeArquivo);
+            }
+            
+            // Se houver múltiplos arquivos, criar zip
             var caminhoZip = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId + ".zip");
+            
+            // Remover zip existente se houver
+            if (System.IO.File.Exists(caminhoZip))
+            {
+                System.IO.File.Delete(caminhoZip);
+            }
 
             ZipFile.CreateFromDirectory(caminhoConvertidos, caminhoZip);
 
