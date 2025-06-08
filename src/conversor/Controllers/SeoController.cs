@@ -29,23 +29,50 @@ public class SeoController : Controller
 
     private string GenerateSitemap(string baseUrl)
     {
+        // Usar sempre o domínio de produção
+        baseUrl = "https://wepper.vip4.link";
+        
         var sitemap = new StringBuilder();
         sitemap.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sitemap.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
 
-        // URLs principais
+        // URLs principais do wepper.vip4.link
         var urls = new[]
         {
+            // Páginas principais
             new { Url = "/", Priority = "1.0", ChangeFreq = "daily" },
             new { Url = "/en/", Priority = "0.9", ChangeFreq = "daily" },
             new { Url = "/es/", Priority = "0.9", ChangeFreq = "daily" },
-            new { Url = "/converter-jpg-para-webp", Priority = "0.8", ChangeFreq = "weekly" },
-            new { Url = "/converter-png-para-webp", Priority = "0.8", ChangeFreq = "weekly" },
-            new { Url = "/converter-gif-para-webp", Priority = "0.8", ChangeFreq = "weekly" },
+            
+            // Ferramentas de conversão (baseado no site real)
+            new { Url = "/converter-jpg-para-webp", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/converter-png-para-webp", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/converter-gif-para-webp", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/compressor-imagem", Priority = "0.8", ChangeFreq = "weekly" },
-            new { Url = "/privacidade", Priority = "0.5", ChangeFreq = "monthly" },
-            new { Url = "/en/privacy", Priority = "0.5", ChangeFreq = "monthly" },
-            new { Url = "/es/privacidad", Priority = "0.5", ChangeFreq = "monthly" }
+            
+            // Páginas informativas
+            new { Url = "/como-converter-webp", Priority = "0.7", ChangeFreq = "monthly" },
+            new { Url = "/vantagens-formato-webp", Priority = "0.7", ChangeFreq = "monthly" },
+            new { Url = "/tutorial-otimizacao-imagens", Priority = "0.6", ChangeFreq = "monthly" },
+            
+            // Páginas legais
+            new { Url = "/privacidade", Priority = "0.4", ChangeFreq = "monthly" },
+            new { Url = "/termos-uso", Priority = "0.4", ChangeFreq = "monthly" },
+            new { Url = "/politica-cookies", Priority = "0.4", ChangeFreq = "monthly" },
+            
+            // Versões em inglês
+            new { Url = "/en/jpg-to-webp-converter", Priority = "0.8", ChangeFreq = "weekly" },
+            new { Url = "/en/png-to-webp-converter", Priority = "0.8", ChangeFreq = "weekly" },
+            new { Url = "/en/gif-to-webp-converter", Priority = "0.8", ChangeFreq = "weekly" },
+            new { Url = "/en/privacy", Priority = "0.4", ChangeFreq = "monthly" },
+            new { Url = "/en/terms", Priority = "0.4", ChangeFreq = "monthly" },
+            
+            // Versões em espanhol
+            new { Url = "/es/convertir-jpg-webp", Priority = "0.8", ChangeFreq = "weekly" },
+            new { Url = "/es/convertir-png-webp", Priority = "0.8", ChangeFreq = "weekly" },
+            new { Url = "/es/convertir-gif-webp", Priority = "0.8", ChangeFreq = "weekly" },
+            new { Url = "/es/privacidad", Priority = "0.4", ChangeFreq = "monthly" },
+            new { Url = "/es/terminos", Priority = "0.4", ChangeFreq = "monthly" }
         };
 
         foreach (var url in urls)
@@ -64,23 +91,44 @@ public class SeoController : Controller
 
     private string GenerateRobotsTxt(string baseUrl)
     {
+        // Usar sempre o domínio de produção
+        baseUrl = "https://wepper.vip4.link";
+        
         var robots = new StringBuilder();
         robots.AppendLine("User-agent: *");
         robots.AppendLine("Allow: /");
         robots.AppendLine();
-        robots.AppendLine("# Bloquear arquivos temporários e uploads");
+        robots.AppendLine("# Crawl-delay para ser gentil com o servidor");
+        robots.AppendLine("Crawl-delay: 1");
+        robots.AppendLine();
+        robots.AppendLine("# Bloquear arquivos temporários e sensíveis");
         robots.AppendLine("Disallow: /wwwroot/uploads/");
         robots.AppendLine("Disallow: /wwwroot/convertidos/");
         robots.AppendLine("Disallow: /temp/");
+        robots.AppendLine("Disallow: /bin/");
+        robots.AppendLine("Disallow: /obj/");
+        robots.AppendLine("Disallow: /logs/");
+        robots.AppendLine("Disallow: /*.log$");
         robots.AppendLine();
-        robots.AppendLine("# Permitir CSS e JS para renderização");
+        robots.AppendLine("# Bloquear URLs de API internas");
+        robots.AppendLine("Disallow: /api/");
+        robots.AppendLine("Disallow: /progressHub");
+        robots.AppendLine();
+        robots.AppendLine("# Permitir recursos estáticos importantes");
         robots.AppendLine("Allow: /css/");
         robots.AppendLine("Allow: /js/");
         robots.AppendLine("Allow: /lib/");
         robots.AppendLine("Allow: /img/");
+        robots.AppendLine("Allow: /images/");
+        robots.AppendLine("Allow: /favicon.ico");
+        robots.AppendLine("Allow: /robots.txt");
+        robots.AppendLine("Allow: /sitemap.xml");
         robots.AppendLine();
-        robots.AppendLine($"# Sitemap");
+        robots.AppendLine("# Sitemap principal");
         robots.AppendLine($"Sitemap: {baseUrl}/sitemap.xml");
+        robots.AppendLine();
+        robots.AppendLine("# Wepper.vip4.link - Conversor WebP Online Gratuito");
+        robots.AppendLine("# Converta JPG, PNG, GIF para WebP com qualidade profissional");
         
         return robots.ToString();
     }
