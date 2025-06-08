@@ -539,6 +539,7 @@ html, body {
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--border-color);
     width: 100%;
+    align-items: start;
 }
 
 .workflow-step {

@@ -577,20 +577,74 @@ document.addEventListener('DOMContentLoaded', function() {
         if (files.length === 0) {
             selectedFiles.style.display = 'none';
             fileCount.textContent = '';
+            uploadArea.classList.remove('has-files');
             return;
         }
 
-        let html = '<h4>Arquivos selecionados:</h4><ul>';
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const size = (file.size / 1024 / 1024).toFixed(2);
-            html += `<li>${file.name} (${size} MB)</li>`;
-        }
-        html += '</ul>';
+        let totalSize = 0;
+        let fileNames = [];
         
-        selectedFiles.innerHTML = html;
+        // Show loading feedback
         selectedFiles.style.display = 'block';
-        fileCount.textContent = `${files.length} arquivo(s) selecionado(s)`;
+        uploadArea.classList.add('has-files');
+        
+        for (let i = 0; i < files.length; i++) {
+            totalSize += files[i].size;
+            fileNames.push(files[i].name);
+        }
+        const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+        
+        fileCount.textContent = `${files.length} arquivo(s) • ${totalMB}MB total`;
+        
+        const filesList = document.getElementById('filesList');
+        if (!filesList) {
+            // Create filesList if it doesn't exist
+            const filesListDiv = document.createElement('div');
+            filesListDiv.id = 'filesList';
+            filesListDiv.className = 'files-list';
+            selectedFiles.appendChild(filesListDiv);
+        }
+        
+        const filesListElement = document.getElementById('filesList');
+        filesListElement.innerHTML = '';
+        
+        const maxDisplayFiles = 5;
+        const filesToShow = Math.min(files.length, maxDisplayFiles);
+        const remainingFiles = files.length - filesToShow;
+        
+        for (let i = 0; i < filesToShow; i++) {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.style.pointerEvents = 'none';
+            
+            const truncatedName = fileNames[i].length > 30 
+                ? fileNames[i].substring(0, 27) + '...' 
+                : fileNames[i];
+            
+            fileItem.innerHTML = `
+                <i data-feather="file-image"></i>
+                <span class="file-name" title="${fileNames[i]}">${truncatedName}</span>
+                <span class="file-size">${(files[i].size / (1024 * 1024)).toFixed(1)}MB</span>
+                <span class="file-status">✓</span>
+            `;
+            filesListElement.appendChild(fileItem);
+        }
+        
+        if (remainingFiles > 0) {
+            const moreFilesItem = document.createElement('div');
+            moreFilesItem.className = 'file-item more-files';
+            moreFilesItem.style.pointerEvents = 'none';
+            moreFilesItem.innerHTML = `
+                <i data-feather="plus-circle"></i>
+                <span class="file-name">e mais ${remainingFiles} arquivo(s)...</span>
+                <span class="file-size">Total: ${totalMB}MB</span>
+            `;
+            filesListElement.appendChild(moreFilesItem);
+        }
+        
+        setTimeout(() => {
+            feather.replace();
+        }, 100);
     }
 
     // File input change event
