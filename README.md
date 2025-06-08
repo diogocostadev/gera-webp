@@ -5,7 +5,7 @@
 
 ## Funcionalidades Principais
 - **Conversão Otimizada**: Converte imagens JPEG, PNG e GIF para WebP com compressão inteligente
-- **Redimensionamento Automático**: Reduz automaticamente o tamanho das imagens mantendo a qualidade
+- **Preservação de Dimensões**: Mantém as dimensões originais das imagens enviadas
 - **Perfis de Otimização**: Aplica diferentes níveis de compressão baseados no tamanho do arquivo original
 - **Interface Intuitiva**: Interface web simples para upload e conversão em lote
 - **Progresso em Tempo Real**: Acompanhe o progresso da conversão via SignalR
@@ -25,10 +25,9 @@
 - **Arquivos 5-10MB**: Compressão alta (qualidade -10)
 - **Arquivos > 10MB**: Compressão máxima (qualidade -15)
 
-### Redimensionamento Inteligente
-- **Largura/Altura Máxima**: Configurável (padrão: 1920x1080)
-- **Manter Proporção**: Preserva a proporção original da imagem
-- **Algoritmo Lanczos3**: Melhor qualidade de redimensionamento
+### Processamento Sem Redimensionamento
+- **Dimensões Originais**: Mantém as dimensões exatas da imagem original
+- **Qualidade Preservada**: Foco na compressão sem alteração de resolução
 - **Sharpening Adaptativo**: Aplicado em imagens grandes para compensar compressão
 
 ## Requisitos
@@ -66,15 +65,15 @@ Navegue até `http://localhost:5000` para acessar a aplicação.
 
 ## Como Usar
 1. **Upload**: Selecione uma ou mais imagens (JPEG, PNG, GIF)
-2. **Configuração**: Ajuste a qualidade (0-100%) e dimensões máximas
+2. **Configuração**: Ajuste apenas a qualidade (0-100%)
 3. **Conversão**: Clique em "Gerar WebP" e acompanhe o progresso
 4. **Download**: Baixe o arquivo ZIP com todas as imagens convertidas
 
 ## Dicas para Melhor Compressão
 - **Qualidade 60-80%**: Oferece o melhor equilíbrio entre tamanho e qualidade
-- **Redimensionamento**: Imagens menores resultam em arquivos significativamente menores
 - **Formato Original**: JPEGs geralmente comprimem melhor que PNGs para fotos
 - **Transparência**: PNGs com transparência mantêm a qualidade do canal alpha
+- **Dimensões**: As imagens mantêm suas dimensões originais para preservar detalhes
 
 ## Desenvolvimento
 `gerawebp` é um projeto de código fechado, desenvolvido exclusivamente para uso interno da Código Central. Não são aceitas contribuições externas.

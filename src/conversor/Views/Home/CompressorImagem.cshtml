@@ -1,0 +1,545 @@
+@{
+    ViewData["Title"] = "Compressor de Imagem Online Gratuito - Otimize Suas Fotos";
+    ViewData["Description"] = "Comprima e otimize suas imagens online gratuitamente. Reduza JPG, PNG, GIF convertendo para WebP. Ferramenta profissional para compressão de imagens.";
+    ViewData["Keywords"] = "compressor imagem online, comprimir foto, otimizar imagem web, reduzir tamanho imagem, compressor foto gratuito";
+}
+
+<!-- SEO Hero Section -->
+<section class="hero-seo">
+    <div class="container">
+        <header class="hero-content">
+            <h1>Compressor de Imagem Online Gratuito</h1>
+            <p class="hero-description">
+                <strong>Comprima suas imagens online</strong> gratuitamente e reduza até <strong>90% do tamanho</strong> 
+                sem perder qualidade. Nosso compressor de fotos converte JPG, PNG, GIF para <strong>WebP otimizado</strong>.
+            </p>
+            <div class="hero-features">
+                <span class="feature-badge">🗜️ Compressão Máxima</span>
+                <span class="feature-badge">📱 Todos os Formatos</span>
+                <span class="feature-badge">⚡ Super Rápido</span>
+                <span class="feature-badge">🎯 Qualidade Preservada</span>
+            </div>
+        </header>
+    </div>
+</section>
+
+<!-- Service Notice -->
+<div class="free-service-notice">
+    <div class="container">
+        <div class="notice-content">
+            <i data-feather="minimize-2"></i>
+            <span><strong>Compressor Profissional</strong> • Redução até 90% • Qualidade Mantida</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Compressor -->
+<main class="main-converter">
+    <div class="converter-container">
+        <form id="converterForm" method="post" action="/Home/Converter" enctype="multipart/form-data">
+            
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/">Conversor WebP</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Compressor de Imagem</li>
+                </ol>
+            </nav>
+            
+            <!-- Compression Workflow -->
+            <div class="converter-workflow">
+                <!-- Step 1: Upload -->
+                <div class="workflow-step upload-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h2>Selecionar Imagens para Comprimir</h2>
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon" style="color: var(--primary-color);">
+                            <i data-feather="minimize-2"></i>
+                        </div>
+                        <p>Arraste imagens JPG, PNG, GIF ou clique para selecionar</p>
+                        <div class="upload-button" style="background: var(--primary-color);">
+                            <i data-feather="folder"></i>
+                            Escolher Imagens para Comprimir
+                        </div>
+                        <div class="upload-info">
+                            <small>JPG, PNG, GIF • Máx: 50MB por arquivo ou 50MB total</small>
+                        </div>
+                        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" 
+                               accept="image/jpeg,image/jpg,image/png,image/gif" />
+                    </div>
+                    
+                    <!-- Selected Files Display -->
+                    <div id="selectedFiles" class="selected-files" style="display: none;">
+                        <div class="files-header">
+                            <i data-feather="check-circle"></i>
+                            <span id="fileCount">0</span> imagem(s) selecionada(s)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Compression Settings -->
+                <div class="workflow-step settings-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h2>Nível de Compressão</h2>
+                    </div>
+                    
+                    <div class="quality-control">
+                        <div class="quality-info">
+                            <label for="qualidade" class="quality-label">Compressão WebP:</label>
+                            <span class="quality-value" id="qualidadeValue">75</span>%
+                        </div>
+                        
+                        <input type="range" 
+                               id="qualidade" 
+                               name="qualidade" 
+                               min="10" 
+                               max="100" 
+                               value="75" 
+                               class="quality-slider"
+                               oninput="atualizarValorDaQuantidade(this.value)"
+                               aria-label="Ajustar nível de compressão" />
+                        
+                        <div class="quality-labels">
+                            <small>Máxima compressão</small>
+                            <small>Melhor qualidade</small>
+                        </div>
+                    </div>
+                    
+                    <div class="compression-presets">
+                        <h4>Presets de Compressão:</h4>
+                        <div class="preset-buttons">
+                            <button type="button" class="preset-btn" onclick="setCompressionPreset(90)" data-tooltip="Compressão máxima">
+                                <i data-feather="zap"></i>
+                                Máxima
+                            </button>
+                            <button type="button" class="preset-btn active" onclick="setCompressionPreset(75)" data-tooltip="Equilibrio qualidade/tamanho">
+                                <i data-feather="target"></i>
+                                Ótima
+                            </button>
+                            <button type="button" class="preset-btn" onclick="setCompressionPreset(50)" data-tooltip="Melhor qualidade">
+                                <i data-feather="award"></i>
+                                Qualidade
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-preview">
+                        <div class="preview-item">
+                            <div class="preview-icon">
+                                <i data-feather="trending-down"></i>
+                            </div>
+                            <div class="preview-text">
+                                <strong>Redução estimada:</strong>
+                                <small id="compressionEstimate">~65% menor</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Compress -->
+                <div class="workflow-step convert-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h2>Comprimir Imagens</h2>
+                    </div>
+                    
+                    <button type="submit" class="convert-button" id="convertButton" aria-label="Comprimir imagens">
+                        <i data-feather="minimize-2"></i>
+                        Comprimir Imagens Agora
+                    </button>
+                    
+                    <div class="convert-info">
+                        <small>Compressão profissional com conversão para WebP</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress & Download Sections -->
+            <div id="progressContainer" class="progress-section" style="display: none;">
+                <h3>Comprimindo suas imagens...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progressText">0%</p>
+            </div>
+
+            @if (ViewBag.DownloadLink != null)
+            {
+                <div class="download-section">
+                    <div class="download-success">
+                        <i data-feather="check-circle"></i>
+                        <h3>Imagens Comprimidas com Sucesso!</h3>
+                        <p>Suas imagens foram comprimidas e otimizadas para WebP com máxima eficiência.</p>
+                        <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar imagens comprimidas">
+                            <i data-feather="download"></i>
+                            Baixar Imagens Comprimidas
+                        </a>
+                        <small>Arquivo ZIP com todas as imagens otimizadas</small>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
+</main>
+
+<!-- SEO Content -->
+<section class="seo-content">
+    <div class="container">
+        <!-- Compression Benefits -->
+        <section class="compression-benefits" aria-labelledby="benefits-title">
+            <h2 id="benefits-title" class="section-title">Por que Comprimir Suas Imagens?</h2>
+            
+            <div class="benefits-grid">
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="trending-up"></i>
+                    </div>
+                    <h3>Performance Melhorada</h3>
+                    <p>Sites com imagens comprimidas carregam 3x mais rápido. Melhor experiência do usuário e melhor ranking no Google.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="smartphone"></i>
+                    </div>
+                    <h3>Economia de Dados Móveis</h3>
+                    <p>Imagens comprimidas consomem até 90% menos dados móveis. Seus usuários vão agradecer!</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="dollar-sign"></i>
+                    </div>
+                    <h3>Economia de Banda e Armazenamento</h3>
+                    <p>Reduza custos de hospedagem e CDN. Imagens menores significam menos gastos com infraestrutura.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="search"></i>
+                    </div>
+                    <h3>SEO Melhorado</h3>
+                    <p>Google prioriza sites rápidos. Imagens otimizadas melhoram diretamente seu ranking de busca.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Compression Formats -->
+        <section class="compression-formats" aria-labelledby="formats-title">
+            <h2 id="formats-title" class="section-title">Formatos Suportados para Compressão</h2>
+            
+            <div class="formats-grid">
+                <div class="format-card">
+                    <div class="format-header">
+                        <div class="format-icon jpg">JPG</div>
+                        <h3>Comprimir JPG/JPEG</h3>
+                    </div>
+                    <p>Otimize fotos e imagens JPG. Redução típica de 70-90% convertendo para WebP.</p>
+                    <a href="/converter-jpg-para-webp" class="format-link">Comprime JPG →</a>
+                </div>
+                
+                <div class="format-card">
+                    <div class="format-header">
+                        <div class="format-icon png">PNG</div>
+                        <h3>Comprimir PNG</h3>
+                    </div>
+                    <p>Compressão PNG mantendo transparência. Redução de 60-85% com qualidade preservada.</p>
+                    <a href="/converter-png-para-webp" class="format-link">Comprimir PNG →</a>
+                </div>
+                
+                <div class="format-card">
+                    <div class="format-header">
+                        <div class="format-icon gif">GIF</div>
+                        <h3>Comprimir GIF</h3>
+                    </div>
+                    <p>Otimize GIFs animados. Compressão superior mantendo animação e qualidade.</p>
+                    <a href="/converter-gif-para-webp" class="format-link">Comprimir GIF →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- How-to Section -->
+        <section class="howto-section" aria-labelledby="howto-title">
+            <h2 id="howto-title" class="section-title">Como Comprimir Imagens Online</h2>
+            
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3>Upload das Imagens</h3>
+                    <p>Selecione ou arraste as imagens que deseja comprimir. Suportamos JPG, PNG e GIF em lote.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3>Escolha o Nível</h3>
+                    <p>Selecione entre máxima compressão, ótima qualidade ou preset balanceado.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3>Comprima Automaticamente</h3>
+                    <p>Nosso algoritmo WebP faz a compressão inteligente preservando qualidade visual.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h3>Download Otimizado</h3>
+                    <p>Baixe suas imagens comprimidas em ZIP. Prontas para usar em seu site!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" aria-labelledby="faq-title">
+            <h2 id="faq-title" class="section-title">Perguntas Frequentes sobre Compressão</h2>
+            
+            <div class="faq-container">
+                <details class="faq-item">
+                    <summary>Quanto posso reduzir o tamanho das minhas imagens?</summary>
+                    <p>Com nossa compressão WebP, você pode reduzir JPG em até 90%, PNG em até 85% e GIF em até 95%, mantendo qualidade visual excelente.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>A compressão afeta a qualidade das imagens?</summary>
+                    <p>Nosso compressor usa algoritmos inteligentes. Com configuração "Ótima", a diferença visual é imperceptível, mas o tamanho reduz drasticamente.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Posso comprimir várias imagens simultaneamente?</summary>
+                    <p>Sim! Nosso compressor suporta upload em lote até 50MB total. Comprima centenas de imagens de uma vez.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>O WebP é compatível com todos os navegadores?</summary>
+                    <p>WebP é suportado por 95%+ dos navegadores modernos, incluindo Chrome, Firefox, Safari, Edge. É o futuro das imagens web.</p>
+                </details>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Comprima Suas Imagens Agora!</h2>
+                <p>
+                    Otimize suas fotos com nosso compressor profissional gratuito. 
+                    Milhares de pessoas já reduziram seus arquivos conosco.
+                </p>
+                <a href="#converterForm" class="cta-button" aria-label="Comprimir minhas imagens">
+                    <i data-feather="minimize-2"></i>
+                    Comprimir Minhas Imagens
+                </a>
+            </div>
+        </section>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        feather.replace();
+        
+        function atualizarValorDaQuantidade(value) {
+            document.getElementById('qualidadeValue').textContent = value;
+            updateCompressionEstimate(value);
+            updateActivePreset(value);
+        }
+        
+        function updateCompressionEstimate(value) {
+            const compressionEstimate = document.getElementById('compressionEstimate');
+            if (compressionEstimate) {
+                let estimate;
+                if (value <= 30) estimate = '~85% menor';
+                else if (value <= 50) estimate = '~75% menor';
+                else if (value <= 70) estimate = '~65% menor';
+                else if (value <= 85) estimate = '~55% menor';
+                else estimate = '~45% menor';
+                
+                compressionEstimate.textContent = estimate;
+            }
+        }
+        
+        function setCompressionPreset(value) {
+            document.getElementById('qualidade').value = value;
+            atualizarValorDaQuantidade(value);
+        }
+        
+        function updateActivePreset(value) {
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (value >= 85) {
+                document.querySelector('[onclick="setCompressionPreset(50)"]').classList.add('active');
+            } else if (value >= 60) {
+                document.querySelector('[onclick="setCompressionPreset(75)"]').classList.add('active');
+            } else {
+                document.querySelector('[onclick="setCompressionPreset(90)"]').classList.add('active');
+            }
+        }
+
+        // File upload handling
+        const fileInput = document.getElementById('arquivos');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileCount = document.getElementById('fileCount');
+        const uploadArea = document.getElementById('uploadArea');
+
+        fileInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+            updateFileDisplay(files);
+        });
+
+        uploadArea.addEventListener('click', function(e) {
+            if (e.target === fileInput) return;
+            fileInput.click();
+        });
+
+        function updateFileDisplay(files) {
+            if (files.length > 0) {
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSize += files[i].size;
+                }
+                const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+                
+                fileCount.textContent = `${files.length} imagem(s) • ${totalMB}MB total`;
+                selectedFiles.style.display = 'block';
+                uploadArea.classList.add('has-files');
+            } else {
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+            }
+        }
+    </script>
+    
+    <style>
+        .compression-presets {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        
+        .compression-presets h4 {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .preset-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .preset-btn:hover, .preset-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .formats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .format-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .format-header {
+            margin-bottom: 1rem;
+        }
+        
+        .format-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .format-icon.jpg { background: #f59e0b; }
+        .format-icon.png { background: #8b5cf6; }
+        .format-icon.gif { background: #ef4444; }
+        
+        .format-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        .format-link:hover {
+            text-decoration: underline;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .faq-item summary {
+            padding: 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            background: var(--gray-50);
+            list-style: none;
+        }
+        
+        .faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .faq-item p {
+            padding: 1.5rem;
+            margin: 0;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        @@media (max-width: 768px) {
+            .preset-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .formats-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+} 

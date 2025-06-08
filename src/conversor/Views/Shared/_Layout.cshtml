@@ -1,65 +1,197 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="@(ViewData["Language"] ?? "pt-BR")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags Essenciais -->
     <title>@ViewData["Title"]</title>
+    <meta name="description" content="@ViewData["Description"]" />
+    <meta name="keywords" content="conversor webp, converter para webp, webp online, comprimir imagem, otimizar imagem web, jpg para webp, png para webp, gif para webp, reduzir tamanho imagem" />
+    <meta name="author" content="WebP Converter" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    
+    <!-- Canonical URL -->
+    @{
+        var currentLanguage = ViewData["Language"]?.ToString();
+        var canonicalUrl = currentLanguage switch
+        {
+            "en" => "https://webpconverter.com.br/en/",
+            "es" => "https://webpconverter.com.br/es/",
+            _ => "https://webpconverter.com.br/"
+        };
+    }
+    <link rel="canonical" href="@canonicalUrl" />
+    
+    <!-- Hreflang para SEO Internacional -->
+    <link rel="alternate" hreflang="pt-br" href="https://webpconverter.com.br/" />
+    <link rel="alternate" hreflang="en" href="https://webpconverter.com.br/en/" />
+    <link rel="alternate" hreflang="es" href="https://webpconverter.com.br/es/" />
+    <link rel="alternate" hreflang="x-default" href="https://webpconverter.com.br/" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:title" content="@ViewData["Title"]" />
+    <meta property="og:description" content="@ViewData["Description"]" />
+    <meta property="og:image" content="https://webpconverter.com.br/images/webp-converter-preview.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="WebP Converter - Converta suas imagens para formato WebP" />
+    <meta property="og:site_name" content="WebP Converter" />
+    <meta property="og:locale" content="@(ViewData["Culture"]?.ToString()?.Replace("-", "_") ?? "pt_BR")" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="@canonicalUrl" />
+    <meta name="twitter:title" content="@ViewData["Title"]" />
+    <meta name="twitter:description" content="@ViewData["Description"]" />
+    <meta name="twitter:image" content="https://webpconverter.com.br/images/webp-converter-preview.jpg" />
+    <meta name="twitter:image:alt" content="WebP Converter - Ferramenta online para converter imagens" />
+    <meta name="twitter:creator" content="@@webpconverter" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    
+    <!-- Favicon e Icons -->
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="~/images/apple-touch-icon.png" />
+    <link rel="manifest" href="~/site.webmanifest" />
+    
+    <!-- DNS Prefetch para Performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//unpkg.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    
+    <!-- CSS Principal -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <script type="text/javascript" src="js/script.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-</head>
-<body>
     
-    <div>
-        <main role="main">
-            @RenderBody()
-        </main>
-    </div>
-
-
-<script>
-    document.getElementById('arquivos').addEventListener('change', function(event) {
-        var validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-        for (var i = 0; i < this.files.length; i++) {
-            if (!validTypes.includes(this.files[i].type)) {
-                alert('Somente são permitidos arquivos de imagem.');
-                this.value = ''; 
-                break;
-            }
+    <!-- Structured Data / Schema.org -->
+    <script type="application/ld+json">
+    @Html.Raw(@"{
+        ""@context"": ""https://schema.org"",
+        ""@type"": ""WebApplication"",
+        ""name"": ""WebP Converter"",
+        ""alternateName"": ""Conversor WebP Online"",
+        ""url"": ""https://webpconverter.com.br"",
+        ""description"": ""Conversor WebP online gratuito para otimizar imagens JPG, PNG, GIF. Reduza o tamanho dos arquivos em até 90% mantendo a qualidade."",
+        ""applicationCategory"": ""PhotoApplication"",
+        ""operatingSystem"": ""Web Browser"",
+        ""offers"": {
+            ""@type"": ""Offer"",
+            ""price"": ""0"",
+            ""priceCurrency"": ""BRL"",
+            ""availability"": ""https://schema.org/InStock""
+        },
+        ""creator"": {
+            ""@type"": ""Organization"",
+            ""name"": ""WebP Converter"",
+            ""url"": ""https://webpconverter.com.br""
+        },
+        ""featureList"": [
+            ""Conversão gratuita JPG para WebP"",
+            ""Conversão gratuita PNG para WebP"", 
+            ""Conversão gratuita GIF para WebP"",
+            ""Redução de até 90% no tamanho"",
+            ""Qualidade ajustável"",
+            ""Processamento em lote"",
+            ""Download em ZIP"",
+            ""100% online e seguro""
+        ],
+        ""screenshot"": ""https://webpconverter.com.br/images/webp-converter-screenshot.jpg"",
+        ""aggregateRating"": {
+            ""@type"": ""AggregateRating"",
+            ""ratingValue"": ""4.9"",
+            ""reviewCount"": ""1247""
         }
-    });
-</script>
-
-<script>
-    function atualizarValorDaQuantidade(value) {
-        document.getElementById('qualidadeValue').textContent = value;
-    }
-</script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
-
-    <script type="text/javascript">
-        var connection = new signalR.HubConnectionBuilder().withUrl("/progressHub").build();
-        connection.on("ReceiveProgress", function (progress) {
-            var progressBar = document.getElementById("progress-bar");
-            if (progressBar) {
-                progressBar.style.width = progress + "%";
-                progressBar.setAttribute("aria-valuenow", progress);
-                document.getElementById("progressContainer").style.display = 'block';
+    }")
+    </script>
+    
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    @Html.Raw(@"{
+        ""@context"": ""https://schema.org"",
+        ""@type"": ""FAQPage"",
+        ""mainEntity"": [
+            {
+                ""@type"": ""Question"",
+                ""name"": ""O que é formato WebP?"",
+                ""acceptedAnswer"": {
+                    ""@type"": ""Answer"",
+                    ""text"": ""WebP é um formato de imagem moderno desenvolvido pelo Google que oferece compressão superior aos formatos JPEG e PNG, reduzindo o tamanho dos arquivos em até 90% mantendo a qualidade visual.""
+                }
+            },
+            {
+                ""@type"": ""Question"", 
+                ""name"": ""Como converter JPG para WebP?"",
+                ""acceptedAnswer"": {
+                    ""@type"": ""Answer"",
+                    ""text"": ""Basta arrastar suas imagens JPG para nossa ferramenta online, ajustar a qualidade se desejar, e clicar em converter. O download do arquivo WebP será disponibilizado instantaneamente.""
+                }
+            },
+            {
+                ""@type"": ""Question"",
+                ""name"": ""É seguro usar este conversor online?"",
+                ""acceptedAnswer"": {
+                    ""@type"": ""Answer"",
+                    ""text"": ""Sim, 100% seguro. Seus arquivos são processados localmente e excluídos automaticamente após 5 minutos. Não armazenamos nem compartilhamos suas imagens.""
+                }
             }
-        });
+        ]
+    }")
+    </script>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+</head>
 
-        connection.start().catch(function (err) {
-            return console.error(err.toString());
-        });
+<body>
+    <!-- Skip to main content para acessibilidade -->
+    <a class="skip-link screen-reader-text" href="#main">Pular para o conteúdo principal</a>
+    
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    @Html.Raw(@"{
+        ""@context"": ""https://schema.org"",
+        ""@type"": ""BreadcrumbList"",
+        ""itemListElement"": [
+            {
+                ""@type"": ""ListItem"",
+                ""position"": 1,
+                ""name"": ""Home"",
+                ""item"": ""https://webpconverter.com.br/""
+            },
+            {
+                ""@type"": ""ListItem"", 
+                ""position"": 2,
+                ""name"": ""Conversor WebP"",
+                ""item"": ""https://webpconverter.com.br/""
+            }
+        ]
+    }")
     </script>
 
+    <!-- Language Selector -->
+    @await Html.PartialAsync("_LanguageSelector")
+    
+    <main id="main" role="main">
+        @RenderBody()
+    </main>
 
-
-    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

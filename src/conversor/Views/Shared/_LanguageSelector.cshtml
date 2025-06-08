@@ -1,0 +1,86 @@
+@{
+    var currentLanguage = ViewData["Language"]?.ToString() ?? "pt";
+    var currentPath = Context.Request.Path.Value ?? "";
+    
+    // Definir URLs para cada idioma
+    var urls = new Dictionary<string, string>
+    {
+        ["pt"] = "/",
+        ["en"] = "/en/",
+        ["es"] = "/es/"
+    };
+    
+    // Se estiver numa página específica (privacy/privacidade), ajustar URLs
+    if (currentPath.Contains("privacy") || currentPath.Contains("privacidade") || currentPath.Contains("Privacidade"))
+    {
+        urls["pt"] = "/Home/Privacidade";
+        urls["en"] = "/en/privacy";
+        urls["es"] = "/es/privacidad";
+    }
+}
+
+<div class="language-selector">
+    <div class="dropdown">
+        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            @switch (currentLanguage)
+            {
+                case "en":
+                    <text><span class="flag-icon">🇺🇸</span> English</text>
+                    break;
+                case "es":
+                    <text><span class="flag-icon">🇪🇸</span> Español</text>
+                    break;
+                default:
+                    <text><span class="flag-icon">🇧🇷</span> Português</text>
+                    break;
+            }
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+            @if (currentLanguage != "pt")
+            {
+                <li><a class="dropdown-item" href="@urls["pt"]"><span class="flag-icon">🇧🇷</span> Português</a></li>
+            }
+            @if (currentLanguage != "en")
+            {
+                <li><a class="dropdown-item" href="@urls["en"]"><span class="flag-icon">🇺🇸</span> English</a></li>
+            }
+            @if (currentLanguage != "es")
+            {
+                <li><a class="dropdown-item" href="@urls["es"]"><span class="flag-icon">🇪🇸</span> Español</a></li>
+            }
+        </ul>
+    </div>
+</div>
+
+<style>
+.language-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.language-selector .flag-icon {
+    margin-right: 5px;
+}
+
+.language-selector .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+}
+
+.language-selector .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+@@media (max-width: 768px) {
+    .language-selector {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+}
+</style> 

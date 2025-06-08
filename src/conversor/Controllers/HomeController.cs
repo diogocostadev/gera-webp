@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
+using System.Globalization;
 
 namespace GeraWebP.Controllers
 {
@@ -20,18 +21,57 @@ namespace GeraWebP.Controllers
         private const string PastaConvertidos = "convertidos";
         private const string PastaUploads = "uploads";
         
-        public ActionResult Index()
+        public ActionResult Index(string? culture = null)
         {
+            // Se culture vier da rota, usá-la
+            if (string.IsNullOrEmpty(culture))
+            {
+                culture = RouteData.Values["culture"]?.ToString();
+            }
+            
+            SetCultureContent(culture ?? "pt");
             return View();
         }
 
-        public ActionResult Privacidade()
+        public ActionResult Privacidade(string? culture = null)
         {
+            // Se culture vier da rota, usá-la
+            if (string.IsNullOrEmpty(culture))
+            {
+                culture = RouteData.Values["culture"]?.ToString();
+            }
+            
+            SetCultureContent(culture ?? "pt");
             return View();
+        }
+
+        private void SetCultureContent(string culture)
+        {
+            switch (culture?.ToLower())
+            {
+                case "en":
+                    ViewData["Title"] = "Free Online WebP Converter";
+                    ViewData["Description"] = "Free and fast online WebP converter. Convert JPG, PNG, GIF images to WebP format with up to 90% size reduction. Optimize your images for web in seconds!";
+                    ViewData["Language"] = "en";
+                    ViewData["Culture"] = "en-US";
+                    break;
+                case "es":
+                    ViewData["Title"] = "Convertidor WebP Online Gratuito";
+                    ViewData["Description"] = "Convertidor WebP online gratuito y rápido. Convierte imágenes JPG, PNG, GIF a formato WebP con hasta 90% de reducción de tamaño. ¡Optimiza tus imágenes para web en segundos!";
+                    ViewData["Language"] = "es";
+                    ViewData["Culture"] = "es-ES";
+                    break;
+                default:
+                    ViewData["Title"] = "Conversor WebP Online Gratuito";
+                    ViewData["Description"] = "Conversor WebP online gratuito e rápido. Converta imagens JPG, PNG, GIF para formato WebP com até 90% de redução no tamanho. Otimize suas imagens para web em segundos!";
+                    ViewData["Language"] = "pt";
+                    ViewData["Culture"] = "pt-BR";
+                    break;
+            }
         }
         
         [HttpPost]
-        public async Task<IActionResult> Converter(List<IFormFile>? arquivos, int qualidade = 75, int maxWidth = 1920, int maxHeight = 1080, bool manterProporção = true)
+        public async Task<IActionResult> Converter(List<IFormFile>? arquivos, int qualidade = 75)
         {   
             if (arquivos == null || arquivos.Count == 0)
             {
@@ -39,12 +79,36 @@ namespace GeraWebP.Controllers
                 return View("Index");
             }
             
+            // Validar tipos de arquivo
             var tiposPermitidos = new HashSet<string> { "image/jpeg", "image/png", "image/gif" };
             foreach (var arquivo in arquivos)
             {
                 if (!tiposPermitidos.Contains(arquivo.ContentType))
                 {
                     ModelState.AddModelError("files", $"Tipo de arquivo não permitido: {arquivo.ContentType}");
+                    return View("Index");
+                }
+            }
+            
+            // Validar tamanho total dos arquivos (50MB máximo)
+            const long maxTotalSize = 50 * 1024 * 1024; // 50MB
+            const long maxFileSize = 50 * 1024 * 1024;  // 50MB por arquivo
+            
+            long totalSize = arquivos.Sum(f => f.Length);
+            if (totalSize > maxTotalSize)
+            {
+                var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
+                ModelState.AddModelError("files", $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 50MB. Por favor, selecione menos arquivos ou arquivos menores.");
+                return View("Index");
+            }
+            
+            // Validar tamanho individual dos arquivos
+            foreach (var arquivo in arquivos)
+            {
+                if (arquivo.Length > maxFileSize)
+                {
+                    var fileMB = Math.Round(arquivo.Length / (1024.0 * 1024.0), 1);
+                    ModelState.AddModelError("files", $"Arquivo '{arquivo.FileName}' ({fileMB}MB) excede o limite de 50MB por arquivo.");
                     return View("Index");
                 }
             }
@@ -83,7 +147,7 @@ namespace GeraWebP.Controllers
                             await arquivo.CopyToAsync(fileStream);
                         }
 
-                        byte[] webPImage = await ConvertToWebP(arquivo, qualidade, maxWidth, maxHeight, manterProporção);
+                        byte[] webPImage = await ConvertToWebP(arquivo, qualidade);
                         await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, webPImage);
 
                         arquivosProcessados++;
@@ -102,7 +166,7 @@ namespace GeraWebP.Controllers
             
         }
 
-        private static async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade, int maxWidth = 1920, int maxHeight = 1080, bool manterProporção = true)
+        private static async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
         {
             await using var imageStream = file.OpenReadStream();
             using var image = await Image.LoadAsync(imageStream);
@@ -110,19 +174,6 @@ namespace GeraWebP.Controllers
             // Otimização automática baseada no tamanho do arquivo
             var tamanhoOriginalMB = file.Length / (1024.0 * 1024.0);
             var perfilOtimizacao = DeterminarPerfilOtimizacao(tamanhoOriginalMB, qualidade);
-            
-            // Redimensionar a imagem se necessário
-            if (image.Width > maxWidth || image.Height > maxHeight)
-            {
-                var resizeOptions = new ResizeOptions
-                {
-                    Size = new Size(maxWidth, maxHeight),
-                    Mode = manterProporção ? ResizeMode.Max : ResizeMode.Stretch,
-                    Sampler = KnownResamplers.Lanczos3 // Melhor qualidade de redimensionamento
-                };
-                
-                image.Mutate(x => x.Resize(resizeOptions));
-            }
             
             // Aplicar filtros adicionais para reduzir ruído se a imagem for muito grande
             if (tamanhoOriginalMB > 5)
@@ -206,6 +257,77 @@ namespace GeraWebP.Controllers
             return File(fileBytes, "application/zip", sessionId + ".zip");
         }
         
+        [HttpGet("converter-jpg-para-webp")]
+        public IActionResult ConverterJpgParaWebp()
+        {
+            ViewData["Title"] = "Converter JPG para WebP Online Gratuito";
+            ViewData["Description"] = "Converta imagens JPG/JPEG para WebP online gratuitamente. Reduza até 90% do tamanho mantendo a qualidade. Ferramenta rápida e segura.";
+            ViewData["Keywords"] = "converter jpg para webp, jpg para webp online, jpeg para webp, converter jpeg webp gratuito";
+            ViewData["FormatType"] = "JPG";
+            ViewData["FormatIcon"] = "jpg";
+            ViewData["FormatColor"] = "#f59e0b";
+            return View("FormatSpecific");
+        }
+
+        [HttpGet("converter-png-para-webp")]
+        public IActionResult ConverterPngParaWebp()
+        {
+            ViewData["Title"] = "Converter PNG para WebP Online Gratuito";
+            ViewData["Description"] = "Converta imagens PNG para WebP online mantendo transparência. Reduza até 85% do tamanho. Ferramenta gratuita e profissional.";
+            ViewData["Keywords"] = "converter png para webp, png para webp online, converter png webp transparência, png webp gratuito";
+            ViewData["FormatType"] = "PNG";
+            ViewData["FormatIcon"] = "png";
+            ViewData["FormatColor"] = "#8b5cf6";
+            return View("FormatSpecific");
+        }
+
+        [HttpGet("converter-gif-para-webp")]
+        public IActionResult ConverterGifParaWebp()
+        {
+            ViewData["Title"] = "Converter GIF para WebP Online Gratuito";
+            ViewData["Description"] = "Converta animações GIF para WebP online. Compressão máxima para GIFs animados. Ferramenta online gratuita e rápida.";
+            ViewData["Keywords"] = "converter gif para webp, gif para webp online, gif animado webp, comprimir gif webp";
+            ViewData["FormatType"] = "GIF";
+            ViewData["FormatIcon"] = "gif";
+            ViewData["FormatColor"] = "#ef4444";
+            return View("FormatSpecific");
+        }
+
+        [HttpGet("compressor-imagem")]
+        public IActionResult CompressorImagem()
+        {
+            ViewData["Title"] = "Compressor de Imagem Online Gratuito - WebP Converter";
+            ViewData["Description"] = "Comprima e otimize suas imagens online gratuitamente. Reduza o tamanho de JPG, PNG, GIF convertendo para WebP. Ferramenta profissional.";
+            ViewData["Keywords"] = "compressor imagem online, comprimir foto, otimizar imagem web, reduzir tamanho imagem";
+            return View("CompressorImagem");
+        }
+
+
+
+        // Rotas específicas para idiomas
+        [HttpGet("en")]
+        public IActionResult IndexEnglish()
+        {
+            return Index("en");
+        }
+
+        [HttpGet("es")]  
+        public IActionResult IndexSpanish()
+        {
+            return Index("es");
+        }
+
+        [HttpGet("en/privacidade")]
+        public IActionResult PrivacidadeEnglish()
+        {
+            return Privacidade("en");
+        }
+
+        [HttpGet("es/privacidade")]
+        public IActionResult PrivacidadeSpanish()
+        {
+            return Privacidade("es");
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

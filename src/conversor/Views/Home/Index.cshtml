@@ -1,95 +1,628 @@
 ﻿@{
-    ViewBag.Title = "Gerar WebP";
+    ViewData["Title"] = "Conversor WebP Online Gratuito";
 }
-<div id="container">
 
-    <div class="box-login">
-        <h1>Olá!</h1><p>Converta seu arquivo aqui!</p>
-        <div class="box">
-            
-            <form asp-action="Converter" asp-controller="Home" method="post" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
+<!-- SEO Header Section -->
+<section class="hero-seo">
+    <div class="container">
+        <header class="hero-content">
+            <h1>Conversor WebP Online Gratuito - Otimize suas Imagens Instantaneamente</h1>
+            <p class="hero-description">
+                Converta <strong>JPG, PNG e GIF para WebP</strong> gratuitamente. 
+                Reduza o tamanho das suas imagens em <strong>até 90%</strong> mantendo a qualidade perfeita. 
+                Ferramenta online rápida, segura e sem limites.
+            </p>
+            <div class="hero-features">
+                <span class="feature-badge">✅ 100% Gratuito</span>
+                <span class="feature-badge">🚀 Conversão Instantânea</span>
+                <span class="feature-badge">🔒 Totalmente Seguro</span>
+                <span class="feature-badge">📱 Funciona em Qualquer Dispositivo</span>
+            </div>
+        </header>
+    </div>
+</section>
 
-                <div>
-                    <label style=" color: blue;" for="arquivos">Carregue suas imagens:</label>
-                    <input style=" color: blue;" type="file" name="arquivos" id="arquivos" multiple="multiple" class="form-control" />
-                </div>
-               
-                <br />
-                <div>
-                    <label style=" color: blue;" for="qualidade">Selecione a Qualidade:</label>
-                    <input style=" color: blue;" type="range" name="qualidade" id="qualidade" class="form-control-range" value="75" min="0" max="100" oninput="atualizarValorDaQuantidade(this.value)" />
-                    <span style=" color: blue;" id="qualidadeValue">75</span>%
-                </div>
-                
-                <br />
-                <div>
-                    <label style=" color: blue;" for="maxWidth">Largura Máxima (px):</label>
-                    <input style=" color: blue;" type="number" name="maxWidth" id="maxWidth" class="form-control" value="1920" min="100" max="4000" />
-                </div>
-                
-                <br />
-                <div>
-                    <label style=" color: blue;" for="maxHeight">Altura Máxima (px):</label>
-                    <input style=" color: blue;" type="number" name="maxHeight" id="maxHeight" class="form-control" value="1080" min="100" max="4000" />
-                </div>
-                
-                <br />
-                <div>
-                    <label style=" color: blue;">
-                        <input type="checkbox" name="manterProporção" value="true" checked="checked" />
-                        Manter proporção da imagem
-                    </label>
-                    <input name="manterProporção" type="hidden" value="false" />
-                </div>
-                
-                <br />
-                <div>
-                    <button style="margin-left:110px;"  type="submit" class="btn btn-primary">Gerar WebP</button>
-                </div>
-
-
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div class="alert alert-danger">
-                        @foreach (var item in ViewData.ModelState.Values)
-                        {
-                            @foreach (var error in item.Errors)
-                            {
-                                <p>@error.ErrorMessage</p>
-                            }
-                        }
-                    </div>
-                }
-
-                
-                <br />
-                <div class="progress">
-                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
-                </div>
-                <br />
-                
-                @if (ViewBag.DownloadLink != null)
-                {
-                    <a style="margin-left:110px;" type="button" href="@ViewBag.DownloadLink">Baixar Arquivos Convertidos</a>
-                }
-
-                <br />
-                
-
-                <br />
-
-
-
-            </form>
-            @if (!string.IsNullOrEmpty(ViewBag.Message))
-            {
-
-                <div class="alert alert-info" role="alert">@ViewBag.Message</div>
-
-
-            }
+<!-- Service Notice -->
+<div class="free-service-notice">
+    <div class="container">
+        <div class="notice-content">
+            <i data-feather="gift"></i>
+            <span><strong>Serviço 100% Gratuito</strong> • Processamento Seguro • Arquivos Excluídos em 5 Minutos</span>
         </div>
     </div>
 </div>
+
+<!-- Main Converter Tool -->
+<main class="main-converter">
+    <div class="converter-container">
+        <form id="converterForm" method="post" action="/Home/Converter" enctype="multipart/form-data">
+            
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Conversor WebP</li>
+                </ol>
+            </nav>
+            
+            <!-- Main Converter -->
+            <div class="converter-workflow">
+                <!-- Step 1: Upload -->
+                <div class="workflow-step upload-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h2>Selecionar Imagens</h2>
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i data-feather="upload-cloud"></i>
+                        </div>
+                        <p>Clique ou arraste arquivos</p>
+                        <div class="upload-button">
+                            <i data-feather="folder"></i>
+                            Escolher Arquivos
+                        </div>
+                        <div class="upload-info">
+                            <small>JPG, PNG, GIF • Máx: 50MB por arquivo ou 50MB total</small>
+                        </div>
+                        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" accept="image/jpeg,image/jpg,image/png,image/gif" />
+                    </div>
+                    
+                    <!-- Selected Files Display -->
+                    <div id="selectedFiles" class="selected-files" style="display: none;">
+                        <div class="files-header">
+                            <i data-feather="check-circle"></i>
+                            <span id="fileCount">0</span> arquivo(s) selecionado(s)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Settings -->
+                <div class="workflow-step settings-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h2>Ajustar Qualidade</h2>
+                    </div>
+                    
+                    <div class="quality-control">
+                        <div class="quality-info">
+                            <label for="qualidade" class="quality-label">Qualidade:</label>
+                            <span class="quality-value" id="qualidadeValue">75</span>%
+                        </div>
+                        
+                        <input type="range" 
+                               id="qualidade" 
+                               name="qualidade" 
+                               min="10" 
+                               max="100" 
+                               value="75" 
+                               class="quality-slider"
+                               oninput="atualizarValorDaQuantidade(this.value)"
+                               aria-label="Ajustar qualidade da conversão WebP" />
+                        
+                        <div class="quality-labels">
+                            <small>Menor tamanho</small>
+                            <small>Melhor qualidade</small>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-preview">
+                        <div class="preview-item">
+                            <div class="preview-icon">
+                                <i data-feather="trending-down"></i>
+                            </div>
+                            <div class="preview-text">
+                                <strong>Compressão Estimada</strong>
+                                <small id="compressionEstimate">~65% menor</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Convert -->
+                <div class="workflow-step convert-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h2>Converter para WebP</h2>
+                    </div>
+                    
+                    <button type="submit" class="convert-button" id="convertButton" aria-label="Converter imagens para formato WebP">
+                        <i data-feather="zap"></i>
+                        Converter Agora
+                    </button>
+                    
+                    <div class="convert-info">
+                        <small>Conversão rápida e segura</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="progressContainer" class="progress-section" style="display: none;">
+                <h3>Convertendo suas imagens...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progressText">0%</p>
+            </div>
+
+            <!-- Download Section -->
+            @if (ViewBag.DownloadLink != null)
+            {
+                <div class="download-section">
+                    <div class="download-success">
+                        <i data-feather="check-circle"></i>
+                        <h3>Conversão Concluída com Sucesso!</h3>
+                        <p>Suas imagens foram convertidas para WebP com otimização máxima.</p>
+                        <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar imagens convertidas para WebP">
+                            <i data-feather="download"></i>
+                            Baixar Imagens WebP
+                        </a>
+                        <small>Arquivo ZIP com todas as imagens otimizadas</small>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
+</main>
+
+<!-- SEO Content Sections -->
+<section class="seo-content">
+    <div class="container">
+        <!-- Format Conversion Cards -->
+        <section class="conversion-formats" aria-labelledby="conversion-title">
+            <h2 id="conversion-title" class="section-title">Conversões de Formato Suportadas</h2>
+            <p class="section-subtitle">
+                Converta qualquer formato de imagem para WebP com nossa ferramenta online avançada
+            </p>
+            
+            <div class="format-cards">
+                <a href="/converter-jpg-para-webp" class="format-card-link">
+                    <div class="format-card">
+                        <div class="format-icon jpg">
+                            <i data-feather="image"></i>
+                        </div>
+                        <div class="format-text">
+                            <strong>JPG para WebP</strong>
+                            <small>Otimização ideal para fotos</small>
+                        </div>
+                    </div>
+                </a>
+                
+                <div class="format-arrow">
+                    <i data-feather="arrow-right"></i>
+                </div>
+                
+                <a href="/converter-png-para-webp" class="format-card-link">
+                    <div class="format-card">
+                        <div class="format-icon png">
+                            <i data-feather="image"></i>
+                        </div>
+                        <div class="format-text">
+                            <strong>PNG para WebP</strong>
+                            <small>Mantém transparência</small>
+                        </div>
+                    </div>
+                </a>
+                
+                <div class="format-arrow">
+                    <i data-feather="arrow-right"></i>
+                </div>
+                
+                <a href="/converter-gif-para-webp" class="format-card-link">
+                    <div class="format-card">
+                        <div class="format-icon gif">
+                            <i data-feather="image"></i>
+                        </div>
+                        <div class="format-text">
+                            <strong>GIF para WebP</strong>
+                            <small>Compressão máxima</small>
+                        </div>
+                    </div>
+                </a>
+                
+                <div class="format-arrow">
+                    <i data-feather="arrow-right"></i>
+                </div>
+                
+                <div class="format-card webp-result">
+                    <div class="format-icon webp">
+                        <i data-feather="zap"></i>
+                    </div>
+                    <div class="format-text">
+                        <strong>WebP Otimizado</strong>
+                        <small>Até 90% menor</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section" aria-labelledby="features-title">
+            <h2 id="features-title" class="section-title">Por que Escolher Nosso Conversor WebP?</h2>
+            
+            <div class="features-grid">
+                <article class="feature-item">
+                    <div class="feature-icon">
+                        <i data-feather="zap"></i>
+                    </div>
+                    <h3>Conversão Ultra Rápida</h3>
+                    <p>Processe múltiplas imagens em segundos com nossa tecnologia avançada de compressão WebP.</p>
+                </article>
+                
+                <article class="feature-item">
+                    <div class="feature-icon">
+                        <i data-feather="shield-check"></i>
+                    </div>
+                    <h3>100% Seguro e Privado</h3>
+                    <p>Seus arquivos são processados localmente e excluídos automaticamente. Zero armazenamento em nuvem.</p>
+                </article>
+                
+                <article class="feature-item">
+                    <div class="feature-icon">
+                        <i data-feather="trending-down"></i>
+                    </div>
+                    <h3>Compressão Máxima</h3>
+                    <p>Reduza até 90% do tamanho das imagens mantendo qualidade visual perfeita para web.</p>
+                </article>
+                
+                <article class="feature-item">
+                    <div class="feature-icon">
+                        <i data-feather="layers"></i>
+                    </div>
+                    <h3>Processamento em Lote</h3>
+                    <p>Converta múltiplas imagens simultaneamente e baixe tudo em um arquivo ZIP organizado.</p>
+                </article>
+                
+                <article class="feature-item">
+                    <div class="feature-icon">
+                        <i data-feather="settings"></i>
+                    </div>
+                    <h3>Qualidade Ajustável</h3>
+                    <p>Controle total sobre o nível de compressão para equilibrar tamanho e qualidade perfeitamente.</p>
+                </article>
+                
+                <article class="feature-item">
+                    <div class="feature-icon">
+                        <i data-feather="smartphone"></i>
+                    </div>
+                    <h3>Funciona em Qualquer Dispositivo</h3>
+                    <p>Responsivo e otimizado para desktop, tablet e celular. Converta de qualquer lugar.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" aria-labelledby="faq-title">
+            <h2 id="faq-title" class="section-title">Perguntas Frequentes sobre Conversão WebP</h2>
+            
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>
+                        <h3>O que é formato WebP e por que usar?</h3>
+                        <i data-feather="plus"></i>
+                    </summary>
+                    <div class="faq-content">
+                        <p>
+                            <strong>WebP</strong> é um formato de imagem moderno desenvolvido pelo Google que oferece 
+                            compressão superior aos formatos tradicionais JPEG, PNG e GIF. Principais benefícios:
+                        </p>
+                        <ul>
+                            <li>📉 <strong>90% menor tamanho</strong> que JPEG/PNG</li>
+                            <li>🚀 <strong>Carregamento mais rápido</strong> em sites</li>
+                            <li>🔍 <strong>Melhor SEO</strong> por velocidade</li>
+                            <li>💰 <strong>Menos uso de banda</strong> e armazenamento</li>
+                            <li>✨ <strong>Qualidade visual mantida</strong></li>
+                        </ul>
+                    </div>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>
+                        <h3>Como converter JPG para WebP online?</h3>
+                        <i data-feather="plus"></i>
+                    </summary>
+                    <div class="faq-content">
+                        <p>Converter JPG para WebP é simples e rápido:</p>
+                        <ol>
+                            <li>🖱️ <strong>Clique ou arraste</strong> suas imagens JPG</li>
+                            <li>⚙️ <strong>Ajuste a qualidade</strong> (recomendado: 75%)</li>
+                            <li>🔄 <strong>Clique em "Converter"</strong></li>
+                            <li>💾 <strong>Baixe o arquivo ZIP</strong> com imagens WebP</li>
+                        </ol>
+                        <p>Todo o processo leva menos de 30 segundos!</p>
+                    </div>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>
+                        <h3>É seguro usar este conversor online?</h3>
+                        <i data-feather="plus"></i>
+                    </summary>
+                    <div class="faq-content">
+                        <p><strong>Sim, 100% seguro!</strong> Garantimos total privacidade:</p>
+                        <ul>
+                            <li>🔒 <strong>Processamento local</strong> - arquivos não vão para nuvem</li>
+                            <li>⏰ <strong>Exclusão automática</strong> em 5 minutos</li>
+                            <li>🚫 <strong>Zero armazenamento</strong> permanente</li>
+                            <li>🔐 <strong>Conexão criptografada</strong> HTTPS</li>
+                            <li>👤 <strong>Sem registro</strong> necessário</li>
+                        </ul>
+                    </div>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>
+                        <h3>Qual a diferença entre WebP e outros formatos?</h3>
+                        <i data-feather="plus"></i>
+                    </summary>
+                    <div class="faq-content">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Formato</th>
+                                    <th>Tamanho</th>
+                                    <th>Qualidade</th>
+                                    <th>Suporte</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>WebP</strong></td>
+                                    <td>🟢 Menor</td>
+                                    <td>🟢 Excelente</td>
+                                    <td>🟢 96%+ navegadores</td>
+                                </tr>
+                                <tr>
+                                    <td>JPEG</td>
+                                    <td>🟡 Médio</td>
+                                    <td>🟡 Boa</td>
+                                    <td>🟢 Universal</td>
+                                </tr>
+                                <tr>
+                                    <td>PNG</td>
+                                    <td>🔴 Maior</td>
+                                    <td>🟢 Excelente</td>
+                                    <td>🟢 Universal</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Comece a Otimizar suas Imagens Agora!</h2>
+                <p>
+                    Junte-se a milhares de desenvolvedores e designers que já otimizaram suas imagens com nosso conversor WebP gratuito.
+                </p>
+                <a href="#main" class="cta-button" aria-label="Voltar ao conversor">
+                    <i data-feather="arrow-up"></i>
+                    Converter Minhas Imagens
+                </a>
+            </div>
+        </section>
+    </div>
+</section>
+
+<!-- WebP Info Section -->
+<section class="webp-info">
+    <div class="info-container">
+        <h2>Por que escolher o formato WebP?</h2>
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">
+                    <i data-feather="minimize-2"></i>
+                </div>
+                <h3>Compressão Superior</h3>
+                <p>Reduza o tamanho dos arquivos em até <strong>85%</strong> comparado ao JPEG, mantendo a mesma qualidade visual.</p>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">
+                    <i data-feather="zap"></i>
+                </div>
+                <h3>Carregamento Mais Rápido</h3>
+                <p>Sites carregam mais rápido com imagens WebP, melhorando a experiência do usuário e SEO.</p>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">
+                    <i data-feather="globe"></i>
+                </div>
+                <h3>Suporte Universal</h3>
+                <p>Compatível com todos os navegadores modernos: Chrome, Firefox, Safari, Edge e mais.</p>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">
+                    <i data-feather="layers"></i>
+                </div>
+                <h3>Transparência e Animação</h3>
+                <p>Suporta transparência como PNG e animações como GIF, tudo em um só formato.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/@@microsoft/signalr@latest/dist/browser/signalr.js"></script>
+<script>
+    // Inicializar ícones
+    feather.replace();
+
+    // Função para atualizar qualidade
+    function atualizarValorDaQuantidade(value) {
+        document.getElementById('qualidadeValue').textContent = value;
+        
+        // Atualizar estimativa de compressão
+        const compressionEstimate = document.getElementById('compressionEstimate');
+        if (compressionEstimate) {
+            let estimate;
+            if (value <= 30) estimate = '~85% menor';
+            else if (value <= 50) estimate = '~75% menor';
+            else if (value <= 70) estimate = '~65% menor';
+            else if (value <= 85) estimate = '~55% menor';
+            else estimate = '~45% menor';
+            
+            compressionEstimate.textContent = estimate;
+        }
+    }
+
+    // File upload handling
+    const fileInput = document.getElementById('arquivos');
+    const selectedFiles = document.getElementById('selectedFiles');
+    const fileCount = document.getElementById('fileCount');
+    const uploadArea = document.getElementById('uploadArea');
+
+    // File input change
+    fileInput.addEventListener('change', function(event) {
+        const files = event.target.files;
+        updateFileDisplay(files);
+        validateFiles(files);
+    });
+
+    // Click to select files
+    uploadArea.addEventListener('click', function(e) {
+        if (e.target === fileInput) return;
+        fileInput.click();
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        
+        const dt = new DataTransfer();
+        for (let i = 0; i < files.length; i++) {
+            dt.items.add(files[i]);
+        }
+        fileInput.files = dt.files;
+        
+        updateFileDisplay(files);
+        validateFiles(files);
+    });
+
+    function updateFileDisplay(files) {
+        if (files.length > 0) {
+            let totalSize = 0;
+            for (let i = 0; i < files.length; i++) {
+                totalSize += files[i].size;
+            }
+            const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+            
+            fileCount.textContent = `${files.length} arquivo(s) • ${totalMB}MB total`;
+            selectedFiles.style.display = 'block';
+            uploadArea.classList.add('has-files');
+        } else {
+            selectedFiles.style.display = 'none';
+            uploadArea.classList.remove('has-files');
+        }
+    }
+
+    function validateFiles(files) {
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        let totalSize = 0;
+        const maxTotalSize = 50 * 1024 * 1024; // 50MB total
+        const maxFileSize = 50 * 1024 * 1024; // 50MB por arquivo
+
+        // Primeiro, calcular o tamanho total
+        for (let i = 0; i < files.length; i++) {
+            totalSize += files[i].size;
+        }
+
+        // Verificar se o total excede 50MB
+        if (totalSize > maxTotalSize) {
+            const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+            alert(`Tamanho total dos arquivos (${totalMB}MB) excede o limite de 50MB. Por favor, selecione menos arquivos ou arquivos menores.`);
+            fileInput.value = '';
+            selectedFiles.style.display = 'none';
+            uploadArea.classList.remove('has-files');
+            return false;
+        }
+
+        // Validar cada arquivo individualmente
+        for (let i = 0; i < files.length; i++) {
+            if (!validTypes.includes(files[i].type)) {
+                alert('Apenas arquivos de imagem são permitidos (JPEG, PNG, GIF).');
+                fileInput.value = '';
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+                return false;
+            }
+            if (files[i].size > maxFileSize) {
+                alert('Arquivo muito grande. Máximo 50MB por arquivo.');
+                fileInput.value = '';
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // SignalR for progress
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/progressHub")
+        .build();
+
+    connection.start().then(function () {
+        console.log("SignalR conectado");
+    }).catch(function (err) {
+        console.error("Erro SignalR: ", err.toString());
+    });
+
+    connection.on("ReceiveProgress", function (progress) {
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progressText');
+        const progressContainer = document.getElementById('progressContainer');
+        
+        progressContainer.style.display = 'block';
+        progressFill.style.width = progress + '%';
+        progressText.textContent = progress + '%';
+        
+        if (progress >= 100) {
+            progressText.textContent = 'Finalizando...';
+            setTimeout(() => {
+                progressContainer.style.display = 'none';
+            }, 2000);
+        }
+    });
+
+    // Form submission
+    document.getElementById('converterForm').addEventListener('submit', function(e) {
+        const files = fileInput.files;
+        if (files.length === 0) {
+            e.preventDefault();
+            alert('Por favor, selecione pelo menos um arquivo.');
+            return;
+        }
+        
+        const button = document.getElementById('convertButton');
+        button.innerHTML = '<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Processando...';
+        button.disabled = true;
+        feather.replace();
+    });
+</script>
+
+@section Scripts {
+<style>
+    @@keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+}
 
