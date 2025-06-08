@@ -20,8 +20,8 @@
 }
 
 <div class="language-selector">
-    <div class="dropdown">
-        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    <div class="custom-dropdown">
+        <button class="dropdown-button" type="button" id="languageButton">
             @switch (currentLanguage)
             {
                 case "en":
@@ -34,19 +34,20 @@
                     <text><span class="flag-icon">🇧🇷</span> Português</text>
                     break;
             }
+            <span class="dropdown-arrow">▼</span>
         </button>
-        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+        <ul class="dropdown-menu-custom" id="languageMenu">
             @if (currentLanguage != "pt")
             {
-                <li><a class="dropdown-item" href="@urls["pt"]"><span class="flag-icon">🇧🇷</span> Português</a></li>
+                <li><a class="dropdown-item-custom" href="@urls["pt"]"><span class="flag-icon">🇧🇷</span> Português</a></li>
             }
             @if (currentLanguage != "en")
             {
-                <li><a class="dropdown-item" href="@urls["en"]"><span class="flag-icon">🇺🇸</span> English</a></li>
+                <li><a class="dropdown-item-custom" href="@urls["en"]"><span class="flag-icon">🇺🇸</span> English</a></li>
             }
             @if (currentLanguage != "es")
             {
-                <li><a class="dropdown-item" href="@urls["es"]"><span class="flag-icon">🇪🇸</span> Español</a></li>
+                <li><a class="dropdown-item-custom" href="@urls["es"]"><span class="flag-icon">🇪🇸</span> Español</a></li>
             }
         </ul>
     </div>
@@ -60,18 +61,84 @@
     z-index: 1000;
 }
 
-.language-selector .flag-icon {
-    margin-right: 5px;
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
 }
 
-.language-selector .dropdown-item {
+.dropdown-button {
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    color: #6c757d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease-in-out;
+    min-width: 120px;
+}
+
+.dropdown-button:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.dropdown-button:focus {
+    outline: none;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.dropdown-arrow {
+    margin-left: auto;
+    font-size: 0.75rem;
+    transition: transform 0.15s ease-in-out;
+}
+
+.custom-dropdown.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu-custom {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    list-style: none;
+    margin: 2px 0 0 0;
+    padding: 0.5rem 0;
+    display: none;
+    z-index: 1001;
+}
+
+.custom-dropdown.open .dropdown-menu-custom {
+    display: block;
+}
+
+.dropdown-item-custom {
     display: flex;
     align-items: center;
     padding: 8px 16px;
+    color: #212529;
+    text-decoration: none;
+    transition: background-color 0.15s ease-in-out;
 }
 
-.language-selector .dropdown-item:hover {
+.dropdown-item-custom:hover {
     background-color: #f8f9fa;
+    color: #212529;
+    text-decoration: none;
+}
+
+.language-selector .flag-icon {
+    margin-right: 8px;
 }
 
 @@media (max-width: 768px) {
@@ -83,4 +150,36 @@
         text-align: center;
     }
 }
-</style> 
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropdown = document.querySelector('.custom-dropdown');
+    const button = document.getElementById('languageButton');
+    const menu = document.getElementById('languageMenu');
+    
+    if (!dropdown || !button || !menu) return;
+    
+    // Toggle dropdown
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+    
+    // Close dropdown when pressing Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            dropdown.classList.remove('open');
+            button.focus();
+        }
+    });
+});
+</script> 

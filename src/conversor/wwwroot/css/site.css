@@ -1,8 +1,15 @@
-/* Reset e base */
-* {
+/* Reset básico */
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -34,6 +41,8 @@ html, body {
     line-height: 1.6;
     color: var(--text-primary);
     background: var(--bg-secondary);
+    pointer-events: auto;
+    cursor: default;
 }
 
 /* Header */
@@ -215,12 +224,12 @@ html, body {
 /* File Input Global */
 .file-input {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -9999px;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
     opacity: 0;
-    cursor: pointer;
+    pointer-events: none;
 }
 
 /* Progress Global */
@@ -530,6 +539,7 @@ html, body {
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--border-color);
     width: 100%;
+    align-items: start;
 }
 
 .workflow-step {
@@ -575,7 +585,7 @@ html, body {
     border-radius: var(--radius-lg);
     padding: 1.5rem 1rem;
     text-align: center;
-    cursor: pointer;
+    cursor: default;
     transition: all 0.3s ease;
     flex: 1;
     display: flex;
@@ -1500,3 +1510,271 @@ input:focus {
     }
 }
 /* Cache bust: 1749393763 */
+
+.global-counter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(90deg, #e0e7ff 0%, #f0fdfa 100%);
+    border: 2px solid #2563eb22;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px 0 rgba(37,99,235,0.10);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2563eb;
+    user-select: none;
+    pointer-events: none;
+    transition: none;
+    position: relative;
+    z-index: 2;
+    cursor: default;
+}
+.global-counter * {
+    pointer-events: none;
+    cursor: default;
+    user-select: none;
+}
+.global-counter i {
+    color: #f59e0b;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    font-size: 1.5rem;
+    filter: drop-shadow(0 2px 4px #fbbf2433);
+    animation: zap-bounce 1.2s infinite alternate;
+}
+@keyframes zap-bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-6px) scale(1.15); }
+}
+
+.files-list {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+    animation: slideInFile 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+@keyframes slideInFile {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.file-item:last-child {
+    border-bottom: none;
+}
+
+.file-item i {
+    color: #6b7280;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.file-name {
+    flex: 1;
+    color: #374151;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.file-size {
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #e5e7eb;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.file-status {
+    color: #10b981;
+    font-weight: bold;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.more-files {
+    background: linear-gradient(90deg, #f3f4f6, #e5e7eb);
+    border-radius: 6px;
+    padding: 0.75rem 0.5rem;
+    margin-top: 0.5rem;
+    border: none;
+    font-style: italic;
+}
+
+.more-files i {
+    color: #9ca3af;
+}
+
+.more-files .file-name {
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.file-count-updated {
+    animation: pulseCount 0.3s ease-out;
+}
+
+@keyframes pulseCount {
+    0% { transform: scale(1); color: inherit; }
+    50% { transform: scale(1.05); color: #10b981; }
+    100% { transform: scale(1); color: inherit; }
+}
+
+.files-header {
+    background: linear-gradient(90deg, #ecfdf5, #f0fdf4);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.alert {
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+}
+
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.alert-header i {
+    color: #dc3545;
+    width: 20px;
+    height: 20px;
+}
+
+.error-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    list-style-type: disc;
+}
+
+.error-list li {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.error-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* ESPECÍFICO - Remover cliques apenas dos elementos problemáticos */
+.workflow-step .step-header,
+.workflow-step .step-header *,
+.workflow-step .step-number,
+.quality-info .quality-label,
+.quality-info .quality-value,
+.quality-labels,
+.quality-labels small,
+.convert-info,
+.convert-info small,
+.upload-info,
+.upload-info small,
+.files-header span,
+.file-item,
+.file-item *,
+.global-counter,
+.global-counter *,
+.hero-content h1,
+.hero-content .hero-description,
+.section-title,
+.section-subtitle,
+.preview-text strong,
+.preview-text small {
+    pointer-events: none !important;
+    user-select: none;
+    cursor: default !important;
+}
+
+/* GARANTIR que elementos essenciais funcionem */
+.upload-area .upload-button,
+.upload-area .upload-icon,
+.upload-area .upload-icon i,
+.upload-area > p,
+input[type="file"],
+input[type="range"],
+.quality-slider,
+button,
+.convert-button,
+#convertButton,
+.download-button,
+a[href],
+.breadcrumb-item a,
+.format-card-link {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* ESPECÍFICO - Elementos da upload area que devem ter cursor pointer */
+.upload-area .upload-button,
+.upload-area .upload-icon,
+.upload-area .upload-icon i,
+.upload-area > p {
+    cursor: pointer !important;
+}
+
+/* ESPECÍFICO - Garantir que step headers não tenham cursor pointer */
+.workflow-step .step-header,
+.workflow-step .step-header *,
+.workflow-step .step-number,
+.workflow-step .step-header h2,
+.workflow-step .step-header h3,
+.step-header,
+.step-number,
+div.step-header,
+div.step-number {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+/* Upload area container */
+.upload-area {
+    cursor: default;
+}
+
+/* Elementos de texto que podem ser selecionados */
+.error-list,
+.alert,
+.faq-content {
+    pointer-events: auto;
+    user-select: text;
+    cursor: text;
+}

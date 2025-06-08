@@ -8,6 +8,8 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace GeraWebP.Controllers
 {
@@ -20,6 +22,7 @@ namespace GeraWebP.Controllers
         private const string PastaRaiz = "wwwroot";
         private const string PastaConvertidos = "convertidos";
         private const string PastaUploads = "uploads";
+        private const string ContadorPath = "wwwroot/contador.json";
         
         public ActionResult Index(string? culture = null)
         {
@@ -30,6 +33,8 @@ namespace GeraWebP.Controllers
             }
             
             SetCultureContent(culture ?? "pt");
+            int contadorGlobal = LerContadorGlobal();
+            ViewBag.ContadorGlobal = contadorGlobal;
             return View();
         }
 
@@ -96,6 +101,31 @@ namespace GeraWebP.Controllers
                 if (!tiposPermitidos.Contains(arquivo.ContentType))
                 {
                     ModelState.AddModelError("files", $"Tipo de arquivo não permitido: {arquivo.ContentType}");
+                    return View("Index");
+                }
+            }
+            
+            // Validar dimensões das imagens antes da conversão
+            const int maxWebPWidth = 16383;
+            const int maxWebPHeight = 16383;
+            
+            foreach (var arquivo in arquivos)
+            {
+                try
+                {
+                    using var imageStream = arquivo.OpenReadStream();
+                    using var image = await Image.LoadAsync(imageStream);
+                    
+                    if (image.Width > maxWebPWidth || image.Height > maxWebPHeight)
+                    {
+                        ModelState.AddModelError("files", 
+                            $"A imagem '{arquivo.FileName}' ({image.Width}x{image.Height}) excede o limite máximo de {maxWebPWidth}x{maxWebPHeight} pixels suportado pelo formato WebP.");
+                        return View("Index");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("files", $"Erro ao processar a imagem '{arquivo.FileName}': {ex.Message}");
                     return View("Index");
                 }
             }
@@ -170,7 +200,13 @@ namespace GeraWebP.Controllers
 
             await Task.WhenAll(tasks);
 
+            // Incrementa o contador global
+            IncrementarContadorGlobal(totalFiles);
+
             ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
+
+            // Atualizar contador global para exibição após conversão
+            ViewBag.ContadorGlobal = LerContadorGlobal();
 
             return View("Index");
             
@@ -347,6 +383,31 @@ namespace GeraWebP.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private int LerContadorGlobal()
+        {
+            try
+            {
+                if (!System.IO.File.Exists(ContadorPath))
+                    return 0;
+                var json = System.IO.File.ReadAllText(ContadorPath);
+                var obj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json);
+                return obj != null && obj.ContainsKey("total") ? obj["total"] : 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        private void IncrementarContadorGlobal(int quantidade)
+        {
+            int atual = LerContadorGlobal();
+            int novo = atual + quantidade;
+            var obj = new Dictionary<string, int> { { "total", novo } };
+            var json = System.Text.Json.JsonSerializer.Serialize(obj);
+            System.IO.File.WriteAllText(ContadorPath, json);
         }
     }
 

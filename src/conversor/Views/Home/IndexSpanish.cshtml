@@ -37,6 +37,32 @@
     <div class="converter-container">
         <form id="converterForm" method="post" action="/Home/Converter" enctype="multipart/form-data">
             
+            <!-- Error Messages Section -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <div class="alert-header">
+                        <i data-feather="alert-circle"></i>
+                        <strong>¡Error!</strong>
+                    </div>
+                    <ul class="error-list">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(x => x.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+            
+            <!-- Client-side Error Messages Section -->
+            <div id="clientErrors" class="alert alert-danger" role="alert" style="display: none;">
+                <div class="alert-header">
+                    <i data-feather="alert-circle"></i>
+                    <strong>¡Error!</strong>
+                </div>
+                <ul id="clientErrorsList" class="error-list"></ul>
+            </div>
+            
             <!-- Breadcrumbs -->
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
                 <ol class="breadcrumb">
@@ -72,8 +98,9 @@
                     <div id="selectedFiles" class="selected-files" style="display: none;">
                         <div class="files-header">
                             <i data-feather="check-circle"></i>
-                            <span id="fileCount">0</span> arquivo(s) selecionado(s)
+                            <span id="fileCount">0</span> archivo(s) seleccionado(s)
                         </div>
+                        <div id="filesList" class="files-list"></div>
                     </div>
                 </div>
 
@@ -97,7 +124,7 @@
                                max="100" 
                                value="75" 
                                class="quality-slider"
-                               oninput="atualizarValorDaQuantidade(this.value)"
+                               oninput="atualizarValorCalidad(this.value)"
                                aria-label="Ajustar qualidade da conversão WebP" />
                         
                         <div class="quality-labels">
@@ -446,49 +473,172 @@
 </section>
 
 <!-- Scripts -->
-<script src="https://unpkg.com/@@microsoft/signalr@latest/dist/browser/signalr.js"></script>
+<script src="https://unpkg.com/@@microsoft/signalr@@latest/dist/browser/signalr.js"></script>
 <script>
-    // Inicializar ícones
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DOM CARGADO, INICIANDO SCRIPT (ES) ===');
+    
+    // Inicializar iconos
     feather.replace();
 
-    // Função para atualizar qualidade
-    function atualizarValorDaQuantidade(value) {
+    // Funciones para gestionar errores en HTML
+    function showError(message) {
+        const clientErrors = document.getElementById('clientErrors');
+        const clientErrorsList = document.getElementById('clientErrorsList');
+        
+        clientErrorsList.innerHTML = `<li>${message}</li>`;
+        clientErrors.style.display = 'block';
+        feather.replace();
+        
+        // Scroll al error
+        clientErrors.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function clearErrors() {
+        const clientErrors = document.getElementById('clientErrors');
+        clientErrors.style.display = 'none';
+    }
+
+    // Función para actualizar calidad
+    function actualizarValorCalidad(value) {
         document.getElementById('qualidadeValue').textContent = value;
         
-        // Atualizar estimativa de compressão
+        // Actualizar estimación de compresión
         const compressionEstimate = document.getElementById('compressionEstimate');
         if (compressionEstimate) {
             let estimate;
-            if (value <= 30) estimate = '~85% menor';
-            else if (value <= 50) estimate = '~75% menor';
-            else if (value <= 70) estimate = '~65% menor';
-            else if (value <= 85) estimate = '~55% menor';
-            else estimate = '~45% menor';
+            if (value <= 30) estimate = '~85% más pequeño';
+            else if (value <= 50) estimate = '~75% más pequeño';
+            else if (value <= 70) estimate = '~65% más pequeño';
+            else if (value <= 85) estimate = '~55% más pequeño';
+            else estimate = '~45% más pequeño';
             
             compressionEstimate.textContent = estimate;
         }
     }
 
-    // File upload handling
+    // Hacer función global para HTML oninput
+    window.actualizarValorCalidad = actualizarValorCalidad;
+
+    // File upload handling - SIMPLE Y FUNCIONAL
     const fileInput = document.getElementById('arquivos');
     const selectedFiles = document.getElementById('selectedFiles');
     const fileCount = document.getElementById('fileCount');
     const uploadArea = document.getElementById('uploadArea');
 
-    // File input change
-    fileInput.addEventListener('change', function(event) {
-        const files = event.target.files;
-        updateFileDisplay(files);
-        validateFiles(files);
+    if (!fileInput || !selectedFiles || !fileCount || !uploadArea) {
+        showError('Error interno: Los elementos de la página no se cargaron correctamente. Recarga la página.');
+        return;
+    }
+
+    // Function to update file display
+    function updateFileDisplay() {
+        const files = fileInput.files;
+        
+        if (files.length === 0) {
+            selectedFiles.style.display = 'none';
+            fileCount.textContent = '';
+            uploadArea.classList.remove('has-files');
+            return;
+        }
+
+        let totalSize = 0;
+        let fileNames = [];
+        
+        // Show loading feedback
+        selectedFiles.style.display = 'block';
+        uploadArea.classList.add('has-files');
+        
+        for (let i = 0; i < files.length; i++) {
+            totalSize += files[i].size;
+            fileNames.push(files[i].name);
+        }
+        const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+        
+        fileCount.textContent = `${files.length} archivo(s) • ${totalMB}MB total`;
+        
+        const filesList = document.getElementById('filesList');
+        if (!filesList) {
+            const filesListDiv = document.createElement('div');
+            filesListDiv.id = 'filesList';
+            filesListDiv.className = 'files-list';
+            selectedFiles.appendChild(filesListDiv);
+        }
+        
+        const filesListElement = document.getElementById('filesList');
+        filesListElement.innerHTML = '';
+        
+        const maxDisplayFiles = 5;
+        const filesToShow = Math.min(files.length, maxDisplayFiles);
+        const remainingFiles = files.length - filesToShow;
+        
+        for (let i = 0; i < filesToShow; i++) {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.style.pointerEvents = 'none';
+            
+            const truncatedName = fileNames[i].length > 30 
+                ? fileNames[i].substring(0, 27) + '...' 
+                : fileNames[i];
+            
+            fileItem.innerHTML = `
+                <i data-feather="file-image"></i>
+                <span class="file-name" title="${fileNames[i]}">${truncatedName}</span>
+                <span class="file-size">${(files[i].size / (1024 * 1024)).toFixed(1)}MB</span>
+                <span class="file-status">✓</span>
+            `;
+            filesListElement.appendChild(fileItem);
+        }
+        
+        if (remainingFiles > 0) {
+            const moreFilesItem = document.createElement('div');
+            moreFilesItem.className = 'file-item more-files';
+            moreFilesItem.style.pointerEvents = 'none';
+            moreFilesItem.innerHTML = `
+                <i data-feather="plus-circle"></i>
+                <span class="file-name">y ${remainingFiles} archivo(s) más...</span>
+                <span class="file-size">Total: ${totalMB}MB</span>
+            `;
+            filesListElement.appendChild(moreFilesItem);
+        }
+        
+        setTimeout(() => {
+            feather.replace();
+        }, 100);
+    }
+
+    // File input change event
+    fileInput.addEventListener('change', function() {
+        updateFileDisplay();
     });
 
-    // Click to select files
-    uploadArea.addEventListener('click', function(e) {
-        if (e.target === fileInput) return;
-        fileInput.click();
-    });
+    // Upload area click - SOLO elementos específicos
+    const uploadButton = uploadArea.querySelector('.upload-button');
+    const uploadIcon = uploadArea.querySelector('.upload-icon');
+    const uploadText = uploadArea.querySelector('p');
+    
+    if (uploadButton) {
+        uploadButton.addEventListener('click', function() {
+            clearErrors();
+            fileInput.click();
+        });
+    }
+    
+    if (uploadIcon) {
+        uploadIcon.addEventListener('click', function() {
+            clearErrors();
+            fileInput.click();
+        });
+    }
+    
+    if (uploadText) {
+        uploadText.addEventListener('click', function() {
+            clearErrors();
+            fileInput.click();
+        });
+    }
 
-    // Drag and drop
+    // Drag and drop functionality
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
         uploadArea.classList.add('dragover');
@@ -502,6 +652,7 @@
     uploadArea.addEventListener('drop', function(e) {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
+        clearErrors();
         const files = e.dataTransfer.files;
         
         const dt = new DataTransfer();
@@ -510,26 +661,9 @@
         }
         fileInput.files = dt.files;
         
-        updateFileDisplay(files);
+        updateFileDisplay();
         validateFiles(files);
     });
-
-    function updateFileDisplay(files) {
-        if (files.length > 0) {
-            let totalSize = 0;
-            for (let i = 0; i < files.length; i++) {
-                totalSize += files[i].size;
-            }
-            const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
-            
-            fileCount.textContent = `${files.length} arquivo(s) • ${totalMB}MB total`;
-            selectedFiles.style.display = 'block';
-            uploadArea.classList.add('has-files');
-        } else {
-            selectedFiles.style.display = 'none';
-            uploadArea.classList.remove('has-files');
-        }
-    }
 
     function validateFiles(files) {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
@@ -615,6 +749,7 @@
         button.disabled = true;
         feather.replace();
     });
+});
 </script>
 
 @section Scripts {
