@@ -89,7 +89,7 @@
                             Escolher Arquivos
                         </div>
                         <div class="upload-info">
-                            <small>JPG, PNG, GIF • Máx: 50MB por arquivo ou 50MB total</small>
+                            <small>JPG, PNG, GIF • Máx: 100MB por arquivo ou 100MB total</small>
                         </div>
                         <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" accept="image/jpeg,image/jpg,image/png,image/gif" />
                     </div>
@@ -668,18 +668,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateFiles(files) {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         let totalSize = 0;
-        const maxTotalSize = 50 * 1024 * 1024; // 50MB total
-        const maxFileSize = 50 * 1024 * 1024; // 50MB por arquivo
+                    const maxTotalSize = 100 * 1024 * 1024; // 100MB total
+            const maxFileSize = 100 * 1024 * 1024; // 100MB por arquivo
 
         // Primeiro, calcular o tamanho total
         for (let i = 0; i < files.length; i++) {
             totalSize += files[i].size;
         }
 
-        // Verificar se o total excede 50MB
+        // Verificar se o total excede 100MB
         if (totalSize > maxTotalSize) {
             const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
-            alert(`Tamanho total dos arquivos (${totalMB}MB) excede o limite de 50MB. Por favor, selecione menos arquivos ou arquivos menores.`);
+            alert(`Tamanho total dos arquivos (${totalMB}MB) excede o limite de 100MB. Por favor, selecione menos arquivos ou arquivos menores.`);
             fileInput.value = '';
             selectedFiles.style.display = 'none';
             uploadArea.classList.remove('has-files');
@@ -696,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             if (files[i].size > maxFileSize) {
-                alert('Arquivo muito grande. Máximo 50MB por arquivo.');
+                alert('Arquivo muito grande. Máximo 100MB por arquivo.');
                 fileInput.value = '';
                 selectedFiles.style.display = 'none';
                 uploadArea.classList.remove('has-files');

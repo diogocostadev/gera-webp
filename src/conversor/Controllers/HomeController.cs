@@ -86,6 +86,11 @@ namespace GeraWebP.Controllers
         }
         
         [HttpPost]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
         public async Task<IActionResult> Converter(List<IFormFile>? arquivos, int qualidade = 75)
         {   
             if (arquivos == null || arquivos.Count == 0)
@@ -130,15 +135,15 @@ namespace GeraWebP.Controllers
                 }
             }
             
-            // Validar tamanho total dos arquivos (50MB máximo)
-            const long maxTotalSize = 50 * 1024 * 1024; // 50MB
-            const long maxFileSize = 50 * 1024 * 1024;  // 50MB por arquivo
+            // Validar tamanho total dos arquivos (100MB máximo)
+            const long maxTotalSize = 100 * 1024 * 1024; // 100MB
+            const long maxFileSize = 100 * 1024 * 1024;  // 100MB por arquivo
             
             long totalSize = arquivos.Sum(f => f.Length);
             if (totalSize > maxTotalSize)
             {
                 var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
-                ModelState.AddModelError("files", $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 50MB. Por favor, selecione menos arquivos ou arquivos menores.");
+                ModelState.AddModelError("files", $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB. Por favor, selecione menos arquivos ou arquivos menores.");
                 return View("Index");
             }
             
@@ -148,7 +153,7 @@ namespace GeraWebP.Controllers
                 if (arquivo.Length > maxFileSize)
                 {
                     var fileMB = Math.Round(arquivo.Length / (1024.0 * 1024.0), 1);
-                    ModelState.AddModelError("files", $"Arquivo '{arquivo.FileName}' ({fileMB}MB) excede o limite de 50MB por arquivo.");
+                    ModelState.AddModelError("files", $"Arquivo '{arquivo.FileName}' ({fileMB}MB) excede o limite de 100MB por arquivo.");
                     return View("Index");
                 }
             }
