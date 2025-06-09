@@ -115,7 +115,7 @@ app.UseStaticFiles(new StaticFileOptions
         
         int cacheDurationInSeconds = fileExtension switch
         {
-            ".css" or ".js" => 60 * 60 * 24 * 365, // 1 ano para CSS/JS (com versioning)
+            ".css" or ".js" => 60 * 60 * 2, // 2 horas para CSS/JS (permite updates mais rápidos)
             ".jpg" or ".jpeg" or ".png" or ".gif" or ".webp" or ".svg" => 60 * 60 * 24 * 365, // 1 ano para imagens
             ".woff" or ".woff2" or ".ttf" or ".eot" => 60 * 60 * 24 * 365, // 1 ano para fontes
             ".ico" => 60 * 60 * 24 * 365, // 1 ano para favicon também
@@ -124,10 +124,10 @@ app.UseStaticFiles(new StaticFileOptions
             _ => 60 * 60 * 24 * 30 // 30 dias para outros arquivos (melhor que 7)
         };
         
-        // Cache headers mais agressivos
+        // Cache headers otimizados para desenvolvimento
         string cacheControl = fileExtension switch
         {
-            ".css" or ".js" => $"public,max-age={cacheDurationInSeconds},immutable,stale-while-revalidate=86400",
+            ".css" or ".js" => $"public,max-age={cacheDurationInSeconds},must-revalidate",
             ".jpg" or ".jpeg" or ".png" or ".gif" or ".webp" or ".svg" => $"public,max-age={cacheDurationInSeconds},immutable",
             ".woff" or ".woff2" or ".ttf" or ".eot" => $"public,max-age={cacheDurationInSeconds},immutable,crossorigin",
             _ => $"public,max-age={cacheDurationInSeconds}"
