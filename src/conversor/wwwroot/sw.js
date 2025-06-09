@@ -3,7 +3,7 @@ const CACHE_NAME = 'wepper-v1.0.0';
 const STATIC_CACHE = 'wepper-static-v1';
 const DYNAMIC_CACHE = 'wepper-dynamic-v1';
 
-// Recursos para cache imediato
+// Recursos para cache imediato - APENAS o essencial
 const STATIC_FILES = [
     '/',
     '/css/site.css',
@@ -12,11 +12,10 @@ const STATIC_FILES = [
     '/js/consent.js',
     '/lib/bootstrap/dist/css/bootstrap.min.css',
     '/lib/bootstrap/dist/js/bootstrap.bundle.min.js',
-    '/lib/jquery/dist/jquery.min.js',
     '/img/favicon.ico',
     '/img/favicon.svg',
-    '/img/apple-touch-icon.png',
-    'https://unpkg.com/feather-icons@latest/dist/feather.min.js'
+    '/img/apple-touch-icon.png'
+    // Removido jQuery e Feather Icons - são carregados sob demanda
 ];
 
 // Instalar Service Worker

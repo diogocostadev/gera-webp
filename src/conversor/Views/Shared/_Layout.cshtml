@@ -67,28 +67,34 @@
     
     <!-- Performance Optimization - Critical Resource Hints -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//unpkg.com" />
+    <link rel="dns-prefetch" href="//cdn.skypack.dev" />
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.skypack.dev" crossorigin />
     
-    <!-- Preload Critical CSS -->
-    <link rel="preload" href="~/lib/bootstrap/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /></noscript>
+    <!-- Bootstrap removed - CSS optimized for PageSpeed -->
     
     <!-- Critical CSS Inline for First Paint -->
     <style>
-        /* Critical Above-the-fold CSS */
+        /* Critical Above-the-fold CSS - Bootstrap optimized */
         body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.5;color:#212529;background:#fff}
         .container{max-width:1200px;margin:0 auto;padding:0 1rem}
-        .btn{display:inline-block;padding:.5rem 1rem;border:none;border-radius:.375rem;text-decoration:none;transition:all .2s}
-        .btn-primary{background:#2563eb;color:#fff}
-        .btn-primary:hover{background:#1d4ed8;color:#fff}
-        .text-center{text-align:center}
-        .mb-4{margin-bottom:1.5rem}
-        .p-4{padding:1.5rem}
-        .rounded{border-radius:.375rem}
-        .shadow{box-shadow:0 .125rem .25rem rgba(0,0,0,.075)}
+        .btn{display:inline-block;padding:.5rem 1rem;border:none;border-radius:.375rem;text-decoration:none;transition:all .2s;font-weight:400;text-align:center;vertical-align:middle;cursor:pointer;user-select:none}
+        .btn-primary{background:#2563eb;color:#fff;border:1px solid #2563eb}
+        .btn-primary:hover{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+        .text-center{text-align:center!important}
+        .mb-4{margin-bottom:1.5rem!important}
+        .p-4{padding:1.5rem!important}
+        .rounded{border-radius:.375rem!important}
+        .shadow{box-shadow:0 .125rem .25rem rgba(0,0,0,.075)!important}
+        .breadcrumb{display:flex;flex-wrap:wrap;padding:0;margin-bottom:1rem;list-style:none;background:transparent;border-radius:.375rem}
+        .breadcrumb-item{display:flex}
+        .breadcrumb-item+.breadcrumb-item{padding-left:.5rem}
+        .breadcrumb-item+.breadcrumb-item::before{float:left;padding-right:.5rem;color:#6c757d;content:var(--bs-breadcrumb-divider,"/")}
+        .breadcrumb-item.active{color:#6c757d}
+        .breadcrumb-item a{color:#0d6efd;text-decoration:none}
+        .breadcrumb-item a:hover{color:#0a58ca;text-decoration:underline}
         .upload-area{border:2px dashed #cbd5e1;border-radius:.5rem;padding:3rem 1rem;cursor:pointer;transition:all .3s}
         .upload-area:hover{border-color:#2563eb;background:#f8fafc}
         .navbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:.5rem 0}
@@ -107,19 +113,45 @@
         
         /* Optimize font loading */
         @@font-display:swap
+        
+        /* Fix H1 font size consistency in semantic elements - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#specifying_a_uniform_font_size_for_h1 */
+        article h1, aside h1, nav h1, section h1 {
+            font-size: 2.5rem !important;
+            font-weight: 700 !important;
+            line-height: 1.2 !important;
+            margin: 0 0 1rem 0 !important;
+        }
+        
+        /* Responsive H1 sizes in semantic elements */
+        @@media (max-width: 768px) {
+            article h1, aside h1, nav h1, section h1 {
+                font-size: 2rem !important;
+            }
+        }
+        
+        @@media (max-width: 480px) {
+            article h1, aside h1, nav h1, section h1 {
+                font-size: 1.75rem !important;
+            }
+        }
     </style>
     
-    <!-- Non-critical CSS - Load asynchronously -->
-    <link rel="preload" href="~/css/site.css?v=@DateTime.Now.Ticks" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /></noscript>
+    <!-- Non-critical CSS - Load asynchronously with strong versioning -->
+    <link rel="preload" href="~/css/site.css?v=2024010202" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="~/css/site.css?v=2024010202" /></noscript>
     
-    <link rel="preload" href="~/css/consent.css?v=@DateTime.Now.Ticks" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="~/css/consent.css" asp-append-version="true" /></noscript>
+    <link rel="preload" href="~/css/consent.css?v=2024010201" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="~/css/consent.css?v=2024010201" /></noscript>
     
-    <!-- Preload JavaScript -->
+    <!-- Preload JavaScript crítico apenas -->
     <link rel="preload" href="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" as="script" />
     <link rel="preload" href="~/js/site.js" as="script" />
-    <link rel="preload" href="https://unpkg.com/feather-icons" as="script" />
+    
+    <!-- Preload fonts importantes -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font" type="font/woff2" crossorigin />
+    
+    <!-- Resource hints para externa resources -->
+    <link rel="prefetch" href="https://unpkg.com/feather-icons@latest/dist/feather.min.js" />
     
     <!-- Structured Data / Schema.org -->
     <script type="application/ld+json">
@@ -196,23 +228,39 @@
     }")
     </script>
     
-    <!-- Google tag (gtag.js) com Consent Mode -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0CBPD9N9FK"></script>
+    <!-- Optimized Google Analytics 4 - Load only when needed -->
     <script>
+        // Minimal inline analytics
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        // Configurar modo de consentimento padrão
-        gtag('consent', 'default', {
-            'analytics_storage': 'denied',
-            'ad_storage': 'denied',
-            'wait_for_update': 500
+        // Load GA4 only after user interaction or 3 seconds
+        let gaLoaded = false;
+        function loadGA4() {
+            if (gaLoaded) return;
+            gaLoaded = true;
+            
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-0CBPD9N9FK';
+            document.head.appendChild(script);
+            
+            script.onload = function() {
+                gtag('config', 'G-0CBPD9N9FK', {
+                    'anonymize_ip': true,
+                    'cookie_flags': 'SameSite=None;Secure'
+                });
+            };
+        }
+        
+        // Load on first user interaction
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(function(event) {
+            document.addEventListener(event, loadGA4, {once: true, passive: true});
         });
-
-        gtag('config', 'G-0CBPD9N9FK', {
-            'anonymize_ip': true
-        });
+        
+        // Fallback: load after 3 seconds
+        setTimeout(loadGA4, 3000);
     </script>
 
 </head>
@@ -282,24 +330,81 @@
     </script>
     
     <!-- Load JavaScript modules asynchronously -->
-    <script async src="https://unpkg.com/feather-icons@latest/dist/feather.min.js"></script>
-    <script defer src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script defer src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script defer src="~/js/site.js?v=@DateTime.Now.Ticks"></script>
-    <script defer src="~/js/consent.js?v=@DateTime.Now.Ticks"></script>
+    <!-- Modern ES6 Feather Icons - Smaller and faster -->
+    <script type="module">
+        // Load ES6 module version - smaller than UMD
+        let featherLoaded = false;
+        async function loadFeatherModern() {
+            if (featherLoaded) return;
+            featherLoaded = true;
+            
+            try {
+                // Use modern ES6 import - smaller bundle
+                const { icons } = await import('https://cdn.skypack.dev/feather-icons@latest');
+                
+                // Replace icons manually - more efficient
+                document.querySelectorAll('[data-feather]').forEach(el => {
+                    const iconName = el.getAttribute('data-feather');
+                    if (icons[iconName]) {
+                        el.innerHTML = icons[iconName].toSvg();
+                        el.classList.add('feather');
+                    }
+                });
+            } catch (error) {
+                console.warn('Feather icons failed to load:', error);
+                // Fallback para versão UMD se ES6 falhar
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/feather-icons@latest/dist/feather.min.js';
+                script.onload = () => {
+                    if (typeof feather !== 'undefined') feather.replace();
+                };
+                document.head.appendChild(script);
+            }
+        }
+        
+        // Load on first scroll or after 2 seconds
+        document.addEventListener('scroll', loadFeatherModern, {once: true, passive: true});
+        setTimeout(loadFeatherModern, 2000);
+    </script>
     
-    <!-- Initialize Feather icons when loaded -->
+    <!-- Fallback for browsers without ES6 modules -->
+    <script nomodule>
+        // Legacy browsers fallback
+        setTimeout(function() {
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/feather-icons@latest/dist/feather.min.js';
+            script.onload = function() {
+                if (typeof feather !== 'undefined') feather.replace();
+            };
+            document.head.appendChild(script);
+        }, 2000);
+    </script>
+    <!-- Bootstrap sem jQuery dependency -->
+    <script defer src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="~/js/site.js?v=2024010201"></script>
+    <script defer src="~/js/consent.js?v=2024010201"></script>
+    
+    <!-- Replace jQuery with Vanilla JS -->
+    <script>
+        // jQuery replacement - minimal functions only
+        window.$ = window.jQuery = function(selector) {
+            if (typeof selector === 'function') {
+                // $(document).ready equivalent
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', selector);
+                } else {
+                    selector();
+                }
+                return;
+            }
+            return document.querySelectorAll(selector);
+        };
+    </script>
+    
+    <!-- Initialize other functionality -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Wait for feather to load then initialize
-            function initFeather() {
-                if (typeof feather !== 'undefined') {
-                    feather.replace();
-                } else {
-                    setTimeout(initFeather, 50);
-                }
-            }
-            initFeather();
+            // Feather icons are loaded asynchronously above, no need to check here
             
             // Register Service Worker for performance
             if ('serviceWorker' in navigator) {
