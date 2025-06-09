@@ -113,15 +113,15 @@
                     <div class="compression-presets">
                         <h4>Presets de Compressão:</h4>
                         <div class="preset-buttons">
-                            <button type="button" class="preset-btn" onclick="setCompressionPreset(90)" data-tooltip="Compressão máxima">
+                            <button type="button" class="preset-btn" data-preset="90" data-tooltip="Compressão máxima">
                                 <i data-feather="zap"></i>
                                 Máxima
                             </button>
-                            <button type="button" class="preset-btn active" onclick="setCompressionPreset(75)" data-tooltip="Equilibrio qualidade/tamanho">
+                            <button type="button" class="preset-btn active" data-preset="75" data-tooltip="Equilibrio qualidade/tamanho">
                                 <i data-feather="target"></i>
                                 Ótima
                             </button>
-                            <button type="button" class="preset-btn" onclick="setCompressionPreset(50)" data-tooltip="Melhor qualidade">
+                            <button type="button" class="preset-btn" data-preset="50" data-tooltip="Melhor qualidade">
                                 <i data-feather="award"></i>
                                 Qualidade
                             </button>
@@ -371,13 +371,23 @@
             document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
             
             if (value >= 85) {
-                document.querySelector('[onclick="setCompressionPreset(50)"]').classList.add('active');
+                document.querySelector('[data-preset="50"]').classList.add('active');
             } else if (value >= 60) {
-                document.querySelector('[onclick="setCompressionPreset(75)"]').classList.add('active');
+                document.querySelector('[data-preset="75"]').classList.add('active');
             } else {
-                document.querySelector('[onclick="setCompressionPreset(90)"]').classList.add('active');
+                document.querySelector('[data-preset="90"]').classList.add('active');
             }
         }
+
+        // Preset buttons event delegation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('[data-preset]')) {
+                const preset = e.target.closest('[data-preset]').dataset.preset;
+                if (preset) {
+                    setCompressionPreset(parseInt(preset));
+                }
+            }
+        });
 
         // File upload handling
         const fileInput = document.getElementById('arquivos');

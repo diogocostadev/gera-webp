@@ -1,60 +1,45 @@
-// Service Worker para Wepper.vip4.link
-const CACHE_NAME = 'wepper-v1.0.0';
-const STATIC_CACHE = 'wepper-static-v1';
-const DYNAMIC_CACHE = 'wepper-dynamic-v1';
+// Service Worker para Wepper.vip4.link - SILENT MODE
+const CACHE_NAME = 'wepper-v1.0.1';
+const STATIC_CACHE = 'wepper-static-v1.1';
+const DYNAMIC_CACHE = 'wepper-dynamic-v1.1';
 
-// Recursos para cache imediato - APENAS o essencial
+// Recursos para cache imediato - Bootstrap removido, PageSpeed otimizado
 const STATIC_FILES = [
     '/',
     '/css/site.css',
     '/css/consent.css',
     '/js/site.js',
     '/js/consent.js',
-    '/lib/bootstrap/dist/css/bootstrap.min.css',
-    '/lib/bootstrap/dist/js/bootstrap.bundle.min.js',
     '/img/favicon.ico',
     '/img/favicon.svg',
     '/img/apple-touch-icon.png'
-    // Removido jQuery e Feather Icons - são carregados sob demanda
+    // Bootstrap removido para otimização PageSpeed
+    // jQuery e Feather Icons são carregados sob demanda
 ];
 
-// Instalar Service Worker
+// Instalar Service Worker - SILENT
 self.addEventListener('install', event => {
-    console.log('Service Worker: Instalando...');
     event.waitUntil(
         caches.open(STATIC_CACHE)
-            .then(cache => {
-                console.log('Service Worker: Cache aberto');
-                return cache.addAll(STATIC_FILES);
-            })
-            .then(() => {
-                console.log('Service Worker: Recursos em cache');
-                return self.skipWaiting();
-            })
-            .catch(err => {
-                console.log('Service Worker: Erro no cache', err);
-            })
+            .then(cache => cache.addAll(STATIC_FILES))
+            .then(() => self.skipWaiting())
+            .catch(() => {}) // Silent error handling
     );
 });
 
-// Ativar Service Worker
+// Ativar Service Worker - SILENT
 self.addEventListener('activate', event => {
-    console.log('Service Worker: Ativando...');
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    // Remove caches antigos
+                    // Remove caches antigos silenciosamente
                     if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
-                        console.log('Service Worker: Removendo cache antigo', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
-        }).then(() => {
-            console.log('Service Worker: Ativo');
-            return self.clients.claim();
-        })
+        }).then(() => self.clients.claim())
     );
 });
 
@@ -78,9 +63,8 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(request)
             .then(response => {
-                // Retorna do cache se disponível
+                // Retorna do cache se disponível (silent)
                 if (response) {
-                    console.log('Service Worker: Servindo do cache', request.url);
                     return response;
                 }
                 
@@ -142,8 +126,7 @@ self.addEventListener('message', event => {
 if ('sync' in self.registration) {
     self.addEventListener('sync', event => {
         if (event.tag === 'background-conversion') {
-            console.log('Service Worker: Background sync para conversões');
-            // Implementar lógica de conversão em background se necessário
+            // Background sync - silent processing
         }
     });
 }
