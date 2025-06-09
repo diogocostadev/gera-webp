@@ -131,6 +131,7 @@
                         <div class="upload-info">
                             <small>JPG, PNG, GIF • Máx: 100MB por arquivo ou 100MB total</small>
                         </div>
+                        <label for="arquivos" class="visually-hidden">Selecionar arquivos de imagem para conversão WebP</label>
                         <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" accept="image/jpeg,image/jpg,image/png,image/gif" />
                     </div>
                     
@@ -680,15 +681,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Drag and drop functionality
 
-    // SignalR for progress
+    // SignalR for progress - with error handling
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/progressHub")
+        .withUrl("/progressHub", {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+        })
+        .configureLogging(signalR.LogLevel.Warning)
         .build();
 
     connection.start().then(function () {
-        // SignalR conectado
+        // SignalR conectado silenciosamente
     }).catch(function (err) {
-        showError("Erro de conexão: " + err.toString());
+        console.warn("SignalR não disponível, usando fallback:", err.message);
+        // Fallback silencioso - não mostra erro para o usuário
     });
 
     connection.on("ReceiveProgress", function (progress) {

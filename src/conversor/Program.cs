@@ -110,16 +110,39 @@ app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
     {
-        const int durationInSeconds = 60 * 60 * 24 * 30; // 30 dias
-        ctx.Context.Response.Headers.Append("Cache-Control", $"public,max-age={durationInSeconds}");
-        ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddDays(30).ToString("R"));
+        // Cache mais agressivo baseado no tipo de arquivo
+        var fileExtension = Path.GetExtension(ctx.File.Name).ToLowerInvariant();
+        
+        int cacheDurationInSeconds = fileExtension switch
+        {
+            ".css" or ".js" => 60 * 60 * 24 * 365, // 1 ano para CSS/JS (com versioning)
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".webp" or ".svg" => 60 * 60 * 24 * 365, // 1 ano para imagens
+            ".woff" or ".woff2" or ".ttf" or ".eot" => 60 * 60 * 24 * 365, // 1 ano para fontes
+            ".ico" => 60 * 60 * 24 * 365, // 1 ano para favicon também
+            ".json" => 60 * 60 * 24 * 30, // 30 dias para manifests
+            ".xml" => 60 * 60 * 24 * 7, // 7 dias para XML (sitemap, etc)
+            _ => 60 * 60 * 24 * 30 // 30 dias para outros arquivos (melhor que 7)
+        };
+        
+        // Cache headers mais agressivos
+        string cacheControl = fileExtension switch
+        {
+            ".css" or ".js" => $"public,max-age={cacheDurationInSeconds},immutable,stale-while-revalidate=86400",
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".webp" or ".svg" => $"public,max-age={cacheDurationInSeconds},immutable",
+            ".woff" or ".woff2" or ".ttf" or ".eot" => $"public,max-age={cacheDurationInSeconds},immutable,crossorigin",
+            _ => $"public,max-age={cacheDurationInSeconds}"
+        };
+        
+        ctx.Context.Response.Headers.Append("Cache-Control", cacheControl);
+        ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddSeconds(cacheDurationInSeconds).ToString("R"));
         
         // Headers de segurança
         ctx.Context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
         
-        // Compressão adicional para assets específicos
-        if (ctx.File.Name.EndsWith(".css") || ctx.File.Name.EndsWith(".js"))
+        // ETag forte para versionamento
+        if (fileExtension is ".css" or ".js")
         {
+            ctx.Context.Response.Headers.Append("ETag", $"\"{ctx.File.LastModified:yyyyMMddHHmmss}\"");
             ctx.Context.Response.Headers.Append("Vary", "Accept-Encoding");
         }
     }
