@@ -586,6 +586,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Tornar a função global para o oninput do HTML
     window.atualizarValorDaQuantidade = atualizarValorDaQuantidade;
+    
+    // Função para atualizar contador global dinamicamente
+    function updateGlobalCounter(filesConverted) {
+        const contadorElement = document.getElementById('contadorGlobal');
+        if (contadorElement) {
+            const currentCount = parseInt(contadorElement.textContent) || 0;
+            const newCount = currentCount + filesConverted;
+            contadorElement.textContent = newCount;
+            
+            // Adicionar animação visual
+            contadorElement.style.transition = 'color 0.5s ease';
+            contadorElement.style.color = '#22c55e';
+            setTimeout(() => {
+                contadorElement.style.color = '';
+            }, 1000);
+        }
+    }
 
     // File upload handling - SIMPLES E FUNCIONAL
     const fileInput = document.getElementById('arquivos');
@@ -790,6 +807,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Sucesso - mostrar botão de download
                 showDownloadSection(data.downloadLink, data.filesCount);
+                
+                // Atualizar contador global na tela
+                updateGlobalCounter(data.filesCount);
             } else {
                 // Erro - mostrar mensagem
                 showError(data.message);

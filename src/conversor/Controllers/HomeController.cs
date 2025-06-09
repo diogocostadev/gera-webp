@@ -22,9 +22,12 @@ namespace GeraWebP.Controllers
         private const string PastaRaiz = "wwwroot";
         private const string PastaConvertidos = "convertidos";
         private const string PastaUploads = "uploads";
-        private const string ContadorPath = "data/contador.json";
+        private static readonly string ContadorPath = Path.Combine(Directory.GetCurrentDirectory(), "data", "contador.json");
         
-        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "culture" })]
+        // Lock para evitar problemas de concorrência no contador
+        private static readonly object ContadorLock = new object();
+        
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public ActionResult Index(string? culture = null)
         {
             // Se culture vier da rota, usá-la
@@ -33,11 +36,14 @@ namespace GeraWebP.Controllers
                 culture = RouteData.Values["culture"]?.ToString();
             }
             
-            // Adicionar headers de performance
+            // Adicionar headers de performance e anti-cache
             Response.Headers.Append("X-Content-Type-Options", "nosniff");
             Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
             Response.Headers.Append("X-XSS-Protection", "1; mode=block");
             Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
             
             SetCultureContent(culture ?? "pt");
             int contadorGlobal = LerContadorGlobal();
@@ -551,7 +557,7 @@ namespace GeraWebP.Controllers
 
         // Rotas específicas para idiomas
         [HttpGet("en")]
-        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "culture" })]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult IndexEnglish()
         {
             SetCultureContent("en");
@@ -561,7 +567,7 @@ namespace GeraWebP.Controllers
         }
 
         [HttpGet("es")]
-        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "culture" })]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult IndexSpanish()
         {
             SetCultureContent("es");
@@ -592,48 +598,64 @@ namespace GeraWebP.Controllers
 
         private int LerContadorGlobal()
         {
-            try
+            lock (ContadorLock)
             {
-                // Criar diretório se não existir
-                var directoryPath = Path.GetDirectoryName(ContadorPath);
-                if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                try
                 {
-                    Directory.CreateDirectory(directoryPath);
+                    // Criar diretório se não existir
+                    var directoryPath = Path.GetDirectoryName(ContadorPath);
+                    if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+                    
+                    if (!System.IO.File.Exists(ContadorPath))
+                        return 0;
+                    var json = System.IO.File.ReadAllText(ContadorPath);
+                    var obj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json);
+                    return obj != null && obj.ContainsKey("total") ? obj["total"] : 0;
                 }
-                
-                if (!System.IO.File.Exists(ContadorPath))
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Erro ao ler contador global");
                     return 0;
-                var json = System.IO.File.ReadAllText(ContadorPath);
-                var obj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json);
-                return obj != null && obj.ContainsKey("total") ? obj["total"] : 0;
-            }
-            catch
-            {
-                return 0;
+                }
             }
         }
 
         private void IncrementarContadorGlobal(int quantidade)
         {
-            try
+            lock (ContadorLock)
             {
-                // Criar diretório se não existir
-                var directoryPath = Path.GetDirectoryName(ContadorPath);
-                if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                try
                 {
-                    Directory.CreateDirectory(directoryPath);
+                    // Criar diretório se não existir
+                    var directoryPath = Path.GetDirectoryName(ContadorPath);
+                    if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+                    
+                    int atual = 0;
+                    if (System.IO.File.Exists(ContadorPath))
+                    {
+                        var json = System.IO.File.ReadAllText(ContadorPath);
+                        var obj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json);
+                        atual = obj != null && obj.ContainsKey("total") ? obj["total"] : 0;
+                    }
+                    
+                    int novo = atual + quantidade;
+                    var novoObj = new Dictionary<string, int> { { "total", novo } };
+                    var novoJson = System.Text.Json.JsonSerializer.Serialize(novoObj, new JsonSerializerOptions { WriteIndented = true });
+                    System.IO.File.WriteAllText(ContadorPath, novoJson);
+                    
+                    _logger.LogInformation("Contador incrementado: {Anterior} + {Quantidade} = {Novo}", atual, quantidade, novo);
                 }
-                
-                int atual = LerContadorGlobal();
-                int novo = atual + quantidade;
-                var obj = new Dictionary<string, int> { { "total", novo } };
-                var json = System.Text.Json.JsonSerializer.Serialize(obj);
-                System.IO.File.WriteAllText(ContadorPath, json);
-            }
-            catch (Exception ex)
-            {
-                // Log erro mas não falhar a conversão por causa do contador
-                Console.WriteLine($"Erro ao incrementar contador: {ex.Message}");
+                catch (Exception ex)
+                {
+                    // Log erro mas não falhar a conversão por causa do contador
+                    _logger.LogError(ex, "Erro ao incrementar contador global de {Anterior} para +{Quantidade}", quantidade, quantidade);
+                }
             }
         }
     }

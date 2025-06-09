@@ -1,7 +1,7 @@
 // Service Worker para Wepper.vip4.link - SILENT MODE
-const CACHE_NAME = 'wepper-v1.0.1';
-const STATIC_CACHE = 'wepper-static-v1.1';
-const DYNAMIC_CACHE = 'wepper-dynamic-v1.1';
+const CACHE_NAME = 'wepper-v1.0.2';
+const STATIC_CACHE = 'wepper-static-v1.2';
+const DYNAMIC_CACHE = 'wepper-dynamic-v1.2';
 
 // Recursos para cache imediato - Bootstrap removido, PageSpeed otimizado
 const STATIC_FILES = [
@@ -52,10 +52,14 @@ self.addEventListener('fetch', event => {
     // - APIs internas
     // - Uploads de arquivos
     // - SignalR
+    // - Páginas principais (para contador sempre atualizado)
     if (url.pathname.startsWith('/api/') || 
         url.pathname.startsWith('/progressHub') ||
         url.pathname.includes('/uploads/') ||
         url.pathname.includes('/convertidos/') ||
+        url.pathname === '/' ||
+        url.pathname === '/en' ||
+        url.pathname === '/es' ||
         request.method !== 'GET') {
         return;
     }
