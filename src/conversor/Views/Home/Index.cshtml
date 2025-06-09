@@ -56,7 +56,19 @@
         <div class="global-counter">
             <span>
                 <i data-feather="zap"></i>
-                <span id="contadorGlobal">@ViewBag.ContadorGlobal</span> arquivos já convertidos!
+                <span id="contadorGlobal">@ViewBag.ContadorGlobal</span> 
+                @if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <text>files already converted!</text>
+                }
+                else if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <text>archivos ya convertidos!</text>
+                }
+                else
+                {
+                    <text>arquivos já convertidos!</text>
+                }
             </span>
         </div>
     </div>
@@ -67,7 +79,20 @@
     <div class="container">
         <div class="notice-content">
             <i data-feather="gift"></i>
-            <span><strong>Serviço 100% Gratuito</strong> • Processamento Seguro • Arquivos Excluídos em 5 Minutos</span>
+            <span>
+                @if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <strong>100% Free Service</strong><text> • Secure Processing • Files Deleted in 5 Minutes</text>
+                }
+                else if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <strong>Servicio 100% Gratuito</strong><text> • Procesamiento Seguro • Archivos Eliminados en 5 Minutos</text>
+                }
+                else
+                {
+                    <strong>Serviço 100% Gratuito</strong><text> • Processamento Seguro • Arquivos Excluídos em 5 Minutos</text>
+                }
+            </span>
         </div>
     </div>
 </div>
@@ -516,19 +541,21 @@
 <!-- Scripts -->
 <script src="https://unpkg.com/@@microsoft/signalr@@latest/dist/browser/signalr.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    
+document.addEventListener('DOMContentLoaded', function() {    
     // Inicializar ícones
-    feather.replace();
+    if (typeof feather !== 'undefined' && feather.replace) {
+        feather.replace();
+    }
 
     // Funções para gerenciar erros no HTML
     function showError(message) {
         const clientErrors = document.getElementById('clientErrors');
         const clientErrorsList = document.getElementById('clientErrorsList');
-        
-        clientErrorsList.innerHTML = `<li>${message}</li>`;
+          clientErrorsList.innerHTML = `<li>${message}</li>`;
         clientErrors.style.display = 'block';
-        feather.replace();
+        if (typeof feather !== 'undefined' && feather.replace) {
+            feather.replace();
+        }
         
         // Scroll para o erro
         clientErrors.scrollIntoView({ behavior: 'smooth' });
@@ -567,8 +594,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadArea = document.getElementById('uploadArea');
 
     if (!fileInput || !selectedFiles || !fileCount || !uploadArea) {
-        showError('Erro interno: Elementos da página não foram carregados corretamente. Recarregue a página.');
-        return;
+        console.warn('Elementos da página não encontrados:', {
+            fileInput: !!fileInput,
+            selectedFiles: !!selectedFiles,
+            fileCount: !!fileCount,
+            uploadArea: !!uploadArea
+        });
+        return; // Return silently instead of showing error
     }
 
     // Function to update file display
@@ -642,9 +674,10 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             filesListElement.appendChild(moreFilesItem);
         }
-        
-        setTimeout(() => {
-            feather.replace();
+          setTimeout(() => {
+            if (typeof safeFeatherReplace === 'function') {
+                safeFeatherReplace();
+            }
         }, 100);
     }
 
@@ -693,8 +726,7 @@ document.addEventListener('DOMContentLoaded', function() {
     connection.start().then(function () {
         // SignalR conectado silenciosamente
     }).catch(function (err) {
-        console.warn("SignalR não disponível, usando fallback:", err.message);
-        // Fallback silencioso - não mostra erro para o usuário
+        // SignalR fallback - silent mode
     });
 
     connection.on("ReceiveProgress", function (progress) {
@@ -702,34 +734,42 @@ document.addEventListener('DOMContentLoaded', function() {
         const progressText = document.getElementById('progressText');
         const progressContainer = document.getElementById('progressContainer');
         
-        progressContainer.style.display = 'block';
-        progressFill.style.width = progress + '%';
-        progressText.textContent = progress + '%';
+        // Safe DOM manipulation
+        if (progressContainer) progressContainer.style.display = 'block';
+        if (progressFill) progressFill.style.width = progress + '%';
+        if (progressText) progressText.textContent = progress + '%';
         
         if (progress >= 100) {
-            progressText.textContent = 'Finalizando...';
+            if (progressText) progressText.textContent = 'Finalizando...';
             setTimeout(() => {
-                progressContainer.style.display = 'none';
+                if (progressContainer) progressContainer.style.display = 'none';
             }, 2000);
         }
     });
 
     // Form submission via AJAX
-    document.getElementById('converterForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Sempre prevenir o submit padrão
-        
-        const files = fileInput.files;
-        if (files.length === 0) {
-            showError('Por favor, selecione pelo menos um arquivo.');
-            return;
-        }
-        
-        clearErrors();
-        const button = document.getElementById('convertButton');
-        const originalButtonText = button.innerHTML;
-        button.innerHTML = '<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Processando...';
+    const converterForm = document.getElementById('converterForm');
+    if (converterForm) {
+        converterForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Sempre prevenir o submit padrão
+            
+            const files = fileInput ? fileInput.files : null;
+            if (!files || files.length === 0) {
+                showError('Por favor, selecione pelo menos um arquivo.');
+                return;
+            }
+            
+            clearErrors();
+            const button = document.getElementById('convertButton');
+            if (!button) {
+                // Button not found - silent fail
+                return;
+            }
+            const originalButtonText = button.innerHTML;        button.innerHTML = `<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Processando...`;
         button.disabled = true;
-        feather.replace();
+        if (typeof safeFeatherReplace === 'function') {
+            safeFeatherReplace();
+        }
 
         // Preparar FormData para AJAX
         const formData = new FormData();
@@ -756,16 +796,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => {
-            console.error('Erro na conversão:', error);
+            // Error handled silently
             showError('Erro de conexão. Tente novamente.');
         })
         .finally(() => {
             // Restaurar botão
             button.innerHTML = originalButtonText;
             button.disabled = false;
-            feather.replace();
+            if (typeof safeFeatherReplace === 'function') {
+                safeFeatherReplace();
+            }
         });
-    });
+                });
+    }
 
     // Função para mostrar a seção de download dinamicamente
     function showDownloadSection(downloadLink, filesCount) {
@@ -794,9 +837,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Inserir após o formulário
         const form = document.getElementById('converterForm');
         form.parentNode.insertBefore(downloadSection, form.nextSibling);
-        
-        // Substituir ícones
-        feather.replace();
+          // Substituir ícones
+        if (typeof safeFeatherReplace === 'function') {
+            safeFeatherReplace();
+        }
 
         // Scroll suave até a seção de download
         downloadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });

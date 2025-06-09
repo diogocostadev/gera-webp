@@ -478,18 +478,20 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== DOM CARGADO, INICIANDO SCRIPT (ES) ===');
-    
-    // Inicializar iconos
-    feather.replace();
+      // Inicializar iconos
+    if (typeof feather !== 'undefined' && feather.replace) {
+        feather.replace();
+    }
 
     // Funciones para gestionar errores en HTML
     function showError(message) {
         const clientErrors = document.getElementById('clientErrors');
         const clientErrorsList = document.getElementById('clientErrorsList');
-        
-        clientErrorsList.innerHTML = `<li>${message}</li>`;
+          clientErrorsList.innerHTML = `<li>${message}</li>`;
         clientErrors.style.display = 'block';
-        feather.replace();
+        if (typeof feather !== 'undefined' && feather.replace) {
+            feather.replace();
+        }
         
         // Scroll al error
         clientErrors.scrollIntoView({ behavior: 'smooth' });
@@ -602,9 +604,10 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             filesListElement.appendChild(moreFilesItem);
         }
-        
-        setTimeout(() => {
-            feather.replace();
+          setTimeout(() => {
+            if (typeof feather !== 'undefined' && feather.replace) {
+                feather.replace();
+            }
         }, 100);
     }
 
@@ -752,10 +755,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const button = document.getElementById('convertButton');
-        const originalButtonText = button.innerHTML;
-        button.innerHTML = '<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Processando...';
+        const originalButtonText = button.innerHTML;        button.innerHTML = `<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Procesando...`;
         button.disabled = true;
-        feather.replace();
+        if (typeof feather !== 'undefined' && feather.replace) {
+            feather.replace();
+        }
 
         // Preparar FormData para AJAX
         const formData = new FormData();
@@ -784,12 +788,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Erro na conversão:', error);
             alert('Error de conexión. Inténtalo de nuevo.');
-        })
-        .finally(() => {
+        })        .finally(() => {
             // Restaurar botão
             button.innerHTML = originalButtonText;
             button.disabled = false;
-            feather.replace();
+            if (typeof feather !== 'undefined' && feather.replace) {
+                feather.replace();
+            }
         });
     });
 
@@ -820,9 +825,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Inserir após o formulário
         const form = document.getElementById('converterForm');
         form.parentNode.insertBefore(downloadSection, form.nextSibling);
-        
-        // Substituir ícones
-        feather.replace();
+          // Substituir ícones
+        if (typeof feather !== 'undefined' && feather.replace) {
+            feather.replace();
+        }
 
         // Scroll suave até a seção de download
         downloadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });

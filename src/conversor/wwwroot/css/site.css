@@ -1,3 +1,6 @@
+/* @import MUST be first - CSS rule */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* Reset básico */
 *, *::before, *::after {
     margin: 0;
@@ -28,8 +31,6 @@ body {
     color: var(--text-primary);
     background: var(--bg-secondary);
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
     --primary-color: #2563eb;

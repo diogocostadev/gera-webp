@@ -66,15 +66,15 @@ class CookieConsentManager {
                     </p>
                 </div>
                 <div class="cookie-consent-actions">
-                    <button class="consent-btn consent-btn-reject" onclick="cookieConsent.rejectAll()">
+                    <button class="consent-btn consent-btn-reject" data-action="rejectAll">
                         <i data-feather="x"></i>
                         Rejeitar
                     </button>
-                    <button class="consent-btn consent-btn-settings" onclick="cookieConsent.openSettings()">
+                    <button class="consent-btn consent-btn-settings" data-action="openSettings">
                         <i data-feather="settings"></i>
                         Configurar
                     </button>
-                    <button class="consent-btn consent-btn-accept" onclick="cookieConsent.acceptAll()">
+                    <button class="consent-btn consent-btn-accept" data-action="acceptAll">
                         <i data-feather="check"></i>
                         Aceitar Todos
                     </button>
@@ -97,7 +97,7 @@ class CookieConsentManager {
             
             categoriesHTML += `
                 <div class="cookie-category">
-                    <div class="cookie-category-header" onclick="cookieConsent.toggleCategory('${key}')">
+                    <div class="cookie-category-header" data-action="toggleCategory" data-key="${key}">
                         <div class="cookie-category-title">
                             <i data-feather="${this.getCategoryIcon(key)}"></i>
                             <h4>${category.name}</h4>
@@ -133,15 +133,15 @@ class CookieConsentManager {
                     ${categoriesHTML}
                 </div>
                 <div class="cookie-settings-footer">
-                    <button class="consent-btn consent-btn-reject" onclick="cookieConsent.rejectAll()">
+                    <button class="consent-btn consent-btn-reject" data-action="rejectAll">
                         <i data-feather="x"></i>
                         Rejeitar Tudo
                     </button>
-                    <button class="consent-btn consent-btn-settings" onclick="cookieConsent.closeSettings()">
+                    <button class="consent-btn consent-btn-settings" data-action="closeSettings">
                         <i data-feather="x-circle"></i>
                         Cancelar
                     </button>
-                    <button class="consent-btn consent-btn-accept" onclick="cookieConsent.saveSettings()">
+                    <button class="consent-btn consent-btn-accept" data-action="saveSettings">
                         <i data-feather="save"></i>
                         Salvar Preferências
                     </button>
@@ -174,6 +174,40 @@ class CookieConsentManager {
     }
 
     attachEventListeners() {
+        // Event delegation para evitar problemas de sintaxe com onclick
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-action]');
+            if (!target) return;
+            
+            const action = target.dataset.action;
+            
+            try {
+                switch(action) {
+                    case 'acceptAll':
+                        this.acceptAll();
+                        break;
+                    case 'rejectAll':
+                        this.rejectAll();
+                        break;
+                    case 'openSettings':
+                        this.openSettings();
+                        break;
+                    case 'closeSettings':
+                        this.closeSettings();
+                        break;
+                    case 'saveSettings':
+                        this.saveSettings();
+                        break;
+                    case 'toggleCategory':
+                        const key = target.dataset.key;
+                        if (key) this.toggleCategory(key);
+                        break;
+                }
+            } catch(err) {
+                // Silent fail - prevent console errors
+            }
+        });
+
         // Fechar modal clicando no fundo
         document.getElementById('cookieSettingsModal').addEventListener('click', (e) => {
             if (e.target.id === 'cookieSettingsModal') {
@@ -204,8 +238,9 @@ class CookieConsentManager {
         setTimeout(() => {
             const banner = document.getElementById('cookieConsentBanner');
             banner.classList.add('show');
-            if (typeof feather !== 'undefined') {
-                feather.replace();
+            // Use safe feather replacement
+            if (window.feather && typeof window.feather.replace === 'function') {
+                window.feather.replace();
             }
         }, 1000);
     }
@@ -218,8 +253,9 @@ class CookieConsentManager {
     showStatus() {
         const status = document.getElementById('consentStatus');
         status.classList.add('show');
-        if (typeof feather !== 'undefined') {
-            feather.replace();
+        // Use safe feather replacement
+        if (window.feather && typeof window.feather.replace === 'function') {
+            window.feather.replace();
         }
     }
 
@@ -227,8 +263,9 @@ class CookieConsentManager {
         const modal = document.getElementById('cookieSettingsModal');
         modal.classList.add('show');
         this.updateToggleStates();
-        if (typeof feather !== 'undefined') {
-            feather.replace();
+        // Use safe feather replacement
+        if (window.feather && typeof window.feather.replace === 'function') {
+            window.feather.replace();
         }
     }
 
@@ -351,7 +388,7 @@ class CookieConsentManager {
             });
         }
         
-        console.log('Analytics habilitado');
+        // Analytics enabled - silent
     }
 
     disableAnalytics() {
@@ -365,7 +402,7 @@ class CookieConsentManager {
         // Limpar cookies do Google Analytics
         this.deleteCookies(['_ga', '_ga_*', '_gid', '_gat']);
         
-        console.log('Analytics desabilitado');
+        // Analytics disabled - silent
     }
 
     enableMarketing() {
@@ -381,7 +418,7 @@ class CookieConsentManager {
             });
         }
         
-        console.log('Marketing habilitado');
+        // Marketing enabled - silent
     }
 
     disableMarketing() {
@@ -394,15 +431,15 @@ class CookieConsentManager {
         // Limpar cookies de marketing
         this.deleteCookies(['_fbp', '_fbc', 'fr']);
         
-        console.log('Marketing desabilitado');
+        // Marketing disabled - silent
     }
 
     enablePerformance() {
-        console.log('Performance habilitado');
+        // Performance enabled - silent
     }
 
     disablePerformance() {
-        console.log('Performance desabilitado');
+        // Performance disabled - silent
     }
 
     deleteCookies(cookieNames) {
@@ -454,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.dataLayer = window.dataLayer || [];
     }
     
-    console.log('Sistema de Consentimento inicializado');
+    // Sistema de Consentimento inicializado - silent
 });
 
 // Função para integração com Google Tag Manager

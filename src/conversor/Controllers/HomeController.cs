@@ -551,16 +551,22 @@ namespace GeraWebP.Controllers
 
         // Rotas específicas para idiomas
         [HttpGet("en")]
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "culture" })]
         public IActionResult IndexEnglish()
         {
             SetCultureContent("en");
+            int contadorGlobal = LerContadorGlobal();
+            ViewBag.ContadorGlobal = contadorGlobal;
             return View("Index");
         }
 
-        [HttpGet("es")]  
+        [HttpGet("es")]
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "culture" })]
         public IActionResult IndexSpanish()
         {
             SetCultureContent("es");
+            int contadorGlobal = LerContadorGlobal();
+            ViewBag.ContadorGlobal = contadorGlobal;
             return View("Index");
         }
 
