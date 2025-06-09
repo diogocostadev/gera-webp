@@ -27,6 +27,32 @@ builder.Services.Configure<FormOptions>(options =>
 });
 
 builder.Services.AddHostedService<LimparArquivos>();
+
+// Adicionar Response Compression para melhor performance
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProvider>();
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider>();
+    options.MimeTypes = Microsoft.AspNetCore.ResponseCompression.ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/json", "text/json", "image/svg+xml", "application/javascript" });
+});
+
+// Configurar compressão Brotli e Gzip
+builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Optimal;
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Optimal;
+});
+
+// Adicionar cache em memória
+builder.Services.AddMemoryCache();
+builder.Services.AddResponseCaching();
+
 builder.Services.AddControllersWithViews();
 
 // Configurar SignalR com limites maiores
@@ -75,8 +101,31 @@ if (!app.Environment.IsDevelopment())
 // Configurar páginas de erro customizadas
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
+// Middleware de performance (ordem importa!)
+app.UseResponseCompression();
+app.UseResponseCaching();
+
+// Configurar Static Files com cache headers otimizados
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        const int durationInSeconds = 60 * 60 * 24 * 30; // 30 dias
+        ctx.Context.Response.Headers.Append("Cache-Control", $"public,max-age={durationInSeconds}");
+        ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddDays(30).ToString("R"));
+        
+        // Headers de segurança
+        ctx.Context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+        
+        // Compressão adicional para assets específicos
+        if (ctx.File.Name.EndsWith(".css") || ctx.File.Name.EndsWith(".js"))
+        {
+            ctx.Context.Response.Headers.Append("Vary", "Accept-Encoding");
+        }
+    }
+});
+
 app.UseCors();
-app.UseStaticFiles();
 app.UseWebSockets(); // Importante para SignalR
 app.UseRouting();
 app.UseRequestLocalization();

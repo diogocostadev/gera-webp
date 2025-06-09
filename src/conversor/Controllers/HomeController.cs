@@ -24,6 +24,7 @@ namespace GeraWebP.Controllers
         private const string PastaUploads = "uploads";
         private const string ContadorPath = "data/contador.json";
         
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "culture" })]
         public ActionResult Index(string? culture = null)
         {
             // Se culture vier da rota, usá-la
@@ -31,6 +32,12 @@ namespace GeraWebP.Controllers
             {
                 culture = RouteData.Values["culture"]?.ToString();
             }
+            
+            // Adicionar headers de performance
+            Response.Headers.Append("X-Content-Type-Options", "nosniff");
+            Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
+            Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+            Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
             
             SetCultureContent(culture ?? "pt");
             int contadorGlobal = LerContadorGlobal();

@@ -65,15 +65,61 @@
     <link rel="icon" type="image/png" sizes="192x192" href="~/img/web-app-manifest-192x192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="~/img/web-app-manifest-512x512.png" />
     
-    <!-- DNS Prefetch para Performance -->
+    <!-- Performance Optimization - Critical Resource Hints -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//unpkg.com" />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- CSS Principal -->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/consent.css" asp-append-version="true" />
+    <!-- Preload Critical CSS -->
+    <link rel="preload" href="~/lib/bootstrap/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /></noscript>
+    
+    <!-- Critical CSS Inline for First Paint -->
+    <style>
+        /* Critical Above-the-fold CSS */
+        body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.5;color:#212529;background:#fff}
+        .container{max-width:1200px;margin:0 auto;padding:0 1rem}
+        .btn{display:inline-block;padding:.5rem 1rem;border:none;border-radius:.375rem;text-decoration:none;transition:all .2s}
+        .btn-primary{background:#2563eb;color:#fff}
+        .btn-primary:hover{background:#1d4ed8;color:#fff}
+        .text-center{text-align:center}
+        .mb-4{margin-bottom:1.5rem}
+        .p-4{padding:1.5rem}
+        .rounded{border-radius:.375rem}
+        .shadow{box-shadow:0 .125rem .25rem rgba(0,0,0,.075)}
+        .upload-area{border:2px dashed #cbd5e1;border-radius:.5rem;padding:3rem 1rem;cursor:pointer;transition:all .3s}
+        .upload-area:hover{border-color:#2563eb;background:#f8fafc}
+        .navbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:.5rem 0}
+        .navbar-brand{font-weight:700;color:#1f2937;text-decoration:none}
+        .main-title{font-size:2.5rem;font-weight:700;color:#1f2937;margin-bottom:1rem}
+        @@media(max-width:768px){.main-title{font-size:2rem}.container{padding:0 .5rem}}
+        
+        /* Loading states for better perceived performance */
+        .js-loading *{cursor:progress!important}
+        .js-loading .btn{pointer-events:none;opacity:.7}
+        .js-loading .upload-area{border-color:#94a3b8;background:#f1f5f9}
+        
+        /* Skeleton loaders */
+        .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite}
+        @@keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
+        
+        /* Optimize font loading */
+        @@font-display:swap
+    </style>
+    
+    <!-- Non-critical CSS - Load asynchronously -->
+    <link rel="preload" href="~/css/site.css?v=@DateTime.Now.Ticks" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /></noscript>
+    
+    <link rel="preload" href="~/css/consent.css?v=@DateTime.Now.Ticks" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="~/css/consent.css" asp-append-version="true" /></noscript>
+    
+    <!-- Preload JavaScript -->
+    <link rel="preload" href="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" as="script" />
+    <link rel="preload" href="~/js/site.js" as="script" />
+    <link rel="preload" href="https://unpkg.com/feather-icons" as="script" />
     
     <!-- Structured Data / Schema.org -->
     <script type="application/ld+json">
@@ -204,12 +250,83 @@
         @RenderBody()
     </main>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/consent.js" asp-append-version="true"></script>
+    <!-- Optimized JavaScript Loading -->
+    <!-- Load critical JavaScript first -->
+    <script>
+        // Critical inline JS for immediate functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading class for immediate feedback
+            document.body.classList.add('js-loading');
+            
+            // Remove loading class when everything is loaded
+            window.addEventListener('load', function() {
+                document.body.classList.remove('js-loading');
+                document.body.classList.add('js-loaded');
+            });
+        });
+        
+        // Performance observer for Core Web Vitals
+        if ('PerformanceObserver' in window) {
+            const observer = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.entryType === 'largest-contentful-paint') {
+                        console.log('LCP:', entry.startTime);
+                    }
+                    if (entry.entryType === 'first-input') {
+                        console.log('FID:', entry.processingStart - entry.startTime);
+                    }
+                }
+            });
+            observer.observe({entryTypes: ['largest-contentful-paint', 'first-input']});
+        }
+    </script>
+    
+    <!-- Load JavaScript modules asynchronously -->
+    <script async src="https://unpkg.com/feather-icons@latest/dist/feather.min.js"></script>
+    <script defer src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script defer src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="~/js/site.js?v=@DateTime.Now.Ticks"></script>
+    <script defer src="~/js/consent.js?v=@DateTime.Now.Ticks"></script>
+    
+    <!-- Initialize Feather icons when loaded -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for feather to load then initialize
+            function initFeather() {
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                } else {
+                    setTimeout(initFeather, 50);
+                }
+            }
+            initFeather();
+            
+            // Register Service Worker for performance
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(function(registration) {
+                            console.log('ServiceWorker registrado com sucesso:', registration.scope);
+                            
+                            // Update available
+                            registration.addEventListener('updatefound', function() {
+                                const newWorker = registration.installing;
+                                newWorker.addEventListener('statechange', function() {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        // Opcional: mostrar notificação de update
+                                        console.log('Nova versão disponível');
+                                    }
+                                });
+                            });
+                        })
+                        .catch(function(error) {
+                            console.log('ServiceWorker falhou:', error);
+                        });
+                });
+            }
+        });
+    </script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
