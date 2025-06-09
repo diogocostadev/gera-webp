@@ -1,21 +1,83 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Wepper - Conversor WebP Online",
+  "short_name": "Wepper",
+  "description": "Converta JPG, PNG, GIF para WebP gratuitamente. Reduza o tamanho das imagens em até 90%.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "categories": ["productivity", "photo", "utilities"],
+  "scope": "/",
+  "lang": "pt-BR",
   "icons": [
     {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "/img/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
-      "src": "/web-app-manifest-512x512.png",
+      "src": "/img/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "screenshots": [
+    {
+      "src": "/img/screenshot-mobile-1.png",
+      "sizes": "640x1136",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Conversor WebP Mobile"
+    },
+    {
+      "src": "/img/screenshot-desktop-1.png", 
+      "sizes": "1280x800",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Conversor WebP Desktop"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Converter JPG",
+      "short_name": "JPG→WebP",
+      "description": "Converter imagens JPG para WebP",
+      "url": "/converter-jpg-para-webp",
+      "icons": [
+        {
+          "src": "/img/icon-jpg.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Converter PNG", 
+      "short_name": "PNG→WebP",
+      "description": "Converter imagens PNG para WebP",
+      "url": "/converter-png-para-webp",
+      "icons": [
+        {
+          "src": "/img/icon-png.png", 
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }
