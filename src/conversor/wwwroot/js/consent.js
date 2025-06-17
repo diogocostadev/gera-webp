@@ -6,36 +6,116 @@ class CookieConsentManager {
     constructor() {
         this.consentKey = 'gera_webp_cookie_consent';
         this.consentVersion = '1.0';
-        this.categories = {
+
+        // Detectar idioma atual (pt, en, es)
+        this.lang = (document.documentElement.lang || 'pt').substring(0, 2);
+
+        // Textos traduzidos
+        this.translations = {
+            pt: {
+                bannerTitle: 'Respeito à sua Privacidade',
+                bannerMessage: 'Usamos cookies para melhorar sua experiência, analisar o tráfego e personalizar conteúdo. Você pode escolher quais cookies aceitar. Consulte nossa',
+                policyText: 'Política de Privacidade',
+                policyUrl: '/privacidade',
+                rejectBtn: 'Rejeitar',
+                settingsBtn: 'Configurar',
+                acceptBtn: 'Aceitar Todos',
+                modalTitle: 'Configurações de Privacidade',
+                modalIntro: 'Controle quais cookies você permite. Os cookies essenciais são necessários para o funcionamento básico do site e não podem ser desabilitados.',
+                rejectAllBtn: 'Rejeitar Tudo',
+                cancelBtn: 'Cancelar',
+                saveBtn: 'Salvar Preferências',
+                requiredTag: '(Obrigatório)',
+                cookiesUsedLabel: 'Cookies utilizados:',
+                statusLabel: 'Cookies'
+            },
+            en: {
+                bannerTitle: 'Respecting Your Privacy',
+                bannerMessage: 'We use cookies to improve your experience, analyze traffic and personalize content. You can choose which cookies to accept. See our',
+                policyText: 'Privacy Policy',
+                policyUrl: '/en/privacy',
+                rejectBtn: 'Reject',
+                settingsBtn: 'Settings',
+                acceptBtn: 'Accept All',
+                modalTitle: 'Privacy Settings',
+                modalIntro: 'Control which cookies you allow. Essential cookies are required for basic site functionality and cannot be disabled.',
+                rejectAllBtn: 'Reject All',
+                cancelBtn: 'Cancel',
+                saveBtn: 'Save Preferences',
+                requiredTag: '(Required)',
+                cookiesUsedLabel: 'Used cookies:',
+                statusLabel: 'Cookies'
+            },
+            es: {
+                bannerTitle: 'Respeto a tu Privacidad',
+                bannerMessage: 'Usamos cookies para mejorar tu experiencia, analizar el tráfico y personalizar el contenido. Puedes elegir qué cookies aceptar. Consulta nuestra',
+                policyText: 'Política de Privacidad',
+                policyUrl: '/es/privacidad',
+                rejectBtn: 'Rechazar',
+                settingsBtn: 'Configurar',
+                acceptBtn: 'Aceptar Todo',
+                modalTitle: 'Configuración de Privacidad',
+                modalIntro: 'Controla qué cookies permites. Las cookies esenciales son necesarias para el funcionamiento básico del sitio y no pueden deshabilitarse.',
+                rejectAllBtn: 'Rechazar Todo',
+                cancelBtn: 'Cancelar',
+                saveBtn: 'Guardar Preferencias',
+                requiredTag: '(Obligatorio)',
+                cookiesUsedLabel: 'Cookies utilizados:',
+                statusLabel: 'Cookies'
+            }
+        };
+
+        // Categorias base
+        const baseCategories = {
             essential: {
-                name: 'Essenciais',
-                description: 'Cookies necessários para o funcionamento básico do site',
                 required: true,
                 enabled: true,
                 cookies: ['sessão', 'preferências de idioma', 'segurança']
             },
             analytics: {
-                name: 'Analíticos',
-                description: 'Nos ajudam a entender como você usa nosso site',
                 required: false,
                 enabled: false,
                 cookies: ['Google Analytics', '_ga', '_ga_*', '_gid']
             },
             marketing: {
-                name: 'Marketing',
-                description: 'Usados para mostrar anúncios relevantes',
                 required: false,
                 enabled: false,
                 cookies: ['Google Ads', 'Facebook Pixel', 'remarketing']
             },
             performance: {
-                name: 'Performance',
-                description: 'Melhoram a velocidade e funcionalidade do site',
                 required: false,
                 enabled: false,
                 cookies: ['CDN', 'cache', 'otimização']
             }
         };
+
+        // Textos das categorias por idioma
+        const categoryTexts = {
+            pt: {
+                essential: { name: 'Essenciais', description: 'Cookies necessários para o funcionamento básico do site' },
+                analytics: { name: 'Analíticos', description: 'Nos ajudam a entender como você usa nosso site' },
+                marketing: { name: 'Marketing', description: 'Usados para mostrar anúncios relevantes' },
+                performance: { name: 'Performance', description: 'Melhoram a velocidade e funcionalidade do site' }
+            },
+            en: {
+                essential: { name: 'Essential', description: 'Cookies necessary for basic site functionality' },
+                analytics: { name: 'Analytics', description: 'Help us understand how you use our site' },
+                marketing: { name: 'Marketing', description: 'Used to display relevant ads' },
+                performance: { name: 'Performance', description: 'Improve site speed and functionality' }
+            },
+            es: {
+                essential: { name: 'Esenciales', description: 'Cookies necesarios para el funcionamiento básico del sitio' },
+                analytics: { name: 'Analíticos', description: 'Nos ayudan a entender cómo utilizas nuestro sitio' },
+                marketing: { name: 'Marketing', description: 'Usados para mostrar anuncios relevantes' },
+                performance: { name: 'Rendimiento', description: 'Mejoran la velocidad y funcionalidad del sitio' }
+            }
+        };
+
+        // Montar categorias combinando base e textos traduzidos
+        this.categories = {};
+        Object.keys(baseCategories).forEach(key => {
+            this.categories[key] = Object.assign({}, baseCategories[key], categoryTexts[this.lang][key]);
+        });
         
         this.init();
     }
@@ -49,6 +129,7 @@ class CookieConsentManager {
     }
 
     createBannerHTML() {
+        const t = this.translations[this.lang] || this.translations.pt;
         const banner = document.createElement('div');
         banner.id = 'cookieConsentBanner';
         banner.className = 'cookie-consent-banner';
@@ -57,26 +138,25 @@ class CookieConsentManager {
                 <div class="cookie-consent-text">
                     <h4>
                         <i data-feather="shield"></i>
-                        Respeito à sua Privacidade
+                        ${t.bannerTitle}
                     </h4>
                     <p>
-                        Usamos cookies para melhorar sua experiência, analisar o tráfego e personalizar conteúdo. 
-                        Você pode escolher quais cookies aceitar. Consulte nossa 
-                        <a href="/privacidade" target="_blank" style="color: #4CAF50; text-decoration: underline;">Política de Privacidade</a>.
+                        ${t.bannerMessage}
+                        <a href="${t.policyUrl}" target="_blank" style="color: #4CAF50; text-decoration: underline;">${t.policyText}</a>.
                     </p>
                 </div>
                 <div class="cookie-consent-actions">
                     <button class="consent-btn consent-btn-reject" data-action="rejectAll">
                         <i data-feather="x"></i>
-                        Rejeitar
+                        ${t.rejectBtn}
                     </button>
                     <button class="consent-btn consent-btn-settings" data-action="openSettings">
                         <i data-feather="settings"></i>
-                        Configurar
+                        ${t.settingsBtn}
                     </button>
                     <button class="consent-btn consent-btn-accept" data-action="acceptAll">
                         <i data-feather="check"></i>
-                        Aceitar Todos
+                        ${t.acceptBtn}
                     </button>
                 </div>
             </div>
@@ -85,6 +165,7 @@ class CookieConsentManager {
     }
 
     createModalHTML() {
+        const t = this.translations[this.lang] || this.translations.pt;
         const modal = document.createElement('div');
         modal.id = 'cookieSettingsModal';
         modal.className = 'cookie-settings-modal';
@@ -101,14 +182,14 @@ class CookieConsentManager {
                         <div class="cookie-category-title">
                             <i data-feather="${this.getCategoryIcon(key)}"></i>
                             <h4>${category.name}</h4>
-                            ${category.required ? '<span style="color: #4CAF50; font-size: 12px;">(Obrigatório)</span>' : ''}
+                            ${category.required ? `<span style="color: #4CAF50; font-size: 12px;">${t.requiredTag}</span>` : ''}
                         </div>
                         <div class="cookie-toggle ${toggleClass} ${disabledClass}" data-category="${key}">
                         </div>
                     </div>
                     <div class="cookie-category-content">
                         <p>${category.description}</p>
-                        <p><strong>Cookies utilizados:</strong></p>
+                        <p><strong>${t.cookiesUsedLabel}</strong></p>
                         <ul>
                             ${category.cookies.map(cookie => `<li>${cookie}</li>`).join('')}
                         </ul>
@@ -122,11 +203,10 @@ class CookieConsentManager {
                 <div class="cookie-settings-header">
                     <h3>
                         <i data-feather="shield"></i>
-                        Configurações de Privacidade
+                        ${t.modalTitle}
                     </h3>
                     <p>
-                        Controle quais cookies você permite. Os cookies essenciais são necessários 
-                        para o funcionamento básico do site e não podem ser desabilitados.
+                        ${t.modalIntro}
                     </p>
                 </div>
                 <div class="cookie-settings-body">
@@ -135,15 +215,15 @@ class CookieConsentManager {
                 <div class="cookie-settings-footer">
                     <button class="consent-btn consent-btn-reject" data-action="rejectAll">
                         <i data-feather="x"></i>
-                        Rejeitar Tudo
+                        ${t.rejectAllBtn}
                     </button>
                     <button class="consent-btn consent-btn-settings" data-action="closeSettings">
                         <i data-feather="x-circle"></i>
-                        Cancelar
+                        ${t.cancelBtn}
                     </button>
                     <button class="consent-btn consent-btn-accept" data-action="saveSettings">
                         <i data-feather="save"></i>
-                        Salvar Preferências
+                        ${t.saveBtn}
                     </button>
                 </div>
             </div>
@@ -152,12 +232,13 @@ class CookieConsentManager {
     }
 
     createStatusHTML() {
+        const t = this.translations[this.lang] || this.translations.pt;
         const status = document.createElement('div');
         status.id = 'consentStatus';
         status.className = 'consent-status';
         status.innerHTML = `
             <i data-feather="settings"></i>
-            Cookies
+            ${t.statusLabel}
         `;
         status.onclick = () => this.openSettings();
         document.body.appendChild(status);
@@ -509,4 +590,4 @@ function updateGTMConsent(consentObject) {
 // Listener para mudanças de consentimento
 document.addEventListener('cookieConsentChanged', function(e) {
     updateGTMConsent(e.detail);
-}); 
+});

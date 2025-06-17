@@ -1,24 +1,76 @@
-@{
-    // Title ser� definido pelo controller baseado no idioma
+﻿@{
+    // Title será definido pelo controller baseado no idioma
+    // Debug: @ViewData["DebugLang"] - @ViewData["Language"]
 }
 
 <!-- SEO Header Section -->
 <section class="hero-seo">
     <div class="container">
         <header class="hero-content">
-            <h1>Conversor WebP Online Gratuito - Otimize suas Imagens Instantaneamente</h1>
-            <p class="hero-description">
-                Converta <strong>JPG, PNG e GIF para WebP</strong> gratuitamente. 
-                Reduza o tamanho das suas imagens em <strong>at� 90%</strong> mantendo a qualidade perfeita. 
-                Ferramenta online r�pida, segura e sem limites.
-            </p>
-            <div class="hero-features">
-                <span class="feature-badge">? 100% Gratuito</span>
-                <span class="feature-badge">?? Convers�o Instant�nea</span>
-                <span class="feature-badge">?? Totalmente Seguro</span>
-                <span class="feature-badge">?? Funciona em Qualquer Dispositivo</span>
-            </div>
+            @if (ViewData["Language"]?.ToString() == "en")
+            {
+                <h1>Free Online Wepper - Optimize Your Images Instantly</h1>
+                <p class="hero-description">
+                    Convert <strong>JPG, PNG and GIF to WebP</strong> for free. 
+                    Reduce your image file size by <strong>up to 90%</strong> while maintaining perfect quality. 
+                    Fast, secure and unlimited online tool.
+                </p>
+                <div class="hero-features">
+                    <span class="feature-badge">✅ 100% Free</span>
+                    <span class="feature-badge">🚀 Instant Conversion</span>
+                    <span class="feature-badge">🔒 Completely Secure</span>
+                    <span class="feature-badge">📱 Works on Any Device</span>
+                </div>
+            }
+            else if (ViewData["Language"]?.ToString() == "es")
+            {
+                <h1>Convertidor WebP Online Gratuito - Optimiza tus Imágenes al Instante</h1>
+                <p class="hero-description">
+                    Convierte <strong>JPG, PNG y GIF a WebP</strong> gratis. 
+                    Reduce el tamaño de tus imágenes hasta un <strong>90%</strong> manteniendo la calidad perfecta. 
+                    Herramienta online rápida, segura y sin límites.
+                </p>
+                <div class="hero-features">
+                    <span class="feature-badge">✅ 100% Free</span>
+                    <span class="feature-badge">🚀 Conversión Instantánea</span>
+                    <span class="feature-badge">🔒 Completamente Seguro</span>
+                    <span class="feature-badge">📱 Funciona en Cualquier Dispositivo</span>
+                </div>
+            }
+            else
+            {
+                <h1>Free Online WebP Converter - Optimize Your Images Instantly</h1>
+                <p class="hero-description">
+                    Convert <strong>JPG, PNG and GIF to WebP</strong> for free. 
+                    Reduce your image size by <strong>up to 90%</strong> while maintaining perfect quality. 
+                    Fast, secure and unlimited online tool.
+                </p>
+                <div class="hero-features">
+                    <span class="feature-badge">✅ 100% Free</span>
+                    <span class="feature-badge">🚀 Instant Conversion</span>
+                    <span class="feature-badge">🔒 Completely Secure</span>
+                    <span class="feature-badge">📱 Works on Any Device</span>
+                </div>
+            }
         </header>
+        <div class="global-counter">
+            <span>
+                <i data-feather="zap"></i>
+                <span id="contadorGlobal">@ViewBag.ContadorGlobal</span> 
+                @if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <text>files already converted!</text>
+                }
+                else if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <text>archivos ya convertidos!</text>
+                }
+                else
+                {
+                    <text>arquivos já convertidos!</text>
+                }
+            </span>
+        </div>
     </div>
 </section>
 
@@ -27,7 +79,20 @@
     <div class="container">
         <div class="notice-content">
             <i data-feather="gift"></i>
-            <span><strong>Servi�o 100% Gratuito</strong> � Processamento Seguro � Arquivos Exclu�dos em 5 Minutos</span>
+            <span>
+                @if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <strong>100% Free Service</strong><text> • Secure Processing • Files Deleted in 5 Minutes</text>
+                }
+                else if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <strong>Servicio 100% Gratuito</strong><text> • Procesamiento Seguro • Archivos Eliminados en 5 Minutos</text>
+                }
+                else
+                {
+                    <strong>100% Free Service</strong><text> • Secure Processing • Files Deleted in 5 Minutes</text>
+                }
+            </span>
         </div>
     </div>
 </div>
@@ -67,7 +132,7 @@
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Conversor WebP</li>
+                    <li class="breadcrumb-item active" aria-current="page">WebP Converter</li>
                 </ol>
             </nav>
             
@@ -77,19 +142,19 @@
                 <div class="workflow-step upload-step">
                     <div class="step-header">
                         <div class="step-number">1</div>
-                        <h2>Selecionar Imagens</h2>
+                        <h2>Select Images</h2>
                     </div>
                     <div class="upload-area" id="uploadArea">
                         <div class="upload-icon">
                             <i data-feather="upload-cloud"></i>
                         </div>
-                        <p>Clique ou arraste arquivos</p>
+                        <p>Click or drag files</p>
                         <div class="upload-button">
                             <i data-feather="folder"></i>
-                            Escolher Arquivos
+                            Choose Files
                         </div>
                         <div class="upload-info">
-                            <small>JPG, PNG, GIF � Max: 100MB per file or 100MB total</small>
+                            <small>JPG, PNG, GIF • Max: 100MB per file or 100MB total</small>
                         </div>
                         <label for="arquivos" class="visually-hidden">Select image files for WebP conversion</label>
                         <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" accept="image/jpeg,image/jpg,image/png,image/gif" />
@@ -109,12 +174,12 @@
                 <div class="workflow-step settings-step">
                     <div class="step-header">
                         <div class="step-number">2</div>
-                        <h2>Ajustar Qualidade</h2>
+                        <h2>Adjust Quality</h2>
                     </div>
                     
                     <div class="quality-control">
                         <div class="quality-info">
-                            <label for="qualidade" class="quality-label">Qualidade:</label>
+                            <label for="qualidade" class="quality-label">Quality:</label>
                             <span class="quality-value" id="qualidadeValue">75</span>%
                         </div>
                         
@@ -125,12 +190,12 @@
                                max="100" 
                                value="75" 
                                class="quality-slider"
-                               oninput="updateQualityValue(this.value)"
-                               aria-label="Ajustar qualidade da convers�o WebP" />
+                               oninput="atualizarValorDaQuantidade(this.value)"
+                               aria-label="Ajustar qualidade da conversão WebP" />
                         
                         <div class="quality-labels">
-                            <small>Menor tamanho</small>
-                            <small>Melhor qualidade</small>
+                            <small>Smaller size</small>
+                            <small>Better quality</small>
                         </div>
                     </div>
                     
@@ -140,8 +205,8 @@
                                 <i data-feather="trending-down"></i>
                             </div>
                             <div class="preview-text">
-                                <strong>Compress�o Estimada</strong>
-                                <small id="compressionEstimate">~65% menor</small>
+                                <strong>Estimated Compression</strong>
+                                <small id="compressionEstimate">~65% smaller</small>
                             </div>
                         </div>
                     </div>
@@ -151,23 +216,23 @@
                 <div class="workflow-step convert-step">
                     <div class="step-header">
                         <div class="step-number">3</div>
-                        <h2>Converter para WebP</h2>
+                        <h2>Convert to WebP</h2>
                     </div>
                     
                     <button type="submit" class="convert-button" id="convertButton" aria-label="Converter imagens para formato WebP">
                         <i data-feather="zap"></i>
-                        Converter Agora
+                        Convert Now
                     </button>
                     
                     <div class="convert-info">
-                        <small>Convers�o r�pida e segura</small>
+                        <small>Fast and secure conversion</small>
                     </div>
                 </div>
             </div>
 
             <!-- Progress Section -->
             <div id="progressContainer" class="progress-section" style="display: none;">
-                <h3>Convertendo suas imagens...</h3>
+                <h3>Converting your images...</h3>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
                 </div>
@@ -180,11 +245,11 @@
                 <div class="download-section">
                     <div class="download-success">
                         <i data-feather="check-circle"></i>
-                        <h3>Convers�o Conclu�da com Sucesso!</h3>
-                        <p>Suas imagens foram convertidas para WebP com otimiza��o m�xima.</p>
+                        <h3>Conversion Completed Successfully!</h3>
+                        <p>Your images have been converted to WebP with maximum optimization.</p>
                         <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar imagens convertidas para WebP">
                             <i data-feather="download"></i>
-                            Baixar Imagens WebP
+                            Download WebP Images
                         </a>
                         <small>Single file or ZIP with all optimized images</small>
                     </div>
@@ -199,9 +264,9 @@
     <div class="container">
         <!-- Format Conversion Cards -->
         <section class="conversion-formats" aria-labelledby="conversion-title">
-            <h2 id="conversion-title" class="section-title">Convers�es de Formato Suportadas</h2>
+            <h2 id="conversion-title" class="section-title">Supported Format Conversions</h2>
             <p class="section-subtitle">
-                Converta qualquer formato de imagem para WebP com nossa ferramenta online avan�ada
+                Convert any image format to WebP with our advanced online tool
             </p>
             
             <div class="format-cards">
@@ -211,8 +276,8 @@
                             <i data-feather="image"></i>
                         </div>
                         <div class="format-text">
-                            <strong>JPG para WebP</strong>
-                            <small>Otimiza��o ideal para fotos</small>
+                            <strong>JPG to WebP</strong>
+                            <small>Optimal optimization for photos</small>
                         </div>
                     </div>
                 </a>
@@ -227,8 +292,8 @@
                             <i data-feather="image"></i>
                         </div>
                         <div class="format-text">
-                            <strong>PNG para WebP</strong>
-                            <small>Mant�m transpar�ncia</small>
+                            <strong>PNG to WebP</strong>
+                            <small>Keeps transparency</small>
                         </div>
                     </div>
                 </a>
@@ -243,8 +308,8 @@
                             <i data-feather="image"></i>
                         </div>
                         <div class="format-text">
-                            <strong>GIF para WebP</strong>
-                            <small>Compress�o m�xima</small>
+                            <strong>GIF to WebP</strong>
+                            <small>Maximum compression</small>
                         </div>
                     </div>
                 </a>
@@ -258,8 +323,8 @@
                         <i data-feather="zap"></i>
                     </div>
                     <div class="format-text">
-                        <strong>WebP Otimizado</strong>
-                        <small>At� 90% menor</small>
+                        <strong>Optimized WebP</strong>
+                        <small>Up to 90% smaller</small>
                     </div>
                 </div>
             </div>
@@ -267,151 +332,151 @@
 
         <!-- Features Section -->
         <section class="features-section" aria-labelledby="features-title">
-            <h2 id="features-title" class="section-title">Por que Escolher Nosso Conversor WebP?</h2>
+            <h2 id="features-title" class="section-title">Why Choose Our WebP Converter?</h2>
             
             <div class="features-grid">
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="zap"></i>
                     </div>
-                    <h3>Convers�o Ultra R�pida</h3>
-                    <p>Processe m�ltiplas imagens em segundos com nossa tecnologia avan�ada de compress�o WebP.</p>
+                    <h3>Ultra Fast Conversion</h3>
+                    <p>Process multiple images in seconds with our advanced WebP compression technology.</p>
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="shield-check"></i>
                     </div>
-                    <h3>100% Seguro e Privado</h3>
-                    <p>Seus arquivos s�o processados localmente e exclu�dos automaticamente. Zero armazenamento em nuvem.</p>
+                    <h3>100% Safe and Private</h3>
+                    <p>Your files are processed locally and automatically deleted. Zero cloud storage.</p>
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="trending-down"></i>
                     </div>
-                    <h3>Compress�o M�xima</h3>
-                    <p>Reduza at� 90% do tamanho das imagens mantendo qualidade visual perfeita para web.</p>
+                    <h3>Maximum Compression</h3>
+                    <p>Reduce image size by up to 90% while maintaining perfect web quality.</p>
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="layers"></i>
                     </div>
-                    <h3>Processamento em Lote</h3>
-                    <p>Converta m�ltiplas imagens simultaneamente e baixe tudo em um arquivo ZIP organizado.</p>
+                    <h3>Batch Processing</h3>
+                    <p>Convert multiple images simultaneously and download everything in an organized ZIP file.</p>
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="settings"></i>
                     </div>
-                    <h3>Qualidade Ajust�vel</h3>
-                    <p>Controle total sobre o n�vel de compress�o para equilibrar tamanho e qualidade perfeitamente.</p>
+                    <h3>Adjustable Quality</h3>
+                    <p>Full control over compression level to balance size and quality perfectly.</p>
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="smartphone"></i>
                     </div>
-                    <h3>Funciona em Qualquer Dispositivo</h3>
-                    <p>Responsivo e otimizado para desktop, tablet e celular. Converta de qualquer lugar.</p>
+                    <h3>Works on Any Device</h3>
+                    <p>Responsive and optimized for desktop, tablet and mobile. Convert from anywhere.</p>
                 </article>
             </div>
         </section>
 
         <!-- FAQ Section -->
         <section class="faq-section" aria-labelledby="faq-title">
-            <h2 id="faq-title" class="section-title">Perguntas Frequentes sobre Convers�o WebP</h2>
+            <h2 id="faq-title" class="section-title">Frequently Asked Questions about WebP Conversion</h2>
             
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>
-                        <h3>O que � formato WebP e por que usar?</h3>
+                        <h3>What is the WebP format and why use it?</h3>
                         <i data-feather="plus"></i>
                     </summary>
                     <div class="faq-content">
                         <p>
-                            <strong>WebP</strong> � um formato de imagem moderno desenvolvido pelo Google que oferece 
-                            compress�o superior aos formatos tradicionais JPEG, PNG e GIF. Principais benef�cios:
+                            <strong>WebP</strong> is a modern image format developed by Google that offers 
+                            superior compression compared to traditional JPEG, PNG and GIF formats. Main benefits:
                         </p>
                         <ul>
-                            <li>?? <strong>90% menor tamanho</strong> que JPEG/PNG</li>
-                            <li>?? <strong>Carregamento mais r�pido</strong> em sites</li>
-                            <li>?? <strong>Melhor SEO</strong> por velocidade</li>
-                            <li>?? <strong>Menos uso de banda</strong> e armazenamento</li>
-                            <li>? <strong>Qualidade visual mantida</strong></li>
+                            <li>📉 <strong>90% smaller size</strong> que JPEG/PNG</li>
+                            <li>🚀 <strong>Faster loading</strong> em sites</li>
+                            <li>🔍 <strong>Better SEO</strong> por velocidade</li>
+                            <li>💰 <strong>Less bandwidth usage</strong> e armazenamento</li>
+                            <li>✨ <strong>Visual quality preserved</strong></li>
                         </ul>
                     </div>
                 </details>
                 
                 <details class="faq-item">
                     <summary>
-                        <h3>Como converter JPG para WebP online?</h3>
+                        <h3>Como converter JPG to WebP online?</h3>
                         <i data-feather="plus"></i>
                     </summary>
                     <div class="faq-content">
-                        <p>Converter JPG para WebP � simples e r�pido:</p>
+                        <p>Converter JPG to WebP é simples e rápido:</p>
                         <ol>
-                            <li>??? <strong>Clique ou arraste</strong> suas imagens JPG</li>
-                            <li>?? <strong>Ajuste a qualidade</strong> (recomendado: 75%)</li>
-                            <li>?? <strong>Clique em "Converter"</strong></li>
-                            <li>?? <strong>Baixe o arquivo ZIP</strong> com imagens WebP</li>
+                            <li>🖱️ <strong>Clique ou arraste</strong> suas imagens JPG</li>
+                            <li>⚙️ <strong>Ajuste a qualidade</strong> (recomendado: 75%)</li>
+                            <li>🔄 <strong>Click "Convert"</strong></li>
+                            <li>💾 <strong>Download the ZIP file</strong> com imagens WebP</li>
                         </ol>
-                        <p>Todo o processo leva menos de 30 segundos!</p>
+                        <p>The whole process takes less than 30 seconds!</p>
                     </div>
                 </details>
                 
                 <details class="faq-item">
                     <summary>
-                        <h3>� seguro usar este conversor online?</h3>
+                        <h3>Is it safe to use this online converter?</h3>
                         <i data-feather="plus"></i>
                     </summary>
                     <div class="faq-content">
                         <p><strong>Sim, 100% seguro!</strong> Garantimos total privacidade:</p>
                         <ul>
-                            <li>?? <strong>Processamento local</strong> - arquivos n�o v�o para nuvem</li>
-                            <li>? <strong>Exclus�o autom�tica</strong> em 5 minutos</li>
-                            <li>?? <strong>Zero armazenamento</strong> permanente</li>
-                            <li>?? <strong>Conex�o criptografada</strong> HTTPS</li>
-                            <li>?? <strong>Sem registro</strong> necess�rio</li>
+                            <li>🔒 <strong>Processamento local</strong> - arquivos não vão para nuvem</li>
+                            <li>⏰ <strong>Exclusão automática</strong> em 5 minutos</li>
+                            <li>🚫 <strong>Zero armazenamento</strong> permanente</li>
+                            <li>🔐 <strong>Conexão criptografada</strong> HTTPS</li>
+                            <li>👤 <strong>Sem registro</strong> necessário</li>
                         </ul>
                     </div>
                 </details>
                 
                 <details class="faq-item">
                     <summary>
-                        <h3>Qual a diferen�a entre WebP e outros formatos?</h3>
+                        <h3>What is the difference between WebP and other formats?</h3>
                         <i data-feather="plus"></i>
                     </summary>
                     <div class="faq-content">
                         <table class="comparison-table">
                             <thead>
                                 <tr>
-                                    <th>Formato</th>
-                                    <th>Tamanho</th>
-                                    <th>Qualidade</th>
-                                    <th>Suporte</th>
+                                    <th>Format</th>
+                                    <th>Size</th>
+                                    <th>Quality</th>
+                                    <th>Support</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><strong>WebP</strong></td>
-                                    <td>?? Menor</td>
-                                    <td>?? Excelente</td>
-                                    <td>?? 96%+ navegadores</td>
+                                    <td>🟢 Smaller</td>
+                                    <td>🟢 Excelente</td>
+                                    <td>🟢 96%+ navegadores</td>
                                 </tr>
                                 <tr>
                                     <td>JPEG</td>
-                                    <td>?? M�dio</td>
-                                    <td>?? Boa</td>
-                                    <td>?? Universal</td>
+                                    <td>🟡 Medium</td>
+                                    <td>🟡 Good</td>
+                                    <td>🟢 Universal</td>
                                 </tr>
                                 <tr>
                                     <td>PNG</td>
-                                    <td>?? Maior</td>
-                                    <td>?? Excelente</td>
-                                    <td>?? Universal</td>
+                                    <td>🔴 Larger</td>
+                                    <td>🟢 Excelente</td>
+                                    <td>🟢 Universal</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -423,13 +488,13 @@
         <!-- CTA Section -->
         <section class="cta-section">
             <div class="cta-content">
-                <h2>Comece a Otimizar suas Imagens Agora!</h2>
+                <h2>Start Optimizing Your Images Now!</h2>
                 <p>
-                    Junte-se a milhares de desenvolvedores e designers que j� otimizaram suas imagens com nosso conversor WebP gratuito.
+                    Join thousands of developers and designers who have already optimized their images with our free WebP converter.
                 </p>
                 <a href="#main" class="cta-button" aria-label="Voltar ao conversor">
                     <i data-feather="arrow-up"></i>
-                    Converter Minhas Imagens
+                    Convert My Images
                 </a>
             </div>
         </section>
@@ -439,35 +504,35 @@
 <!-- WebP Info Section -->
 <section class="webp-info">
     <div class="info-container">
-        <h2>Por que escolher o formato WebP?</h2>
+        <h2>Why choose the WebP format?</h2>
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-icon">
                     <i data-feather="minimize-2"></i>
                 </div>
-                <h3>Compress�o Superior</h3>
-                <p>Reduza o tamanho dos arquivos em at� <strong>85%</strong> comparado ao JPEG, mantendo a mesma qualidade visual.</p>
+                <h3>Superior Compression</h3>
+                <p>Reduce file size by up to <strong>85%</strong> compared to JPEG while maintaining the same visual quality.</p>
             </div>
             <div class="info-card">
                 <div class="info-icon">
                     <i data-feather="zap"></i>
                 </div>
-                <h3>Carregamento Mais R�pido</h3>
-                <p>Sites carregam mais r�pido com imagens WebP, melhorando a experi�ncia do usu�rio e SEO.</p>
+                <h3>Faster Loading</h3>
+                <p>Websites load faster with WebP images, improving user experience and SEO.</p>
             </div>
             <div class="info-card">
                 <div class="info-icon">
                     <i data-feather="globe"></i>
                 </div>
-                <h3>Suporte Universal</h3>
-                <p>Compat�vel com todos os navegadores modernos: Chrome, Firefox, Safari, Edge e mais.</p>
+                <h3>Universal Support</h3>
+                <p>Compatible with all modern browsers: Chrome, Firefox, Safari, Edge and more.</p>
             </div>
             <div class="info-card">
                 <div class="info-icon">
                     <i data-feather="layers"></i>
                 </div>
-                <h3>Transpar�ncia e Anima��o</h3>
-                <p>Suporta transpar�ncia como PNG e anima��es como GIF, tudo em um s� formato.</p>
+                <h3>Transparency and Animation</h3>
+                <p>Supports transparency like PNG and animations like GIF, all in a single format.</p>
             </div>
         </div>
     </div>
@@ -476,22 +541,23 @@
 <!-- Scripts -->
 <script src="https://unpkg.com/@@microsoft/signalr@@latest/dist/browser/signalr.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-      // Initialize icons
+document.addEventListener('DOMContentLoaded', function() {    
+    // Inicializar ícones
     if (typeof feather !== 'undefined' && feather.replace) {
-        if (typeof feather !== 'undefined' && feather.replace) { feather.replace(); }
+        feather.replace();
     }
 
-    // Functions to manage errors in HTML
+    // Funções para gerenciar erros no HTML
     function showError(message) {
         const clientErrors = document.getElementById('clientErrors');
         const clientErrorsList = document.getElementById('clientErrorsList');
-        
-        clientErrorsList.innerHTML = `<li>${message}</li>`;
+          clientErrorsList.innerHTML = `<li>${message}</li>`;
         clientErrors.style.display = 'block';
-        if (typeof feather !== 'undefined' && feather.replace) { feather.replace(); }
+        if (typeof feather !== 'undefined' && feather.replace) {
+            feather.replace();
+        }
         
-        // Scroll to error
+        // Scroll para o erro
         clientErrors.scrollIntoView({ behavior: 'smooth' });
     }
     
@@ -500,36 +566,58 @@ document.addEventListener('DOMContentLoaded', function() {
         clientErrors.style.display = 'none';
     }
 
-    // Function to update quality
-    function updateQualityValue(value) {
+    // Função para atualizar qualidade
+    function atualizarValorDaQuantidade(value) {
         document.getElementById('qualidadeValue').textContent = value;
         
-        // Update compression estimate
+        // Atualizar estimativa de compressão
         const compressionEstimate = document.getElementById('compressionEstimate');
         if (compressionEstimate) {
             let estimate;
-            if (value <= 30) estimate = '~85% smaller';
-            else if (value <= 50) estimate = '~75% smaller';
+            if (value <= 30) estimate = '~85% menor';
+            else if (value <= 50) estimate = '~75% menor';
             else if (value <= 70) estimate = '~65% smaller';
-            else if (value <= 85) estimate = '~55% smaller';
-            else estimate = '~45% smaller';
+            else if (value <= 85) estimate = '~55% menor';
+            else estimate = '~45% menor';
             
             compressionEstimate.textContent = estimate;
         }
     }
 
-    // Make function global for HTML oninput
-    window.updateQualityValue = updateQualityValue;
+    // Tornar a função global para o oninput do HTML
+    window.atualizarValorDaQuantidade = atualizarValorDaQuantidade;
+    
+    // Função para atualizar contador global dinamicamente
+    function updateGlobalCounter(filesConverted) {
+        const contadorElement = document.getElementById('contadorGlobal');
+        if (contadorElement) {
+            const currentCount = parseInt(contadorElement.textContent) || 0;
+            const newCount = currentCount + filesConverted;
+            contadorElement.textContent = newCount;
+            
+            // Adicionar animação visual
+            contadorElement.style.transition = 'color 0.5s ease';
+            contadorElement.style.color = '#22c55e';
+            setTimeout(() => {
+                contadorElement.style.color = '';
+            }, 1000);
+        }
+    }
 
-    // File upload handling - SIMPLE AND FUNCTIONAL
+    // File upload handling - SIMPLES E FUNCIONAL
     const fileInput = document.getElementById('arquivos');
     const selectedFiles = document.getElementById('selectedFiles');
     const fileCount = document.getElementById('fileCount');
     const uploadArea = document.getElementById('uploadArea');
 
     if (!fileInput || !selectedFiles || !fileCount || !uploadArea) {
-        showError('Internal error: Page elements were not loaded correctly. Please reload the page.');
-        return;
+        console.warn('Elementos da página não encontrados:', {
+            fileInput: !!fileInput,
+            selectedFiles: !!selectedFiles,
+            fileCount: !!fileCount,
+            uploadArea: !!uploadArea
+        });
+        return; // Return silently instead of showing error
     }
 
     // Function to update file display
@@ -556,10 +644,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
         
-        fileCount.textContent = `${files.length} file(s) � ${totalMB}MB total`;
+        fileCount.textContent = `${files.length} arquivo(s) • ${totalMB}MB total`;
         
         const filesList = document.getElementById('filesList');
         if (!filesList) {
+            // Create filesList if it doesn't exist
             const filesListDiv = document.createElement('div');
             filesListDiv.id = 'filesList';
             filesListDiv.className = 'files-list';
@@ -586,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i data-feather="file-image"></i>
                 <span class="file-name" title="${fileNames[i]}">${truncatedName}</span>
                 <span class="file-size">${(files[i].size / (1024 * 1024)).toFixed(1)}MB</span>
-                <span class="file-status">?</span>
+                <span class="file-status">✓</span>
             `;
             filesListElement.appendChild(fileItem);
         }
@@ -597,14 +686,15 @@ document.addEventListener('DOMContentLoaded', function() {
             moreFilesItem.style.pointerEvents = 'none';
             moreFilesItem.innerHTML = `
                 <i data-feather="plus-circle"></i>
-                <span class="file-name">and ${remainingFiles} more file(s)...</span>
+                <span class="file-name">e mais ${remainingFiles} arquivo(s)...</span>
                 <span class="file-size">Total: ${totalMB}MB</span>
             `;
             filesListElement.appendChild(moreFilesItem);
         }
-        
-        setTimeout(() => {
-            if (typeof feather !== 'undefined' && feather.replace) { feather.replace(); }
+          setTimeout(() => {
+            if (typeof safeFeatherReplace === 'function') {
+                safeFeatherReplace();
+            }
         }, 100);
     }
 
@@ -613,7 +703,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateFileDisplay();
     });
 
-    // Upload area click - ONLY specific elements
+    // Upload area click - APENAS os elementos específicos
     const uploadButton = uploadArea.querySelector('.upload-button');
     const uploadIcon = uploadArea.querySelector('.upload-icon');
     const uploadText = uploadArea.querySelector('p');
@@ -640,30 +730,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Drag and drop functionality
-    uploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-
-    uploadArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        clearErrors();
-        const files = e.dataTransfer.files;
-        
-        const dt = new DataTransfer();
-        for (let i = 0; i < files.length; i++) {
-            dt.items.add(files[i]);
-        }
-        fileInput.files = dt.files;
-        
-        updateFileDisplay();
-    });
 
     // SignalR for progress - with error handling
     const connection = new signalR.HubConnectionBuilder()
@@ -675,10 +741,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .build();
 
     connection.start().then(function () {
-        // SignalR connected silently
+        // SignalR conectado silenciosamente
     }).catch(function (err) {
-        console.warn("SignalR unavailable, using fallback:", err.message);
-        // Silent fallback - no user error
+        // SignalR fallback - silent mode
     });
 
     connection.on("ReceiveProgress", function (progress) {
@@ -686,35 +751,44 @@ document.addEventListener('DOMContentLoaded', function() {
         const progressText = document.getElementById('progressText');
         const progressContainer = document.getElementById('progressContainer');
         
-        progressContainer.style.display = 'block';
-        progressFill.style.width = progress + '%';
-        progressText.textContent = progress + '%';
+        // Safe DOM manipulation
+        if (progressContainer) progressContainer.style.display = 'block';
+        if (progressFill) progressFill.style.width = progress + '%';
+        if (progressText) progressText.textContent = progress + '%';
         
         if (progress >= 100) {
-            progressText.textContent = 'Finalizando...';
+            if (progressText) progressText.textContent = 'Finishing...';
             setTimeout(() => {
-                progressContainer.style.display = 'none';
+                if (progressContainer) progressContainer.style.display = 'none';
             }, 2000);
         }
     });
 
     // Form submission via AJAX
-    document.getElementById('converterForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Always prevent default submit
-        
-        const files = fileInput.files;
-        if (files.length === 0) {
-            alert('Please select at least one file.');
-            return;
-        }
-        
-        const button = document.getElementById('convertButton');
-        const originalButtonText = button.innerHTML;
-        button.innerHTML = `<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Processing...`;
+    const converterForm = document.getElementById('converterForm');
+    if (converterForm) {
+        converterForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Sempre prevenir o submit padrão
+            
+            const files = fileInput ? fileInput.files : null;
+            if (!files || files.length === 0) {
+                showError('Please select at least one file.');
+                return;
+            }
+            
+            clearErrors();
+            const button = document.getElementById('convertButton');
+            if (!button) {
+                // Button not found - silent fail
+                return;
+            }
+            const originalButtonText = button.innerHTML;        button.innerHTML = `<i data-feather="loader" style="animation: spin 1s linear infinite;"></i>Processando...`;
         button.disabled = true;
-        if (typeof feather !== 'undefined' && feather.replace) { feather.replace(); }
+        if (typeof safeFeatherReplace === 'function') {
+            safeFeatherReplace();
+        }
 
-        // Prepare FormData for AJAX
+        // Preparar FormData para AJAX
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             formData.append('arquivos', files[i]);
@@ -723,7 +797,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const qualidade = document.getElementById('qualidade').value;
         formData.append('qualidade', qualidade);
 
-        // Make AJAX request
+        // Fazer requisição AJAX
         fetch('/api/converter', {
             method: 'POST',
             body: formData
@@ -731,34 +805,40 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Success - show download button
+                // Sucesso - mostrar botão de download
                 showDownloadSection(data.downloadLink, data.filesCount);
+                
+                // Atualizar contador global na tela
+                updateGlobalCounter(data.filesCount);
             } else {
-                // Error - show message
-                alert(data.message);
+                // Erro - mostrar mensagem
+                showError(data.message);
             }
         })
         .catch(error => {
-            console.error('Conversion error:', error);
-            alert('Connection error. Please try again.');
+            // Error handled silently
+            showError('Connection error. Please try again.');
         })
         .finally(() => {
-            // Restore button
+            // Restaurar botão
             button.innerHTML = originalButtonText;
             button.disabled = false;
-            if (typeof feather !== 'undefined' && feather.replace) { feather.replace(); }
+            if (typeof safeFeatherReplace === 'function') {
+                safeFeatherReplace();
+            }
         });
-    });
+                });
+    }
 
-    // Function to show download section dynamically
+    // Função para mostrar a seção de download dinamicamente
     function showDownloadSection(downloadLink, filesCount) {
-        // Remove existing section if any
+        // Remover seção existente se houver
         const existingSection = document.querySelector('.download-section');
         if (existingSection) {
             existingSection.remove();
         }
 
-        // Create new download section
+        // Criar nova seção de download
         const downloadSection = document.createElement('div');
         downloadSection.className = 'download-section';
         downloadSection.innerHTML = `
@@ -766,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i data-feather="check-circle"></i>
                 <h3>Conversion Completed Successfully!</h3>
                 <p>Your images have been converted to WebP with maximum optimization.</p>
-                <a href="${downloadLink}" class="download-button" download aria-label="Download converted WebP images">
+                <a href="${downloadLink}" class="download-button" download aria-label="Baixar imagens convertidas para WebP">
                     <i data-feather="download"></i>
                     Download WebP Images
                 </a>
@@ -774,14 +854,15 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        // Insert after form
+        // Inserir após o formulário
         const form = document.getElementById('converterForm');
         form.parentNode.insertBefore(downloadSection, form.nextSibling);
-        
-        // Replace icons
-        if (typeof feather !== 'undefined' && feather.replace) { feather.replace(); }
+          // Substituir ícones
+        if (typeof safeFeatherReplace === 'function') {
+            safeFeatherReplace();
+        }
 
-        // Smooth scroll to download section
+        // Scroll suave até a seção de download
         downloadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });

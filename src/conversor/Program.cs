@@ -1,9 +1,18 @@
+using Serilog;
 using GeraWebP.Hub;
 using GeraWebP.Worker;
 using System.Globalization;
 using Microsoft.AspNetCore.Http.Features;
 
+
+// Configurar Serilog para enviar logs ao Seq
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Seq("https://seq.diogocosta.dev", apiKey: "OyTLRUtv96SYrvz3pyiQ")
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // Configurar Kestrel para .NET 9 - uploads de 100MB
 builder.WebHost.ConfigureKestrel(serverOptions =>
