@@ -142,21 +142,78 @@
                 <div class="workflow-step upload-step">
                     <div class="step-header">
                         <div class="step-number">1</div>
-                        <h2>Selecionar Imagens</h2>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <h2>Seleccionar Imágenes</h2>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <h2>Select Images</h2>
+                        }
+                        else
+                        {
+                            <h2>Selecionar Imagens</h2>
+                        }
                     </div>
                     <div class="upload-area" id="uploadArea">
                         <div class="upload-icon">
                             <i data-feather="upload-cloud"></i>
                         </div>
-                        <p>Clique ou arraste arquivos</p>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <p>Haz clic o arrastra archivos</p>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <p>Click or drag files</p>
+                        }
+                        else
+                        {
+                            <p>Clique ou arraste arquivos</p>
+                        }
                         <div class="upload-button">
                             <i data-feather="folder"></i>
-                            Escolher Arquivos
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <text>Elegir Archivos</text>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <text>Choose Files</text>
+                            }
+                            else
+                            {
+                                <text>Escolher Arquivos</text>
+                            }
                         </div>
                         <div class="upload-info">
-                            <small>JPG, PNG, GIF • Máx: 100MB por arquivo ou 100MB total</small>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <small>JPG, PNG, GIF • Máx: 100MB por archivo o 100MB total</small>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <small>JPG, PNG, GIF • Max: 100MB per file or 100MB total</small>
+                            }
+                            else
+                            {
+                                <small>JPG, PNG, GIF • Máx: 100MB por arquivo ou 100MB total</small>
+                            }
                         </div>
-                        <label for="arquivos" class="visually-hidden">Selecionar arquivos de imagem para conversão WebP</label>
+                        <label for="arquivos" class="visually-hidden">
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <text>Seleccionar archivos de imagen para conversión WebP</text>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <text>Select image files for WebP conversion</text>
+                            }
+                            else
+                            {
+                                <text>Selecionar arquivos de imagem para conversão WebP</text>
+                            }
+                        </label>
                         <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" accept="image/jpeg,image/jpg,image/png,image/gif" />
                     </div>
                     
@@ -164,7 +221,19 @@
                     <div id="selectedFiles" class="selected-files" style="display: none;">
                         <div class="files-header">
                             <i data-feather="check-circle"></i>
-                            <span id="fileCount">0</span> arquivo(s) selecionado(s)
+                            <span id="fileCount">0</span>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <text> archivo(s) seleccionado(s)</text>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <text> file(s) selected</text>
+                            }
+                            else
+                            {
+                                <text> arquivo(s) selecionado(s)</text>
+                            }
                         </div>
                         <div id="filesList" class="files-list"></div>
                     </div>
@@ -174,12 +243,36 @@
                 <div class="workflow-step settings-step">
                     <div class="step-header">
                         <div class="step-number">2</div>
-                        <h2>Ajustar Qualidade</h2>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <h2>Ajustar Calidad</h2>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <h2>Adjust Quality</h2>
+                        }
+                        else
+                        {
+                            <h2>Ajustar Qualidade</h2>
+                        }
                     </div>
                     
                     <div class="quality-control">
                         <div class="quality-info">
-                            <label for="qualidade" class="quality-label">Qualidade:</label>
+                            <label for="qualidade" class="quality-label">
+                                @if (ViewData["Language"]?.ToString() == "es")
+                                {
+                                    <text>Calidad:</text>
+                                }
+                                else if (ViewData["Language"]?.ToString() == "en")
+                                {
+                                    <text>Quality:</text>
+                                }
+                                else
+                                {
+                                    <text>Qualidade:</text>
+                                }
+                            </label>
                             <span class="quality-value" id="qualidadeValue">75</span>%
                         </div>
                         
@@ -194,8 +287,21 @@
                                aria-label="Ajustar qualidade da conversão WebP" />
                         
                         <div class="quality-labels">
-                            <small>Menor tamanho</small>
-                            <small>Melhor qualidade</small>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <small>Tamaño menor</small>
+                                <small>Mejor calidad</small>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <small>Smaller size</small>
+                                <small>Better quality</small>
+                            }
+                            else
+                            {
+                                <small>Menor tamanho</small>
+                                <small>Melhor qualidade</small>
+                            }
                         </div>
                     </div>
                     
@@ -205,8 +311,21 @@
                                 <i data-feather="trending-down"></i>
                             </div>
                             <div class="preview-text">
-                                <strong>Compressão Estimada</strong>
-                                <small id="compressionEstimate">~65% menor</small>
+                                @if (ViewData["Language"]?.ToString() == "es")
+                                {
+                                    <strong>Compresión Estimada</strong>
+                                    <small id="compressionEstimate">~65% menor</small>
+                                }
+                                else if (ViewData["Language"]?.ToString() == "en")
+                                {
+                                    <strong>Estimated Compression</strong>
+                                    <small id="compressionEstimate">~65% smaller</small>
+                                }
+                                else
+                                {
+                                    <strong>Compressão Estimada</strong>
+                                    <small id="compressionEstimate">~65% menor</small>
+                                }
                             </div>
                         </div>
                     </div>
@@ -216,23 +335,67 @@
                 <div class="workflow-step convert-step">
                     <div class="step-header">
                         <div class="step-number">3</div>
-                        <h2>Converter para WebP</h2>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <h2>Convertir a WebP</h2>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <h2>Convert to WebP</h2>
+                        }
+                        else
+                        {
+                            <h2>Converter para WebP</h2>
+                        }
                     </div>
                     
                     <button type="submit" class="convert-button" id="convertButton" aria-label="Converter imagens para formato WebP">
                         <i data-feather="zap"></i>
-                        Converter Agora
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <text>Convertir Ahora</text>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <text>Convert Now</text>
+                        }
+                        else
+                        {
+                            <text>Converter Agora</text>
+                        }
                     </button>
                     
                     <div class="convert-info">
-                        <small>Conversão rápida e segura</small>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <small>Conversión rápida y segura</small>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <small>Fast and secure conversion</small>
+                        }
+                        else
+                        {
+                            <small>Conversão rápida e segura</small>
+                        }
                     </div>
                 </div>
             </div>
 
             <!-- Progress Section -->
             <div id="progressContainer" class="progress-section" style="display: none;">
-                <h3>Convertendo suas imagens...</h3>
+                @if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <h3>Convirtiendo tus imágenes...</h3>
+                }
+                else if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <h3>Converting your images...</h3>
+                }
+                else
+                {
+                    <h3>Convertendo suas imagens...</h3>
+                }
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
                 </div>
@@ -245,13 +408,36 @@
                 <div class="download-section">
                     <div class="download-success">
                         <i data-feather="check-circle"></i>
-                        <h3>Conversão Concluída com Sucesso!</h3>
-                        <p>Suas imagens foram convertidas para WebP com otimização máxima.</p>
-                        <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar imagens convertidas para WebP">
-                            <i data-feather="download"></i>
-                            Baixar Imagens WebP
-                        </a>
-                        <small>Arquivo único ou ZIP com todas as imagens otimizadas</small>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <h3>¡Conversión Completada con Éxito!</h3>
+                            <p>Tus imágenes han sido convertidas a WebP con optimización máxima.</p>
+                            <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Descargar imágenes convertidas a WebP">
+                                <i data-feather="download"></i>
+                                Descargar Imágenes WebP
+                            </a>
+                            <small>Archivo único o ZIP con todas las imágenes optimizadas</small>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <h3>Conversion Completed Successfully!</h3>
+                            <p>Your images have been converted to WebP with maximum optimization.</p>
+                            <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Download converted WebP images">
+                                <i data-feather="download"></i>
+                                Download WebP Images
+                            </a>
+                            <small>Single file or ZIP with all optimized images</small>
+                        }
+                        else
+                        {
+                            <h3>Conversão Concluída com Sucesso!</h3>
+                            <p>Suas imagens foram convertidas para WebP com otimização máxima.</p>
+                            <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar imagens convertidas para WebP">
+                                <i data-feather="download"></i>
+                                Baixar Imagens WebP
+                            </a>
+                            <small>Arquivo único ou ZIP com todas as imagens otimizadas</small>
+                        }
                     </div>
                 </div>
             }
@@ -264,10 +450,27 @@
     <div class="container">
         <!-- Format Conversion Cards -->
         <section class="conversion-formats" aria-labelledby="conversion-title">
-            <h2 id="conversion-title" class="section-title">Conversões de Formato Suportadas</h2>
-            <p class="section-subtitle">
-                Converta qualquer formato de imagem para WebP com nossa ferramenta online avançada
-            </p>
+            @if (ViewData["Language"]?.ToString() == "es")
+            {
+                <h2 id="conversion-title" class="section-title">Conversiones de Formato Soportadas</h2>
+                <p class="section-subtitle">
+                    Convierte cualquier formato de imagen a WebP con nuestra herramienta en línea avanzada
+                </p>
+            }
+            else if (ViewData["Language"]?.ToString() == "en")
+            {
+                <h2 id="conversion-title" class="section-title">Supported Format Conversions</h2>
+                <p class="section-subtitle">
+                    Convert any image format to WebP with our advanced online tool
+                </p>
+            }
+            else
+            {
+                <h2 id="conversion-title" class="section-title">Conversões de Formato Suportadas</h2>
+                <p class="section-subtitle">
+                    Converta qualquer formato de imagem para WebP com nossa ferramenta online avançada
+                </p>
+            }
             
             <div class="format-cards">
                 <a href="/converter-jpg-para-webp" class="format-card-link">
@@ -276,8 +479,21 @@
                             <i data-feather="image"></i>
                         </div>
                         <div class="format-text">
-                            <strong>JPG para WebP</strong>
-                            <small>Otimização ideal para fotos</small>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <strong>JPG a WebP</strong>
+                                <small>Optimización ideal para fotos</small>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <strong>JPG to WebP</strong>
+                                <small>Optimal optimization for photos</small>
+                            }
+                            else
+                            {
+                                <strong>JPG para WebP</strong>
+                                <small>Otimização ideal para fotos</small>
+                            }
                         </div>
                     </div>
                 </a>
@@ -292,8 +508,21 @@
                             <i data-feather="image"></i>
                         </div>
                         <div class="format-text">
-                            <strong>PNG para WebP</strong>
-                            <small>Mantém transparência</small>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <strong>PNG a WebP</strong>
+                                <small>Mantiene transparencia</small>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <strong>PNG to WebP</strong>
+                                <small>Keeps transparency</small>
+                            }
+                            else
+                            {
+                                <strong>PNG para WebP</strong>
+                                <small>Mantém transparência</small>
+                            }
                         </div>
                     </div>
                 </a>
@@ -308,8 +537,21 @@
                             <i data-feather="image"></i>
                         </div>
                         <div class="format-text">
-                            <strong>GIF para WebP</strong>
-                            <small>Compressão máxima</small>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <strong>GIF a WebP</strong>
+                                <small>Compresión máxima</small>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <strong>GIF to WebP</strong>
+                                <small>Maximum compression</small>
+                            }
+                            else
+                            {
+                                <strong>GIF para WebP</strong>
+                                <small>Compressão máxima</small>
+                            }
                         </div>
                     </div>
                 </a>
@@ -323,8 +565,21 @@
                         <i data-feather="zap"></i>
                     </div>
                     <div class="format-text">
-                        <strong>WebP Otimizado</strong>
-                        <small>Até 90% menor</small>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <strong>WebP Optimizado</strong>
+                            <small>Hasta 90% más pequeño</small>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <strong>Optimized WebP</strong>
+                            <small>Up to 90% smaller</small>
+                        }
+                        else
+                        {
+                            <strong>WebP Otimizado</strong>
+                            <small>Até 90% menor</small>
+                        }
                     </div>
                 </div>
             </div>
@@ -332,151 +587,458 @@
 
         <!-- Features Section -->
         <section class="features-section" aria-labelledby="features-title">
-            <h2 id="features-title" class="section-title">Por que Escolher Nosso Conversor WebP?</h2>
+            @if (ViewData["Language"]?.ToString() == "es")
+            {
+                <h2 id="features-title" class="section-title">¿Por qué Elegir Nuestro Conversor WebP?</h2>
+            }
+            else if (ViewData["Language"]?.ToString() == "en")
+            {
+                <h2 id="features-title" class="section-title">Why Choose Our WebP Converter?</h2>
+            }
+            else
+            {
+                <h2 id="features-title" class="section-title">Por que Escolher Nosso Conversor WebP?</h2>
+            }
             
             <div class="features-grid">
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="zap"></i>
                     </div>
-                    <h3>Conversão Ultra Rápida</h3>
-                    <p>Processe múltiplas imagens em segundos com nossa tecnologia avançada de compressão WebP.</p>
+                    @if (ViewData["Language"]?.ToString() == "es")
+                    {
+                        <h3>Conversión Ultrarrápida</h3>
+                        <p>Procesa múltiples imágenes en segundos con nuestra avanzada tecnología de compresión WebP.</p>
+                    }
+                    else if (ViewData["Language"]?.ToString() == "en")
+                    {
+                        <h3>Ultra Fast Conversion</h3>
+                        <p>Process multiple images in seconds with our advanced WebP compression technology.</p>
+                    }
+                    else
+                    {
+                        <h3>Conversão Ultra Rápida</h3>
+                        <p>Processe múltiplas imagens em segundos com nossa tecnologia avançada de compressão WebP.</p>
+                    }
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="shield-check"></i>
                     </div>
-                    <h3>100% Seguro e Privado</h3>
-                    <p>Seus arquivos são processados localmente e excluídos automaticamente. Zero armazenamento em nuvem.</p>
+                    @if (ViewData["Language"]?.ToString() == "es")
+                    {
+                        <h3>100% Seguro y Privado</h3>
+                        <p>Tus archivos se procesan localmente y se eliminan automáticamente. Cero almacenamiento en la nube.</p>
+                    }
+                    else if (ViewData["Language"]?.ToString() == "en")
+                    {
+                        <h3>100% Safe and Private</h3>
+                        <p>Your files are processed locally and automatically deleted. Zero cloud storage.</p>
+                    }
+                    else
+                    {
+                        <h3>100% Seguro e Privado</h3>
+                        <p>Seus arquivos são processados localmente e excluídos automaticamente. Zero armazenamento em nuvem.</p>
+                    }
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="trending-down"></i>
                     </div>
-                    <h3>Compressão Máxima</h3>
-                    <p>Reduza até 90% do tamanho das imagens mantendo qualidade visual perfeita para web.</p>
+                    @if (ViewData["Language"]?.ToString() == "es")
+                    {
+                        <h3>Compresión Máxima</h3>
+                        <p>Reduce hasta un 90% el tamaño de las imágenes manteniendo la calidad perfecta para web.</p>
+                    }
+                    else if (ViewData["Language"]?.ToString() == "en")
+                    {
+                        <h3>Maximum Compression</h3>
+                        <p>Reduce image size by up to 90% while maintaining perfect web quality.</p>
+                    }
+                    else
+                    {
+                        <h3>Compressão Máxima</h3>
+                        <p>Reduza até 90% do tamanho das imagens mantendo qualidade visual perfeita para web.</p>
+                    }
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="layers"></i>
                     </div>
-                    <h3>Processamento em Lote</h3>
-                    <p>Converta múltiplas imagens simultaneamente e baixe tudo em um arquivo ZIP organizado.</p>
+                    @if (ViewData["Language"]?.ToString() == "es")
+                    {
+                        <h3>Procesamiento por Lotes</h3>
+                        <p>Convierte múltiples imágenes simultáneamente y descarga todo en un archivo ZIP organizado.</p>
+                    }
+                    else if (ViewData["Language"]?.ToString() == "en")
+                    {
+                        <h3>Batch Processing</h3>
+                        <p>Convert multiple images simultaneously and download everything in an organized ZIP file.</p>
+                    }
+                    else
+                    {
+                        <h3>Processamento em Lote</h3>
+                        <p>Converta múltiplas imagens simultaneamente e baixe tudo em um arquivo ZIP organizado.</p>
+                    }
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="settings"></i>
                     </div>
-                    <h3>Qualidade Ajustável</h3>
-                    <p>Controle total sobre o nível de compressão para equilibrar tamanho e qualidade perfeitamente.</p>
+                    @if (ViewData["Language"]?.ToString() == "es")
+                    {
+                        <h3>Calidad Ajustable</h3>
+                        <p>Control total sobre el nivel de compresión para equilibrar tamaño y calidad perfectamente.</p>
+                    }
+                    else if (ViewData["Language"]?.ToString() == "en")
+                    {
+                        <h3>Adjustable Quality</h3>
+                        <p>Full control over compression level to balance size and quality perfectly.</p>
+                    }
+                    else
+                    {
+                        <h3>Qualidade Ajustável</h3>
+                        <p>Controle total sobre o nível de compressão para equilibrar tamanho e qualidade perfeitamente.</p>
+                    }
                 </article>
                 
                 <article class="feature-item">
                     <div class="feature-icon">
                         <i data-feather="smartphone"></i>
                     </div>
-                    <h3>Funciona em Qualquer Dispositivo</h3>
-                    <p>Responsivo e otimizado para desktop, tablet e celular. Converta de qualquer lugar.</p>
+                    @if (ViewData["Language"]?.ToString() == "es")
+                    {
+                        <h3>Funciona en Cualquier Dispositivo</h3>
+                        <p>Responsive y optimizado para escritorio, tablet y móvil. Convierte desde cualquier lugar.</p>
+                    }
+                    else if (ViewData["Language"]?.ToString() == "en")
+                    {
+                        <h3>Works on Any Device</h3>
+                        <p>Responsive and optimized for desktop, tablet and mobile. Convert from anywhere.</p>
+                    }
+                    else
+                    {
+                        <h3>Funciona em Qualquer Dispositivo</h3>
+                        <p>Responsivo e otimizado para desktop, tablet e celular. Converta de qualquer lugar.</p>
+                    }
                 </article>
             </div>
         </section>
 
         <!-- FAQ Section -->
         <section class="faq-section" aria-labelledby="faq-title">
-            <h2 id="faq-title" class="section-title">Perguntas Frequentes sobre Conversão WebP</h2>
+            @if (ViewData["Language"]?.ToString() == "es")
+            {
+                <h2 id="faq-title" class="section-title">Preguntas Frecuentes sobre la Conversión a WebP</h2>
+            }
+            else if (ViewData["Language"]?.ToString() == "en")
+            {
+                <h2 id="faq-title" class="section-title">Frequently Asked Questions about WebP Conversion</h2>
+            }
+            else
+            {
+                <h2 id="faq-title" class="section-title">Perguntas Frequentes sobre Conversão WebP</h2>
+            }
             
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>
-                        <h3>O que é formato WebP e por que usar?</h3>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <h3>¿Qué es el formato WebP y por qué usarlo?</h3>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <h3>What is the WebP format and why use it?</h3>
+                        }
+                        else
+                        {
+                            <h3>O que é formato WebP e por que usar?</h3>
+                        }
                         <i data-feather="plus"></i>
                     </summary>
                     <div class="faq-content">
                         <p>
-                            <strong>WebP</strong> é um formato de imagem moderno desenvolvido pelo Google que oferece 
-                            compressão superior aos formatos tradicionais JPEG, PNG e GIF. Principais benefícios:
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <strong>WebP</strong> es un formato de imagen moderno desarrollado por Google que ofrece
+                                compresión superior a los formatos tradicionales JPEG, PNG y GIF. Principales beneficios:
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <strong>WebP</strong> is a modern image format developed by Google that offers
+                                superior compression compared to traditional JPEG, PNG and GIF formats. Main benefits:
+                            }
+                            else
+                            {
+                                <strong>WebP</strong> é um formato de imagem moderno desenvolvido pelo Google que oferece
+                                compressão superior aos formatos tradicionais JPEG, PNG e GIF. Principais benefícios:
+                            }
                         </p>
                         <ul>
-                            <li>📉 <strong>90% menor tamanho</strong> que JPEG/PNG</li>
-                            <li>🚀 <strong>Carregamento mais rápido</strong> em sites</li>
-                            <li>🔍 <strong>Melhor SEO</strong> por velocidade</li>
-                            <li>💰 <strong>Menos uso de banda</strong> e armazenamento</li>
-                            <li>✨ <strong>Qualidade visual mantida</strong></li>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <li>📉 <strong>90% menor tamaño</strong> que JPEG/PNG</li>
+                                <li>🚀 <strong>Carga más rápida</strong> en sitios</li>
+                                <li>🔍 <strong>Mejor SEO</strong> por velocidad</li>
+                                <li>💰 <strong>Menor uso de banda</strong> y almacenamiento</li>
+                                <li>✨ <strong>Calidad visual mantenida</strong></li>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <li>📉 <strong>90% smaller size</strong> than JPEG/PNG</li>
+                                <li>🚀 <strong>Faster loading</strong> on sites</li>
+                                <li>🔍 <strong>Better SEO</strong> due to speed</li>
+                                <li>💰 <strong>Less bandwidth usage</strong> and storage</li>
+                                <li>✨ <strong>Visual quality preserved</strong></li>
+                            }
+                            else
+                            {
+                                <li>📉 <strong>90% menor tamanho</strong> que JPEG/PNG</li>
+                                <li>🚀 <strong>Carregamento mais rápido</strong> em sites</li>
+                                <li>🔍 <strong>Melhor SEO</strong> por velocidade</li>
+                                <li>💰 <strong>Menos uso de banda</strong> e armazenamento</li>
+                                <li>✨ <strong>Qualidade visual mantida</strong></li>
+                            }
                         </ul>
                     </div>
                 </details>
                 
                 <details class="faq-item">
                     <summary>
-                        <h3>Como converter JPG para WebP online?</h3>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <h3>¿Cómo convertir JPG a WebP online?</h3>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <h3>How to convert JPG to WebP online?</h3>
+                        }
+                        else
+                        {
+                            <h3>Como converter JPG para WebP online?</h3>
+                        }
                         <i data-feather="plus"></i>
                     </summary>
                     <div class="faq-content">
-                        <p>Converter JPG para WebP é simples e rápido:</p>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <p>Convertir JPG a WebP es simple y rápido:</p>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <p>Converting JPG to WebP is quick and easy:</p>
+                        }
+                        else
+                        {
+                            <p>Converter JPG para WebP é simples e rápido:</p>
+                        }
                         <ol>
-                            <li>🖱️ <strong>Clique ou arraste</strong> suas imagens JPG</li>
-                            <li>⚙️ <strong>Ajuste a qualidade</strong> (recomendado: 75%)</li>
-                            <li>🔄 <strong>Clique em "Converter"</strong></li>
-                            <li>💾 <strong>Baixe o arquivo ZIP</strong> com imagens WebP</li>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <li>🖱️ <strong>Haz clic o arrastra</strong> tus imágenes JPG</li>
+                                <li>⚙️ <strong>Ajusta la calidad</strong> (recomendado: 75%)</li>
+                                <li>🔄 <strong>Haz clic en "Convertir"</strong></li>
+                                <li>💾 <strong>Descarga el archivo ZIP</strong> con imágenes WebP</li>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <li>🖱️ <strong>Click or drag</strong> your JPG images</li>
+                                <li>⚙️ <strong>Adjust the quality</strong> (recommended: 75%)</li>
+                                <li>🔄 <strong>Click "Convert"</strong></li>
+                                <li>💾 <strong>Download the ZIP file</strong> with WebP images</li>
+                            }
+                            else
+                            {
+                                <li>🖱️ <strong>Clique ou arraste</strong> suas imagens JPG</li>
+                                <li>⚙️ <strong>Ajuste a qualidade</strong> (recomendado: 75%)</li>
+                                <li>🔄 <strong>Clique em "Converter"</strong></li>
+                                <li>💾 <strong>Baixe o arquivo ZIP</strong> com imagens WebP</li>
+                            }
                         </ol>
-                        <p>Todo o processo leva menos de 30 segundos!</p>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <p>¡Todo el proceso toma menos de 30 segundos!</p>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <p>The whole process takes less than 30 seconds!</p>
+                        }
+                        else
+                        {
+                            <p>Todo o processo leva menos de 30 segundos!</p>
+                        }
                     </div>
                 </details>
                 
                 <details class="faq-item">
                     <summary>
-                        <h3>É seguro usar este conversor online?</h3>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <h3>¿Es seguro usar este conversor en línea?</h3>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <h3>Is it safe to use this online converter?</h3>
+                        }
+                        else
+                        {
+                            <h3>É seguro usar este conversor online?</h3>
+                        }
                         <i data-feather="plus"></i>
                     </summary>
                     <div class="faq-content">
-                        <p><strong>Sim, 100% seguro!</strong> Garantimos total privacidade:</p>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <p><strong>¡Sí, 100% seguro!</strong> Garantizamos total privacidad:</p>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <p><strong>Yes, 100% safe!</strong> We guarantee complete privacy:</p>
+                        }
+                        else
+                        {
+                            <p><strong>Sim, 100% seguro!</strong> Garantimos total privacidade:</p>
+                        }
                         <ul>
-                            <li>🔒 <strong>Processamento local</strong> - arquivos não vão para nuvem</li>
-                            <li>⏰ <strong>Exclusão automática</strong> em 5 minutos</li>
-                            <li>🚫 <strong>Zero armazenamento</strong> permanente</li>
-                            <li>🔐 <strong>Conexão criptografada</strong> HTTPS</li>
-                            <li>👤 <strong>Sem registro</strong> necessário</li>
+                            @if (ViewData["Language"]?.ToString() == "es")
+                            {
+                                <li>🔒 <strong>Procesamiento local</strong> - los archivos no se envían a la nube</li>
+                                <li>⏰ <strong>Eliminación automática</strong> en 5 minutos</li>
+                                <li>🚫 <strong>Cero almacenamiento</strong> permanente</li>
+                                <li>🔐 <strong>Conexión cifrada</strong> HTTPS</li>
+                                <li>👤 <strong>No se requiere registro</strong></li>
+                            }
+                            else if (ViewData["Language"]?.ToString() == "en")
+                            {
+                                <li>🔒 <strong>Local processing</strong> - files never leave your device</li>
+                                <li>⏰ <strong>Automatic deletion</strong> in 5 minutes</li>
+                                <li>🚫 <strong>No permanent storage</strong></li>
+                                <li>🔐 <strong>Encrypted connection</strong> HTTPS</li>
+                                <li>👤 <strong>No registration</strong> required</li>
+                            }
+                            else
+                            {
+                                <li>🔒 <strong>Processamento local</strong> - arquivos não vão para nuvem</li>
+                                <li>⏰ <strong>Exclusão automática</strong> em 5 minutos</li>
+                                <li>🚫 <strong>Zero armazenamento</strong> permanente</li>
+                                <li>🔐 <strong>Conexão criptografada</strong> HTTPS</li>
+                                <li>👤 <strong>Sem registro</strong> necessário</li>
+                            }
                         </ul>
                     </div>
                 </details>
                 
                 <details class="faq-item">
                     <summary>
-                        <h3>Qual a diferença entre WebP e outros formatos?</h3>
+                        @if (ViewData["Language"]?.ToString() == "es")
+                        {
+                            <h3>¿Cuál es la diferencia entre WebP y otros formatos?</h3>
+                        }
+                        else if (ViewData["Language"]?.ToString() == "en")
+                        {
+                            <h3>What is the difference between WebP and other formats?</h3>
+                        }
+                        else
+                        {
+                            <h3>Qual a diferença entre WebP e outros formatos?</h3>
+                        }
                         <i data-feather="plus"></i>
                     </summary>
                     <div class="faq-content">
                         <table class="comparison-table">
                             <thead>
                                 <tr>
-                                    <th>Formato</th>
-                                    <th>Tamanho</th>
-                                    <th>Qualidade</th>
-                                    <th>Suporte</th>
+                                    @if (ViewData["Language"]?.ToString() == "es")
+                                    {
+                                        <th>Formato</th>
+                                        <th>Tamaño</th>
+                                        <th>Calidad</th>
+                                        <th>Soporte</th>
+                                    }
+                                    else if (ViewData["Language"]?.ToString() == "en")
+                                    {
+                                        <th>Format</th>
+                                        <th>Size</th>
+                                        <th>Quality</th>
+                                        <th>Support</th>
+                                    }
+                                    else
+                                    {
+                                        <th>Formato</th>
+                                        <th>Tamanho</th>
+                                        <th>Qualidade</th>
+                                        <th>Suporte</th>
+                                    }
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><strong>WebP</strong></td>
-                                    <td>🟢 Menor</td>
-                                    <td>🟢 Excelente</td>
-                                    <td>🟢 96%+ navegadores</td>
+                                    @if (ViewData["Language"]?.ToString() == "es")
+                                    {
+                                        <td>🟢 Más pequeño</td>
+                                        <td>🟢 Excelente</td>
+                                        <td>🟢 96%+ navegadores</td>
+                                    }
+                                    else if (ViewData["Language"]?.ToString() == "en")
+                                    {
+                                        <td>🟢 Smaller</td>
+                                        <td>🟢 Excellent</td>
+                                        <td>🟢 96%+ browsers</td>
+                                    }
+                                    else
+                                    {
+                                        <td>🟢 Menor</td>
+                                        <td>🟢 Excelente</td>
+                                        <td>🟢 96%+ navegadores</td>
+                                    }
                                 </tr>
                                 <tr>
                                     <td>JPEG</td>
-                                    <td>🟡 Médio</td>
-                                    <td>🟡 Boa</td>
-                                    <td>🟢 Universal</td>
+                                    @if (ViewData["Language"]?.ToString() == "es")
+                                    {
+                                        <td>🟡 Medio</td>
+                                        <td>🟡 Buena</td>
+                                        <td>🟢 Universal</td>
+                                    }
+                                    else if (ViewData["Language"]?.ToString() == "en")
+                                    {
+                                        <td>🟡 Medium</td>
+                                        <td>🟡 Good</td>
+                                        <td>🟢 Universal</td>
+                                    }
+                                    else
+                                    {
+                                        <td>🟡 Médio</td>
+                                        <td>🟡 Boa</td>
+                                        <td>🟢 Universal</td>
+                                    }
                                 </tr>
                                 <tr>
                                     <td>PNG</td>
-                                    <td>🔴 Maior</td>
-                                    <td>🟢 Excelente</td>
-                                    <td>🟢 Universal</td>
+                                    @if (ViewData["Language"]?.ToString() == "es")
+                                    {
+                                        <td>🔴 Mayor</td>
+                                        <td>🟢 Excelente</td>
+                                        <td>🟢 Universal</td>
+                                    }
+                                    else if (ViewData["Language"]?.ToString() == "en")
+                                    {
+                                        <td>🔴 Larger</td>
+                                        <td>🟢 Excellent</td>
+                                        <td>🟢 Universal</td>
+                                    }
+                                    else
+                                    {
+                                        <td>🔴 Maior</td>
+                                        <td>🟢 Excelente</td>
+                                        <td>🟢 Universal</td>
+                                    }
                                 </tr>
                             </tbody>
                         </table>
@@ -488,14 +1050,39 @@
         <!-- CTA Section -->
         <section class="cta-section">
             <div class="cta-content">
-                <h2>Comece a Otimizar suas Imagens Agora!</h2>
-                <p>
-                    Junte-se a milhares de desenvolvedores e designers que já otimizaram suas imagens com nosso conversor WebP gratuito.
-                </p>
-                <a href="#main" class="cta-button" aria-label="Voltar ao conversor">
-                    <i data-feather="arrow-up"></i>
-                    Converter Minhas Imagens
-                </a>
+                @if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <h2>¡Comienza a Optimizar tus Imágenes Ahora!</h2>
+                    <p>
+                        Únete a miles de desarrolladores y diseñadores que ya optimizaron sus imágenes con nuestro conversor WebP gratuito.
+                    </p>
+                    <a href="#main" class="cta-button" aria-label="Volver al conversor">
+                        <i data-feather="arrow-up"></i>
+                        Convertir Mis Imágenes
+                    </a>
+                }
+                else if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <h2>Start Optimizing Your Images Now!</h2>
+                    <p>
+                        Join thousands of developers and designers who have already optimized their images with our free WebP converter.
+                    </p>
+                    <a href="#main" class="cta-button" aria-label="Back to converter">
+                        <i data-feather="arrow-up"></i>
+                        Convert My Images
+                    </a>
+                }
+                else
+                {
+                    <h2>Comece a Otimizar suas Imagens Agora!</h2>
+                    <p>
+                        Junte-se a milhares de desenvolvedores e designers que já otimizaram suas imagens com nosso conversor WebP gratuito.
+                    </p>
+                    <a href="#main" class="cta-button" aria-label="Voltar ao conversor">
+                        <i data-feather="arrow-up"></i>
+                        Converter Minhas Imagens
+                    </a>
+                }
             </div>
         </section>
     </div>
@@ -504,35 +1091,98 @@
 <!-- WebP Info Section -->
 <section class="webp-info">
     <div class="info-container">
-        <h2>Por que escolher o formato WebP?</h2>
+        @if (ViewData["Language"]?.ToString() == "es")
+        {
+            <h2>¿Por qué elegir el formato WebP?</h2>
+        }
+        else if (ViewData["Language"]?.ToString() == "en")
+        {
+            <h2>Why choose the WebP format?</h2>
+        }
+        else
+        {
+            <h2>Por que escolher o formato WebP?</h2>
+        }
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-icon">
                     <i data-feather="minimize-2"></i>
                 </div>
-                <h3>Compressão Superior</h3>
-                <p>Reduza o tamanho dos arquivos em até <strong>85%</strong> comparado ao JPEG, mantendo a mesma qualidade visual.</p>
+                @if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <h3>Compresión Superior</h3>
+                    <p>Reduce el tamaño de los archivos hasta un <strong>85%</strong> comparado con JPEG, manteniendo la misma calidad visual.</p>
+                }
+                else if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <h3>Superior Compression</h3>
+                    <p>Reduce file size by up to <strong>85%</strong> compared to JPEG while maintaining the same visual quality.</p>
+                }
+                else
+                {
+                    <h3>Compressão Superior</h3>
+                    <p>Reduza o tamanho dos arquivos em até <strong>85%</strong> comparado ao JPEG, mantendo a mesma qualidade visual.</p>
+                }
             </div>
             <div class="info-card">
                 <div class="info-icon">
                     <i data-feather="zap"></i>
                 </div>
-                <h3>Carregamento Mais Rápido</h3>
-                <p>Sites carregam mais rápido com imagens WebP, melhorando a experiência do usuário e SEO.</p>
+                @if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <h3>Carga Más Rápida</h3>
+                    <p>Los sitios cargan más rápido con imágenes WebP, mejorando la experiencia del usuario y el SEO.</p>
+                }
+                else if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <h3>Faster Loading</h3>
+                    <p>WebP images load faster on websites, improving user experience and SEO.</p>
+                }
+                else
+                {
+                    <h3>Carregamento Mais Rápido</h3>
+                    <p>Sites carregam mais rápido com imagens WebP, melhorando a experiência do usuário e SEO.</p>
+                }
             </div>
             <div class="info-card">
                 <div class="info-icon">
                     <i data-feather="globe"></i>
                 </div>
-                <h3>Suporte Universal</h3>
-                <p>Compatível com todos os navegadores modernos: Chrome, Firefox, Safari, Edge e mais.</p>
+                @if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <h3>Soporte Universal</h3>
+                    <p>Compatible con todos los navegadores modernos: Chrome, Firefox, Safari, Edge y más.</p>
+                }
+                else if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <h3>Universal Support</h3>
+                    <p>Compatible with all modern browsers: Chrome, Firefox, Safari, Edge and more.</p>
+                }
+                else
+                {
+                    <h3>Suporte Universal</h3>
+                    <p>Compatível com todos os navegadores modernos: Chrome, Firefox, Safari, Edge e mais.</p>
+                }
             </div>
             <div class="info-card">
                 <div class="info-icon">
                     <i data-feather="layers"></i>
                 </div>
-                <h3>Transparência e Animação</h3>
-                <p>Suporta transparência como PNG e animações como GIF, tudo em um só formato.</p>
+                @if (ViewData["Language"]?.ToString() == "es")
+                {
+                    <h3>Transparencia y Animación</h3>
+                    <p>Soporta transparencia como PNG y animaciones como GIF, todo en un solo formato.</p>
+                }
+                else if (ViewData["Language"]?.ToString() == "en")
+                {
+                    <h3>Transparency and Animation</h3>
+                    <p>Supports transparency like PNG and animations like GIF, all in a single format.</p>
+                }
+                else
+                {
+                    <h3>Transparência e Animação</h3>
+                    <p>Suporta transparência como PNG e animações como GIF, tudo em um só formato.</p>
+                }
             </div>
         </div>
     </div>
@@ -541,11 +1191,13 @@
 <!-- Scripts -->
 <script src="https://unpkg.com/@@microsoft/signalr@@latest/dist/browser/signalr.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {    
+document.addEventListener('DOMContentLoaded', function() {
     // Inicializar ícones
     if (typeof feather !== 'undefined' && feather.replace) {
         feather.replace();
     }
+
+    const lang = '@ViewData["Language"]';
 
     // Funções para gerenciar erros no HTML
     function showError(message) {
@@ -644,7 +1296,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
         
-        fileCount.textContent = `${files.length} arquivo(s) • ${totalMB}MB total`;
+        const countTextPt = `${files.length} arquivo(s) • ${totalMB}MB total`;
+        const countTextEn = `${files.length} file(s) • ${totalMB}MB total`;
+        const countTextEs = `${files.length} archivo(s) • ${totalMB}MB total`;
+        fileCount.textContent = lang === 'en' ? countTextEn : (lang === 'es' ? countTextEs : countTextPt);
         
         const filesList = document.getElementById('filesList');
         if (!filesList) {
@@ -684,9 +1339,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const moreFilesItem = document.createElement('div');
             moreFilesItem.className = 'file-item more-files';
             moreFilesItem.style.pointerEvents = 'none';
+            const moreTextPt = `e mais ${remainingFiles} arquivo(s)...`;
+            const moreTextEn = `and ${remainingFiles} more file(s)...`;
+            const moreTextEs = `y ${remainingFiles} archivo(s) más...`;
             moreFilesItem.innerHTML = `
                 <i data-feather="plus-circle"></i>
-                <span class="file-name">e mais ${remainingFiles} arquivo(s)...</span>
+                <span class="file-name">${lang === 'en' ? moreTextEn : (lang === 'es' ? moreTextEs : moreTextPt)}</span>
                 <span class="file-size">Total: ${totalMB}MB</span>
             `;
             filesListElement.appendChild(moreFilesItem);
@@ -844,13 +1502,13 @@ document.addEventListener('DOMContentLoaded', function() {
         downloadSection.innerHTML = `
             <div class="download-success">
                 <i data-feather="check-circle"></i>
-                <h3>Conversão Concluída com Sucesso!</h3>
-                <p>Suas imagens foram convertidas para WebP com otimização máxima.</p>
-                <a href="${downloadLink}" class="download-button" download aria-label="Baixar imagens convertidas para WebP">
+                ${lang === 'es' ? '<h3>¡Conversión Completada con Éxito!</h3>' : lang === 'en' ? '<h3>Conversion Completed Successfully!</h3>' : '<h3>Conversão Concluída com Sucesso!</h3>'}
+                ${lang === 'es' ? '<p>Tus imágenes han sido convertidas a WebP con optimización máxima.</p>' : lang === 'en' ? '<p>Your images have been converted to WebP with maximum optimization.</p>' : '<p>Suas imagens foram convertidas para WebP com otimização máxima.</p>'}
+                <a href="${downloadLink}" class="download-button" download aria-label="${lang === 'es' ? 'Descargar imágenes convertidas a WebP' : lang === 'en' ? 'Download converted WebP images' : 'Baixar imagens convertidas para WebP'}">
                     <i data-feather="download"></i>
-                    Baixar Imagens WebP
+                    ${lang === 'es' ? 'Descargar Imágenes WebP' : lang === 'en' ? 'Download WebP Images' : 'Baixar Imagens WebP'}
                 </a>
-                <small>Arquivo único ou ZIP com todas as imagens otimizadas</small>
+                <small>${lang === 'es' ? 'Archivo único o ZIP con todas las imágenes optimizadas' : lang === 'en' ? 'Single file or ZIP with all optimized images' : 'Arquivo único ou ZIP com todas as imagens otimizadas'}</small>
             </div>
         `;
 
