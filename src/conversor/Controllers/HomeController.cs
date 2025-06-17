@@ -2,8 +2,10 @@ using System.Diagnostics;
 using System.IO.Compression;
 using conversor.Models;
 using GeraWebP.Hub;
+using GeraWebP.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
@@ -13,11 +15,12 @@ using System.Text.Json;
 
 namespace GeraWebP.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger, IHubContext<ProgressHub> progressHub
+    public class HomeController(ILogger<HomeController> logger, IHubContext<ProgressHub> progressHub, IOptions<ApplicationSettings> appSettings
         ) : Controller
     {
         private readonly ILogger<HomeController> _logger = logger;
         private readonly IHubContext<ProgressHub> _progressHub = progressHub;
+        private readonly ApplicationSettings _appSettings = appSettings.Value;
 
         private const string PastaRaiz = "wwwroot";
         private const string PastaConvertidos = "convertidos";
@@ -656,6 +659,51 @@ namespace GeraWebP.Controllers
                     // Log erro mas não falhar a conversão por causa do contador
                     _logger.LogError(ex, "Erro ao incrementar contador global de {Anterior} para +{Quantidade}", quantidade, quantidade);
                 }
+            }
+        }
+        
+        /// <summary>
+        /// Endpoint para retornar informações de versão da aplicação
+        /// </summary>
+        [HttpGet]
+        [Route("version")]
+        [Route("api/version")]
+        public IActionResult Version()
+        {
+            try
+            {
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var assemblyBuildTime = System.IO.File.GetCreationTimeUtc(assembly.Location);
+                
+                var versionInfo = new
+                {
+                    Application = _appSettings.Name,
+                    Version = _appSettings.Version,
+                    ShortVersion = _appSettings.Version,
+                    BuildDate = _appSettings.BuildDate,
+                    BuildTime = assemblyBuildTime.ToString("yyyy-MM-dd HH:mm:ss UTC"),
+                    Description = _appSettings.Description,
+                    Framework = Environment.Version.ToString(),
+                    Platform = Environment.OSVersion.ToString(),
+                    Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production",
+                    DisplayVersion = _appSettings.DisplayVersion
+                };
+                
+                return Json(versionInfo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao obter informações de versão");
+                
+                // Fallback usando configurações básicas
+                var fallbackInfo = new
+                {
+                    Application = _appSettings.Name,
+                    Version = _appSettings.Version,
+                    Error = "Algumas informações não puderam ser obtidas"
+                };
+                
+                return Json(fallbackInfo);
             }
         }
     }
