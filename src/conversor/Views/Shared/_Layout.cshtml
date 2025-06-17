@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.Extensions.Options
+@using GeraWebP.Models
+@inject IOptions<ApplicationSettings> AppSettings
+
+<!DOCTYPE html>
 <html lang="@(ViewData["Language"] ?? "pt-BR")">
 <head>
     <meta charset="utf-8" />
@@ -415,5 +419,17 @@
     </script>
     
     @await RenderSectionAsync("Scripts", required: false)
+    
+    <!-- Build Version Footer -->
+    <footer class="build-version">
+        @{
+            var appSettings = AppSettings.Value;
+        }
+        <div style="text-align: center; padding: 8px 0; font-size: 0.7rem; color: #8e8e93; background: #f8f9fa; border-top: 1px solid #e9ecef;">
+            <span title="@appSettings.FullInfo">
+                @appSettings.DisplayVersion
+            </span>
+        </div>
+    </footer>
 </body>
 </html>

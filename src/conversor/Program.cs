@@ -1,6 +1,7 @@
 using Serilog;
 using GeraWebP.Hub;
 using GeraWebP.Worker;
+using GeraWebP.Models;
 using System.Globalization;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -63,6 +64,10 @@ builder.Services.AddMemoryCache();
 builder.Services.AddResponseCaching();
 
 builder.Services.AddControllersWithViews();
+
+// Configurar ApplicationSettings do appsettings.json
+builder.Services.Configure<ApplicationSettings>(
+    builder.Configuration.GetSection("Application"));
 
 // Configurar SignalR com limites maiores
 builder.Services.AddSignalR(options =>

@@ -471,6 +471,95 @@ html, body {
     opacity: 1;
 }
 
+/* =============================================================================
+   BUILD VERSION FOOTER STYLES
+   ============================================================================= */
+
+.build-version {
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.build-version div {
+    font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+    font-size: 0.7rem;
+    color: var(--text-light);
+    text-align: center;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    user-select: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.build-version div:hover {
+    background: rgba(0, 0, 0, 0.02);
+    color: var(--text-secondary);
+    cursor: help;
+}
+
+.build-version span {
+    position: relative;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.build-version span:hover {
+    transform: translateY(-1px);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .build-version {
+        background: #1a1a1a;
+        border-top-color: #333;
+    }
+    
+    .build-version div {
+        color: #888;
+        border-top-color: rgba(255, 255, 255, 0.04);
+    }
+    
+    .build-version div:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #aaa;
+    }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .build-version div {
+        font-size: 0.65rem;
+        padding: 6px 12px;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .build-version {
+        border-top: 2px solid #000;
+    }
+    
+    .build-version div {
+        color: #000;
+        font-weight: 600;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .build-version div,
+    .build-version span {
+        transition: none;
+    }
+    
+    .build-version span:hover {
+        transform: none;
+    }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .info-grid {

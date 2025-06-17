@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>GeraWebP - Conversor WebP Online</Product>
+    <Copyright>© 2025 Wepper. Todos os direitos reservados.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
