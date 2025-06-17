@@ -563,7 +563,7 @@ namespace GeraWebP.Controllers
             SetCultureContent("en");
             int contadorGlobal = LerContadorGlobal();
             ViewBag.ContadorGlobal = contadorGlobal;
-            return View("Index");
+            return View("IndexEnglish");
         }
 
         [HttpGet("es")]
