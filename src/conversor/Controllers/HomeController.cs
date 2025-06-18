@@ -614,16 +614,36 @@ namespace GeraWebP.Controllers
                         Directory.CreateDirectory(directoryPath);
                     }
                     
-                    if (!System.IO.File.Exists(ContadorPath))
-                        return 0;
-                    var json = System.IO.File.ReadAllText(ContadorPath);
-                    var obj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json);
-                    return obj != null && obj.ContainsKey("total") ? obj["total"] : 0;
+                    int contador = 0;
+                    
+                    if (System.IO.File.Exists(ContadorPath))
+                    {
+                        var json = System.IO.File.ReadAllText(ContadorPath);
+                        var obj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json);
+                        contador = obj != null && obj.ContainsKey("total") ? obj["total"] : 0;
+                    }
+                    
+                    // Se o contador estiver em 0, inicializar com o valor do appsettings
+                    if (contador == 0 && _appSettings.ContadorInicial > 0)
+                    {
+                        contador = _appSettings.ContadorInicial;
+                        
+                        // Salvar o valor inicial no arquivo
+                        var obj = new Dictionary<string, int> { { "total", contador } };
+                        var jsonString = System.Text.Json.JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
+                        System.IO.File.WriteAllText(ContadorPath, jsonString);
+                        
+                        _logger.LogInformation("Contador inicializado com valor do appsettings: {ContadorInicial}", contador);
+                    }
+                    
+                    return contador;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning(ex, "Erro ao ler contador global");
-                    return 0;
+                    
+                    // Em caso de erro, retornar o valor inicial do appsettings se configurado
+                    return _appSettings.ContadorInicial > 0 ? _appSettings.ContadorInicial : 0;
                 }
             }
         }
