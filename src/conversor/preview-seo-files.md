@@ -1,26 +1,26 @@
-# Preview dos Arquivos SEO - Wepper.vip4.link
+# Preview dos Arquivos SEO - Wepper.app
 
 ## 🗺️ Sitemap.xml
 
-**URL:** https://wepper.vip4.link/sitemap.xml
+**URL:** https://wepper.app/sitemap.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://wepper.vip4.link/</loc>
+    <loc>https://wepper.app/</loc>
     <lastmod>2024-12-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://wepper.vip4.link/en/</loc>
+    <loc>https://wepper.app/en/</loc>
     <lastmod>2024-12-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://wepper.vip4.link/es/</loc>
+    <loc>https://wepper.app/es/</loc>
     <lastmod>2024-12-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -28,19 +28,19 @@
   
   <!-- Ferramentas de conversão -->
   <url>
-    <loc>https://wepper.vip4.link/converter-jpg-para-webp</loc>
+    <loc>https://wepper.app/converter-jpg-para-webp</loc>
     <lastmod>2024-12-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://wepper.vip4.link/converter-png-para-webp</loc>
+    <loc>https://wepper.app/converter-png-para-webp</loc>
     <lastmod>2024-12-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://wepper.vip4.link/converter-gif-para-webp</loc>
+    <loc>https://wepper.app/converter-gif-para-webp</loc>
     <lastmod>2024-12-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -52,7 +52,7 @@
 
 ## 🤖 Robots.txt
 
-**URL:** https://wepper.vip4.link/robots.txt
+**URL:** https://wepper.app/robots.txt
 
 ```txt
 User-agent: *
@@ -85,9 +85,9 @@ Allow: /robots.txt
 Allow: /sitemap.xml
 
 # Sitemap principal
-Sitemap: https://wepper.vip4.link/sitemap.xml
+Sitemap: https://wepper.app/sitemap.xml
 
-# Wepper.vip4.link - Conversor WebP Online Gratuito
+# Wepper.app - Conversor WebP Online Gratuito
 # Converta JPG, PNG, GIF para WebP com qualidade profissional
 ```
 
@@ -142,8 +142,8 @@ Sitemap: https://wepper.vip4.link/sitemap.xml
 
 ## 🔧 Como Testar
 
-1. **Sitemap**: Acesse https://wepper.vip4.link/sitemap.xml
-2. **Robots**: Acesse https://wepper.vip4.link/robots.txt  
+1. **Sitemap**: Acesse https://wepper.app/sitemap.xml
+2. **Robots**: Acesse https://wepper.app/robots.txt
 3. **Validação**: Use ferramentas do Google Search Console
 4. **Teste local**: Use localhost durante desenvolvimento
 

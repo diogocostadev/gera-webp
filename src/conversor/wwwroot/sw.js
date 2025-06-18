@@ -1,4 +1,4 @@
-// Service Worker para Wepper.vip4.link - SILENT MODE
+// Service Worker para Wepper.app - SILENT MODE
 const CACHE_NAME = 'wepper-v1.0.2';
 const STATIC_CACHE = 'wepper-static-v1.2';
 const DYNAMIC_CACHE = 'wepper-dynamic-v1.2';

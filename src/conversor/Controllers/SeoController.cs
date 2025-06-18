@@ -30,13 +30,13 @@ public class SeoController : Controller
     private string GenerateSitemap(string baseUrl)
     {
         // Usar sempre o domínio de produção
-        baseUrl = "https://wepper.vip4.link";
+        baseUrl = "https://wepper.app";
         
         var sitemap = new StringBuilder();
         sitemap.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sitemap.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
 
-        // URLs principais do wepper.vip4.link
+        // URLs principais do wepper.app
         var urls = new[]
         {
             // Páginas principais
@@ -92,7 +92,7 @@ public class SeoController : Controller
     private string GenerateRobotsTxt(string baseUrl)
     {
         // Usar sempre o domínio de produção
-        baseUrl = "https://wepper.vip4.link";
+        baseUrl = "https://wepper.app";
         
         var robots = new StringBuilder();
         robots.AppendLine("User-agent: *");
@@ -127,7 +127,7 @@ public class SeoController : Controller
         robots.AppendLine("# Sitemap principal");
         robots.AppendLine($"Sitemap: {baseUrl}/sitemap.xml");
         robots.AppendLine();
-        robots.AppendLine("# Wepper.vip4.link - Conversor WebP Online Gratuito");
+        robots.AppendLine("# Wepper.app - Conversor WebP Online Gratuito");
         robots.AppendLine("# Converta JPG, PNG, GIF para WebP com qualidade profissional");
         
         return robots.ToString();
