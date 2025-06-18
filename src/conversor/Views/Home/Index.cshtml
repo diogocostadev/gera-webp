@@ -1388,6 +1388,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        clearErrors();
+        const files = e.dataTransfer.files;
+
+        const dt = new DataTransfer();
+        for (let i = 0; i < files.length; i++) {
+            dt.items.add(files[i]);
+        }
+        fileInput.files = dt.files;
+
+        updateFileDisplay();
+    });
 
     // SignalR for progress - with error handling
     const connection = new signalR.HubConnectionBuilder()

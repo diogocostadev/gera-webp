@@ -492,8 +492,9 @@ namespace GeraWebP.Controllers
                 var arquivo = arquivos[0];
                 var nomeArquivo = Path.GetFileName(arquivo);
                 var bytes = System.IO.File.ReadAllBytes(arquivo);
-                
-                return File(bytes, "image/webp", nomeArquivo);
+
+                var nomeDownload = $"wepper-{nomeArquivo}";
+                return File(bytes, "image/webp", nomeDownload);
             }
             
             // Se houver múltiplos arquivos, criar zip
@@ -508,7 +509,8 @@ namespace GeraWebP.Controllers
             ZipFile.CreateFromDirectory(caminhoConvertidos, caminhoZip);
 
             byte[] fileBytes = System.IO.File.ReadAllBytes(caminhoZip);
-            return File(fileBytes, "application/zip", sessionId + ".zip");
+            var nomeZipDownload = $"wepper-{sessionId}.zip";
+            return File(fileBytes, "application/zip", nomeZipDownload);
         }
         
         [HttpGet("converter-jpg-para-webp")]
