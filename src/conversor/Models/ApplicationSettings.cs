@@ -34,5 +34,10 @@ namespace GeraWebP.Models
         /// Informações completas para tooltip
         /// </summary>
         public string FullInfo => $"Versão: {Version} | Build: {BuildDate}";
+
+        /// <summary>
+        /// Valor inicial do contador global quando o arquivo contador.json não existir ou estiver em 0
+        /// </summary>
+        public int ContadorInicial { get; set; } = 0;
     }
 }
