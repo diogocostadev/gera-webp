@@ -109,9 +109,22 @@ namespace GeraWebP.Controllers
             MultipartHeadersLengthLimit = 104857600)]
         public async Task<IActionResult> Converter(List<IFormFile>? arquivos, int qualidade = 75)
         {   
-            if (arquivos == null || arquivos.Count == 0)
+            try
             {
-                ModelState.AddModelError("files", "Por favor, selecione um ou mais arquivos.");
+                _logger.LogInformation("Iniciando conversão de arquivos. Quantidade: {Count}, Qualidade: {Quality}", 
+                    arquivos?.Count ?? 0, qualidade);
+                
+                if (arquivos == null || arquivos.Count == 0)
+                {
+                    _logger.LogWarning("Tentativa de conversão sem arquivos selecionados");
+                    ModelState.AddModelError("files", "Por favor, selecione um ou mais arquivos.");
+                    return View("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro no início do processo de conversão");
+                ModelState.AddModelError("", "Erro interno no servidor. Tente novamente.");
                 return View("Index");
             }
             
@@ -146,6 +159,7 @@ namespace GeraWebP.Controllers
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Erro ao validar dimensões da imagem {FileName}", arquivo.FileName);
                     ModelState.AddModelError("files", $"Erro ao processar a imagem '{arquivo.FileName}': {ex.Message}");
                     return View("Index");
                 }
@@ -178,53 +192,79 @@ namespace GeraWebP.Controllers
             var caminhoUpload = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaUploads, sessionId);
             var caminhoConvertido = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
 
-            if (!Directory.Exists(caminhoUpload))
+            try
             {
-                Directory.CreateDirectory(caminhoUpload);
-            }
-
-            if (!Directory.Exists(caminhoConvertido))
-            {
-                Directory.CreateDirectory(caminhoConvertido);
-            }
-
-            int totalFiles = arquivos.Count;
-            int arquivosProcessados = 0;
-
-            List<Task> tasks = [];
-            foreach (var arquivo in arquivos)
-            {
-                var task = Task.Run(async () =>
+                _logger.LogInformation("Criando diretórios para sessão {SessionId}", sessionId);
+                
+                if (!Directory.Exists(caminhoUpload))
                 {
-                    if (arquivo.Length > 0)
+                    Directory.CreateDirectory(caminhoUpload);
+                }
+
+                if (!Directory.Exists(caminhoConvertido))
+                {
+                    Directory.CreateDirectory(caminhoConvertido);
+                }
+
+                int totalFiles = arquivos.Count;
+                int arquivosProcessados = 0;
+
+                List<Task> tasks = [];
+                foreach (var arquivo in arquivos)
+                {
+                    var task = Task.Run(async () =>
                     {
-                        var caminhoOriginal = Path.Combine(caminhoUpload, arquivo.FileName);
-                        var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
-                        
-                        var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".webp");
-
-                        using (var fileStream = new FileStream(caminhoOriginal, FileMode.Create))
+                        try
                         {
-                            await arquivo.CopyToAsync(fileStream);
+                            if (arquivo.Length > 0)
+                            {
+                                _logger.LogInformation("Iniciando conversão do arquivo {FileName} (Tamanho: {FileSize} bytes)", 
+                                    arquivo.FileName, arquivo.Length);
+                                
+                                var caminhoOriginal = Path.Combine(caminhoUpload, arquivo.FileName);
+                                var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
+                                
+                                var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".webp");
+
+                                using (var fileStream = new FileStream(caminhoOriginal, FileMode.Create))
+                                {
+                                    await arquivo.CopyToAsync(fileStream);
+                                }
+
+                                byte[] webPImage = await ConvertToWebP(arquivo, qualidade);
+                                await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, webPImage);
+
+                                arquivosProcessados++;
+                                int progress = (int)((float)arquivosProcessados / totalFiles * 100);
+                                await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
+                                
+                                _logger.LogInformation("Arquivo {FileName} convertido com sucesso. Progresso: {Progress}%", 
+                                    arquivo.FileName, progress);
+                            }
                         }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Erro ao converter arquivo {FileName}", arquivo.FileName);
+                            throw; // Re-throw para ser capturado pelo Task.WhenAll
+                        }
+                    });
+                    tasks.Add(task);
+                }
 
-                        byte[] webPImage = await ConvertToWebP(arquivo, qualidade);
-                        await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, webPImage);
+                await Task.WhenAll(tasks);
+                
+                _logger.LogInformation("Conversão concluída com sucesso. Total de arquivos: {TotalFiles}", arquivos.Count);
+                IncrementarContadorGlobal(arquivos.Count);
 
-                        arquivosProcessados++;
-                        int progress = (int)((float)arquivosProcessados / totalFiles * 100);
-                        await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
-                    }
-                });
-                tasks.Add(task);
+                ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
+                return View("Index");
             }
-
-            await Task.WhenAll(tasks);
-            
-            IncrementarContadorGlobal(arquivos.Count);
-
-            ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
-            return View("Index");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro durante o processo de conversão. SessionId: {SessionId}", sessionId);
+                ModelState.AddModelError("", "Erro interno durante a conversão. Tente novamente.");
+                return View("Index");
+            }
         }
 
         [HttpPost("api/converter")]
@@ -237,8 +277,12 @@ namespace GeraWebP.Controllers
         {
             try
             {
+                _logger.LogInformation("API - Iniciando conversão de arquivos. Quantidade: {Count}, Qualidade: {Quality}", 
+                    arquivos?.Count ?? 0, qualidade);
+                
                 if (arquivos == null || arquivos.Count == 0)
                 {
+                    _logger.LogWarning("API - Tentativa de conversão sem arquivos selecionados");
                     return Json(new
                     {
                         success = false,
@@ -472,45 +516,62 @@ namespace GeraWebP.Controllers
 
         public IActionResult DownloadFiles(string sessionId)
         {
-            var caminhoConvertidos = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
-            
-            if (!Directory.Exists(caminhoConvertidos))
+            try
             {
-                return NotFound("Arquivos não encontrados.");
-            }
+                _logger.LogInformation("Iniciando download de arquivos para sessão {SessionId}", sessionId);
+                
+                var caminhoConvertidos = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
+                
+                if (!Directory.Exists(caminhoConvertidos))
+                {
+                    _logger.LogWarning("Diretório de arquivos convertidos não encontrado para sessão {SessionId}", sessionId);
+                    return NotFound("Arquivos não encontrados.");
+                }
 
-            var arquivos = Directory.GetFiles(caminhoConvertidos);
-            
-            if (arquivos.Length == 0)
+                var arquivos = Directory.GetFiles(caminhoConvertidos);
+                
+                if (arquivos.Length == 0)
+                {
+                    _logger.LogWarning("Nenhum arquivo encontrado no diretório para sessão {SessionId}", sessionId);
+                    return NotFound("Nenhum arquivo encontrado.");
+                }
+                
+                // Se houver apenas um arquivo, baixar diretamente
+                if (arquivos.Length == 1)
+                {
+                    var arquivo = arquivos[0];
+                    var nomeArquivo = Path.GetFileName(arquivo);
+                    var bytes = System.IO.File.ReadAllBytes(arquivo);
+
+                    var nomeDownload = $"wepper-{nomeArquivo}";
+                    _logger.LogInformation("Download de arquivo único {FileName} para sessão {SessionId}", nomeArquivo, sessionId);
+                    return File(bytes, "image/webp", nomeDownload);
+                }
+                
+                // Se houver múltiplos arquivos, criar zip
+                var caminhoZip = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId + ".zip");
+                
+                // Remover zip existente se houver
+                if (System.IO.File.Exists(caminhoZip))
+                {
+                    System.IO.File.Delete(caminhoZip);
+                }
+
+                ZipFile.CreateFromDirectory(caminhoConvertidos, caminhoZip);
+
+                byte[] fileBytes = System.IO.File.ReadAllBytes(caminhoZip);
+                var nomeZipDownload = $"wepper-{sessionId}.zip";
+                
+                _logger.LogInformation("Download de arquivo ZIP com {FileCount} arquivos para sessão {SessionId}", 
+                    arquivos.Length, sessionId);
+                
+                return File(fileBytes, "application/zip", nomeZipDownload);
+            }
+            catch (Exception ex)
             {
-                return NotFound("Nenhum arquivo encontrado.");
+                _logger.LogError(ex, "Erro no download de arquivos para sessão {SessionId}", sessionId);
+                return StatusCode(500, "Erro interno no servidor");
             }
-            
-            // Se houver apenas um arquivo, baixar diretamente
-            if (arquivos.Length == 1)
-            {
-                var arquivo = arquivos[0];
-                var nomeArquivo = Path.GetFileName(arquivo);
-                var bytes = System.IO.File.ReadAllBytes(arquivo);
-
-                var nomeDownload = $"wepper-{nomeArquivo}";
-                return File(bytes, "image/webp", nomeDownload);
-            }
-            
-            // Se houver múltiplos arquivos, criar zip
-            var caminhoZip = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId + ".zip");
-            
-            // Remover zip existente se houver
-            if (System.IO.File.Exists(caminhoZip))
-            {
-                System.IO.File.Delete(caminhoZip);
-            }
-
-            ZipFile.CreateFromDirectory(caminhoConvertidos, caminhoZip);
-
-            byte[] fileBytes = System.IO.File.ReadAllBytes(caminhoZip);
-            var nomeZipDownload = $"wepper-{sessionId}.zip";
-            return File(fileBytes, "application/zip", nomeZipDownload);
         }
         
         [HttpGet("converter-jpg-para-webp")]
