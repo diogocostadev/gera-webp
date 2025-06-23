@@ -5,14 +5,19 @@ using GeraWebP.Models;
 using System.Globalization;
 using Microsoft.AspNetCore.Http.Features;
 
+var builder = WebApplication.CreateBuilder(args);
 
-// Configurar Serilog para enviar logs ao Seq
+// Configurar Serilog para enviar logs ao Seq usando as configurações do appsettings.json
+var seqServerUrl = builder.Configuration["Seq:ServerUrl"];
+var seqApiKey = builder.Configuration["Seq:ApiKey"];
+
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.Seq("https://seq.diogocosta.dev", apiKey: "OyTLRUtv96SYrvz3pyiQ")
+    .WriteTo.Seq(seqServerUrl, apiKey: seqApiKey)
+    .Enrich.WithProperty("Application", builder.Configuration["Application:Name"])
+    .Enrich.WithProperty("Version", builder.Configuration["Application:Version"])
     .CreateLogger();
 
-var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
 // Configurar Kestrel para .NET 9 - uploads de 100MB
@@ -178,4 +183,17 @@ app.MapControllerRoute(
 // Mapear controladores com atributos de rota
 app.MapControllers();
 
-app.Run();
+try
+{
+    Log.Information("Iniciando aplicação Wepper");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Erro fatal na inicialização da aplicação");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
