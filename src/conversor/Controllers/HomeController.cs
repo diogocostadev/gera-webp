@@ -111,8 +111,14 @@ namespace GeraWebP.Controllers
         {   
             try
             {
-                _logger.LogInformation("Iniciando conversão de arquivos. Quantidade: {Count}, Qualidade: {Quality}", 
-                    arquivos?.Count ?? 0, qualidade);
+                // Monitorar recursos do sistema antes de iniciar
+                var totalMemoryMB = GC.GetTotalMemory(false) / (1024.0 * 1024.0);
+                var availableProcessors = Environment.ProcessorCount;
+                var workingSetMB = Environment.WorkingSet / (1024.0 * 1024.0);
+                
+                _logger.LogInformation("Iniciando conversão de arquivos. Quantidade: {Count}, Qualidade: {Quality}. " +
+                    "Sistema - Memória: {MemoryMB:F1}MB, WorkingSet: {WorkingSetMB:F1}MB, CPUs: {CPUs}", 
+                    arquivos?.Count ?? 0, qualidade, totalMemoryMB, workingSetMB, availableProcessors);
                 
                 if (arquivos == null || arquivos.Count == 0)
                 {
@@ -210,7 +216,21 @@ namespace GeraWebP.Controllers
                 int arquivosProcessados = 0;
 
                 List<Task> tasks = [];
-                var semaphore = new SemaphoreSlim(3, 3); // Máximo 3 conversões simultâneas
+                
+                // Ajustar concorrência baseado nos recursos disponíveis
+                var currentWorkingSetMB = Environment.WorkingSet / (1024.0 * 1024.0);
+                var maxConcurrency = Environment.ProcessorCount > 2 ? 3 : 1; // Servidor com poucos recursos = 1 por vez
+                var memoryThresholdMB = 500; // Se usar mais que 500MB, reduzir concorrência
+                
+                if (currentWorkingSetMB > memoryThresholdMB)
+                {
+                    maxConcurrency = 1;
+                    _logger.LogWarning("🔥 Memória alta detectada ({WorkingSetMB:F1}MB > {ThresholdMB}MB). Reduzindo concorrência para 1", 
+                        currentWorkingSetMB, memoryThresholdMB);
+                }
+                
+                var semaphore = new SemaphoreSlim(maxConcurrency, maxConcurrency);
+                _logger.LogInformation("Configuração de concorrência: {MaxConcurrency} conversões simultâneas", maxConcurrency);
                 
                 foreach (var arquivo in arquivos)
                 {
@@ -221,8 +241,9 @@ namespace GeraWebP.Controllers
                         {
                             if (arquivo.Length > 0)
                             {
-                                _logger.LogInformation("Iniciando conversão do arquivo {FileName} (Tamanho: {FileSize} bytes)", 
-                                    arquivo.FileName, arquivo.Length);
+                                var threadStartTime = DateTime.UtcNow;
+                                _logger.LogInformation("Thread {ThreadId} - Iniciando conversão do arquivo {FileName} (Tamanho: {FileSize} bytes) às {StartTime}", 
+                                    Thread.CurrentThread.ManagedThreadId, arquivo.FileName, arquivo.Length, threadStartTime);
                                 
                                 var caminhoOriginal = Path.Combine(caminhoUpload, arquivo.FileName);
                                 var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
@@ -253,14 +274,37 @@ namespace GeraWebP.Controllers
                                     _logger.LogWarning(hubEx, "Erro ao enviar progresso via SignalR para {FileName}", arquivo.FileName);
                                 }
                                 
-                                _logger.LogInformation("Arquivo {FileName} convertido com sucesso. Progresso: {Progress}%", 
-                                    arquivo.FileName, progress);
+                                var threadEndTime = DateTime.UtcNow;
+                                var conversionDuration = (threadEndTime - threadStartTime).TotalMilliseconds;
+                                
+                                _logger.LogInformation("Thread {ThreadId} - Arquivo {FileName} convertido com sucesso em {DurationMs}ms. Progresso: {Progress}%", 
+                                    Thread.CurrentThread.ManagedThreadId, arquivo.FileName, conversionDuration, progress);
+                                
+                                // Alertar se conversão demorar muito (pode indicar problema no servidor)
+                                if (conversionDuration > 30000) // 30 segundos
+                                {
+                                    _logger.LogWarning("⚠️ Conversão LENTA detectada! Arquivo {FileName} demorou {DurationMs}ms ({DurationSec:F1}s)", 
+                                        arquivo.FileName, conversionDuration, conversionDuration / 1000.0);
+                                }
                             }
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "Erro ao converter arquivo {FileName}. Detalhes: {ErrorDetails}", 
-                                arquivo.FileName, ex.ToString());
+                            var isServerError = ex is OutOfMemoryException or 
+                                                TimeoutException or 
+                                                System.IO.IOException or 
+                                                System.ComponentModel.Win32Exception;
+                            
+                            if (isServerError)
+                            {
+                                _logger.LogError(ex, "🚨 ERRO DE SERVIDOR detectado ao converter {FileName}: {ExceptionType} - {Message}", 
+                                    arquivo.FileName, ex.GetType().Name, ex.Message);
+                            }
+                            else
+                            {
+                                _logger.LogError(ex, "Erro ao converter arquivo {FileName}. Detalhes: {ErrorDetails}", 
+                                    arquivo.FileName, ex.ToString());
+                            }
                             throw; // Re-throw para ser capturado pelo Task.WhenAll
                         }
                         finally
@@ -272,7 +316,36 @@ namespace GeraWebP.Controllers
                 }
 
                 _logger.LogInformation("Aguardando conclusão de {TaskCount} tarefas de conversão", tasks.Count);
-                await Task.WhenAll(tasks);
+                
+                // Monitorar recursos do sistema durante conversão
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                var initialMemory = GC.GetTotalMemory(false);
+                
+                try
+                {
+                    // Timeout para operações de conversão (5 minutos para múltiplos arquivos)
+                    using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+                    await Task.WhenAll(tasks).WaitAsync(cts.Token);
+                    
+                    stopwatch.Stop();
+                    var finalMemory = GC.GetTotalMemory(false);
+                    var memoryUsed = (finalMemory - initialMemory) / (1024.0 * 1024.0);
+                    
+                    _logger.LogInformation("Conversão concluída com sucesso em {ElapsedTime}ms. Memória utilizada: {MemoryMB:F2}MB", 
+                        stopwatch.ElapsedMilliseconds, memoryUsed);
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.LogError("Timeout na conversão de múltiplos arquivos após 5 minutos. Tarefas: {TaskCount}", tasks.Count);
+                    throw new TimeoutException("Timeout na conversão de arquivos. Tente enviar menos arquivos por vez.");
+                }
+                catch (Exception ex)
+                {
+                    stopwatch.Stop();
+                    _logger.LogError(ex, "Erro durante Task.WhenAll após {ElapsedTime}ms. Tarefas: {TaskCount}", 
+                        stopwatch.ElapsedMilliseconds, tasks.Count);
+                    throw;
+                }
                 
                 _logger.LogInformation("Conversão concluída com sucesso. Total de arquivos: {TotalFiles}", arquivos.Count);
                 IncrementarContadorGlobal(arquivos.Count);
