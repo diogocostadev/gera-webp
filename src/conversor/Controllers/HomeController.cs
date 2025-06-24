@@ -434,14 +434,25 @@ namespace GeraWebP.Controllers
             }
         }
 
-        private static async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
+        private async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
         {
-            await using var imageStream = file.OpenReadStream();
-            using var image = await Image.LoadAsync(imageStream);
-            
-            // Otimização automática baseada no tamanho do arquivo
-            var tamanhoOriginalMB = file.Length / (1024.0 * 1024.0);
-            var perfilOtimizacao = DeterminarPerfilOtimizacao(tamanhoOriginalMB, qualidade);
+            try
+            {
+                _logger.LogInformation("Iniciando conversão WebP do arquivo {FileName} (Tamanho: {FileSizeMB:F2}MB, Qualidade: {Quality})", 
+                    file.FileName, file.Length / (1024.0 * 1024.0), qualidade);
+                
+                await using var imageStream = file.OpenReadStream();
+                using var image = await Image.LoadAsync(imageStream);
+                
+                _logger.LogInformation("Imagem carregada: {FileName} - Dimensões: {Width}x{Height}, Formato: {Format}", 
+                    file.FileName, image.Width, image.Height, image.Metadata.DecodedImageFormat?.Name ?? "Desconhecido");
+                
+                // Otimização automática baseada no tamanho do arquivo
+                var tamanhoOriginalMB = file.Length / (1024.0 * 1024.0);
+                var perfilOtimizacao = DeterminarPerfilOtimizacao(tamanhoOriginalMB, qualidade);
+                
+                _logger.LogInformation("Perfil de otimização para {FileName}: Qualidade={Quality}, Método={Method}, Formato={FileFormat}", 
+                    file.FileName, perfilOtimizacao.Quality, perfilOtimizacao.Method, perfilOtimizacao.FileFormat);
             
             // Aplicar filtros adicionais para reduzir ruído se a imagem for muito grande
             if (tamanhoOriginalMB > 5)
@@ -463,8 +474,22 @@ namespace GeraWebP.Controllers
                 TransparentColorMode = WebpTransparentColorMode.Clear
             };
             
-            await image.SaveAsWebpAsync(output, encoder);
-            return output.ToArray();
+                await image.SaveAsWebpAsync(output, encoder);
+                var resultBytes = output.ToArray();
+                
+                _logger.LogInformation("Conversão WebP concluída para {FileName}. Tamanho final: {FinalSizeMB:F2}MB (Redução: {ReductionPercent:F1}%)", 
+                    file.FileName, 
+                    resultBytes.Length / (1024.0 * 1024.0),
+                    (1 - (double)resultBytes.Length / file.Length) * 100);
+                
+                return resultBytes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro durante conversão WebP do arquivo {FileName}: {ErrorMessage}", 
+                    file.FileName, ex.Message);
+                throw; // Re-throw para ser capturado pelo middleware global
+            }
         }
 
         private static WebPOptimizationProfile DeterminarPerfilOtimizacao(double tamanhoMB, int qualidadeBase)

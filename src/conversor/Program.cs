@@ -2,6 +2,7 @@ using Serilog;
 using GeraWebP.Hub;
 using GeraWebP.Worker;
 using GeraWebP.Models;
+using GeraWebP.Middleware;
 using System.Globalization;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -12,10 +13,15 @@ var seqServerUrl = builder.Configuration["Seq:ServerUrl"];
 var seqApiKey = builder.Configuration["Seq:ApiKey"];
 
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
     .WriteTo.Console()
     .WriteTo.Seq(seqServerUrl, apiKey: seqApiKey)
     .Enrich.WithProperty("Application", builder.Configuration["Application:Name"])
     .Enrich.WithProperty("Version", builder.Configuration["Application:Version"])
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
+    .Enrich.FromLogContext()
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -110,6 +116,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 var app = builder.Build();
+
+// Middleware global de exceções (deve ser o primeiro)
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 if (!app.Environment.IsDevelopment())
 {
