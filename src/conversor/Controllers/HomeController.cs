@@ -210,10 +210,13 @@ namespace GeraWebP.Controllers
                 int arquivosProcessados = 0;
 
                 List<Task> tasks = [];
+                var semaphore = new SemaphoreSlim(3, 3); // Máximo 3 conversões simultâneas
+                
                 foreach (var arquivo in arquivos)
                 {
                     var task = Task.Run(async () =>
                     {
+                        await semaphore.WaitAsync();
                         try
                         {
                             if (arquivo.Length > 0)
@@ -226,17 +229,29 @@ namespace GeraWebP.Controllers
                                 
                                 var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".webp");
 
+                                _logger.LogDebug("Salvando arquivo original: {CaminhoOriginal}", caminhoOriginal);
                                 using (var fileStream = new FileStream(caminhoOriginal, FileMode.Create))
                                 {
                                     await arquivo.CopyToAsync(fileStream);
                                 }
 
+                                _logger.LogDebug("Iniciando conversão WebP para {FileName}", arquivo.FileName);
                                 byte[] webPImage = await ConvertToWebP(arquivo, qualidade);
+                                
+                                _logger.LogDebug("Salvando arquivo convertido: {CaminhoConvertido}", caminhoCompletoConvertido);
                                 await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, webPImage);
 
-                                arquivosProcessados++;
+                                Interlocked.Increment(ref arquivosProcessados);
                                 int progress = (int)((float)arquivosProcessados / totalFiles * 100);
-                                await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
+                                
+                                try 
+                                {
+                                    await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
+                                }
+                                catch (Exception hubEx)
+                                {
+                                    _logger.LogWarning(hubEx, "Erro ao enviar progresso via SignalR para {FileName}", arquivo.FileName);
+                                }
                                 
                                 _logger.LogInformation("Arquivo {FileName} convertido com sucesso. Progresso: {Progress}%", 
                                     arquivo.FileName, progress);
@@ -244,13 +259,19 @@ namespace GeraWebP.Controllers
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "Erro ao converter arquivo {FileName}", arquivo.FileName);
+                            _logger.LogError(ex, "Erro ao converter arquivo {FileName}. Detalhes: {ErrorDetails}", 
+                                arquivo.FileName, ex.ToString());
                             throw; // Re-throw para ser capturado pelo Task.WhenAll
+                        }
+                        finally
+                        {
+                            semaphore.Release();
                         }
                     });
                     tasks.Add(task);
                 }
 
+                _logger.LogInformation("Aguardando conclusão de {TaskCount} tarefas de conversão", tasks.Count);
                 await Task.WhenAll(tasks);
                 
                 _logger.LogInformation("Conversão concluída com sucesso. Total de arquivos: {TotalFiles}", arquivos.Count);
@@ -436,23 +457,35 @@ namespace GeraWebP.Controllers
 
         private async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
         {
+            string threadId = Thread.CurrentThread.ManagedThreadId.ToString();
             try
             {
-                _logger.LogInformation("Iniciando conversão WebP do arquivo {FileName} (Tamanho: {FileSizeMB:F2}MB, Qualidade: {Quality})", 
-                    file.FileName, file.Length / (1024.0 * 1024.0), qualidade);
+                _logger.LogInformation("Thread {ThreadId} - Iniciando conversão WebP do arquivo {FileName} (Tamanho: {FileSizeMB:F2}MB, Qualidade: {Quality})", 
+                    threadId, file.FileName, file.Length / (1024.0 * 1024.0), qualidade);
                 
-                await using var imageStream = file.OpenReadStream();
-                using var image = await Image.LoadAsync(imageStream);
+                // Carregar o arquivo em memória para evitar problemas de concorrência no stream
+                byte[] fileBytes;
+                await using (var imageStream = file.OpenReadStream())
+                {
+                    using var memoryStream = new MemoryStream();
+                    await imageStream.CopyToAsync(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                }
                 
-                _logger.LogInformation("Imagem carregada: {FileName} - Dimensões: {Width}x{Height}, Formato: {Format}", 
-                    file.FileName, image.Width, image.Height, image.Metadata.DecodedImageFormat?.Name ?? "Desconhecido");
+                _logger.LogDebug("Thread {ThreadId} - Arquivo {FileName} carregado em memória ({Bytes} bytes)", 
+                    threadId, file.FileName, fileBytes.Length);
+                
+                using var image = Image.Load(fileBytes);
+                
+                _logger.LogInformation("Thread {ThreadId} - Imagem carregada: {FileName} - Dimensões: {Width}x{Height}, Formato: {Format}", 
+                    threadId, file.FileName, image.Width, image.Height, image.Metadata.DecodedImageFormat?.Name ?? "Desconhecido");
                 
                 // Otimização automática baseada no tamanho do arquivo
                 var tamanhoOriginalMB = file.Length / (1024.0 * 1024.0);
                 var perfilOtimizacao = DeterminarPerfilOtimizacao(tamanhoOriginalMB, qualidade);
                 
-                _logger.LogInformation("Perfil de otimização para {FileName}: Qualidade={Quality}, Método={Method}, Formato={FileFormat}", 
-                    file.FileName, perfilOtimizacao.Quality, perfilOtimizacao.Method, perfilOtimizacao.FileFormat);
+                _logger.LogInformation("Thread {ThreadId} - Perfil de otimização para {FileName}: Qualidade={Quality}, Método={Method}, Formato={FileFormat}", 
+                    threadId, file.FileName, perfilOtimizacao.Quality, perfilOtimizacao.Method, perfilOtimizacao.FileFormat);
             
             // Aplicar filtros adicionais para reduzir ruído se a imagem for muito grande
             if (tamanhoOriginalMB > 5)
@@ -477,8 +510,8 @@ namespace GeraWebP.Controllers
                 await image.SaveAsWebpAsync(output, encoder);
                 var resultBytes = output.ToArray();
                 
-                _logger.LogInformation("Conversão WebP concluída para {FileName}. Tamanho final: {FinalSizeMB:F2}MB (Redução: {ReductionPercent:F1}%)", 
-                    file.FileName, 
+                _logger.LogInformation("Thread {ThreadId} - Conversão WebP concluída para {FileName}. Tamanho final: {FinalSizeMB:F2}MB (Redução: {ReductionPercent:F1}%)", 
+                    threadId, file.FileName, 
                     resultBytes.Length / (1024.0 * 1024.0),
                     (1 - (double)resultBytes.Length / file.Length) * 100);
                 
@@ -486,8 +519,8 @@ namespace GeraWebP.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro durante conversão WebP do arquivo {FileName}: {ErrorMessage}", 
-                    file.FileName, ex.Message);
+                _logger.LogError(ex, "Thread {ThreadId} - Erro durante conversão WebP do arquivo {FileName}: {ErrorMessage}. StackTrace: {StackTrace}", 
+                    threadId, file.FileName, ex.Message, ex.StackTrace);
                 throw; // Re-throw para ser capturado pelo middleware global
             }
         }
@@ -693,11 +726,15 @@ namespace GeraWebP.Controllers
             {
                 try
                 {
+                    _logger.LogDebug("Iniciando leitura do contador global. ContadorPath: {ContadorPath}", ContadorPath);
+                    _logger.LogDebug("ApplicationSettings - ContadorInicial: {ContadorInicial}", _appSettings.ContadorInicial);
+                    
                     // Criar diretório se não existir
                     var directoryPath = Path.GetDirectoryName(ContadorPath);
                     if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
                     {
                         Directory.CreateDirectory(directoryPath);
+                        _logger.LogInformation("Diretório criado: {DirectoryPath}", directoryPath);
                     }
                     
                     int contador = 0;
@@ -705,8 +742,16 @@ namespace GeraWebP.Controllers
                     if (System.IO.File.Exists(ContadorPath))
                     {
                         var json = System.IO.File.ReadAllText(ContadorPath);
+                        _logger.LogDebug("Conteúdo do arquivo contador.json: {Json}", json);
+                        
                         var obj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json);
                         contador = obj != null && obj.ContainsKey("total") ? obj["total"] : 0;
+                        
+                        _logger.LogInformation("Contador lido do arquivo: {Contador}", contador);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Arquivo contador.json não existe: {ContadorPath}", ContadorPath);
                     }
                     
                     // Se o contador estiver em 0, inicializar com o valor do appsettings
@@ -721,15 +766,24 @@ namespace GeraWebP.Controllers
                         
                         _logger.LogInformation("Contador inicializado com valor do appsettings: {ContadorInicial}", contador);
                     }
+                    else if (contador == 0)
+                    {
+                        _logger.LogWarning("Contador em zero e ContadorInicial também é zero. AppSettings: {AppSettings}", 
+                            System.Text.Json.JsonSerializer.Serialize(_appSettings));
+                    }
                     
+                    _logger.LogInformation("Contador final retornado: {Contador}", contador);
                     return contador;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Erro ao ler contador global");
+                    _logger.LogError(ex, "Erro ao ler contador global. AppSettings ContadorInicial: {ContadorInicial}", 
+                        _appSettings.ContadorInicial);
                     
                     // Em caso de erro, retornar o valor inicial do appsettings se configurado
-                    return _appSettings.ContadorInicial > 0 ? _appSettings.ContadorInicial : 0;
+                    var fallbackValue = _appSettings.ContadorInicial > 0 ? _appSettings.ContadorInicial : 0;
+                    _logger.LogWarning("Retornando valor fallback: {FallbackValue}", fallbackValue);
+                    return fallbackValue;
                 }
             }
         }
