@@ -1,0 +1,372 @@
+
+@{{
+    ViewData["Title"] = "Comprimir JPEG Online - Reduza o Tamanho de Imagens JPG";
+    ViewData["Description"] = "Comprima suas imagens JPEG online gratuitamente. Reduza o tamanho de arquivos JPG/JPEG mantendo a melhor qualidade para web. Ferramenta rápida e segura.";
+    ViewData["Keywords"] = "comprimir jpeg, otimizar jpeg, reduzir tamanho jpeg, compressor de imagem jpeg, reduzir jpg";
+}}
+
+<!-- SEO Hero Section -->
+<section class="hero-seo">
+    <div class="container">
+        <header class="hero-content">
+            <h1>Compressor de JPEG Online</h1>
+            <p class="hero-description">
+                <strong>Comprima suas imagens JPEG/JPG online</strong> gratuitamente e reduza o tamanho do arquivo
+                mantendo a máxima qualidade visual. Ideal para otimizar imagens para websites e redes sociais.
+            </p>
+            <div class="hero-features">
+                <span class="feature-badge">⚡ Compressão Rápida</span>
+                <span class="feature-badge">🔒 Seguro e Privado</span>
+                <span class="feature-badge">👌 Controle de Qualidade</span>
+                <span class="feature-badge">批量 Lote</span>
+            </div>
+        </header>
+    </div>
+</section>
+
+<!-- Service Notice -->
+<div class="free-service-notice">
+    <div class="container">
+        <div class="notice-content">
+            <i data-feather="aperture"></i>
+            <span><strong>Compressor de JPEG</strong> • Otimização Inteligente • Qualidade Preservada</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Compressor -->
+<main class="main-converter">
+    <div class="converter-container">
+        <form id="converterForm" method="post" action="/comprimir-jpeg" enctype="multipart/form-data">
+            
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Comprimir JPEG</li>
+                </ol>
+            </nav>
+            
+            <!-- Compression Workflow -->
+            <div class="converter-workflow">
+                <!-- Step 1: Upload -->
+                <div class="workflow-step upload-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h2>Selecionar Imagens JPEG</h2>
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon" style="color: var(--primary-color);">
+                            <i data-feather="image"></i>
+                        </div>
+                        <p>Arraste imagens JPG/JPEG ou clique para selecionar</p>
+                        <div class="upload-button" style="background: var(--primary-color);">
+                            <i data-feather="folder"></i>
+                            Escolher Imagens JPEG
+                        </div>
+                        <div class="upload-info">
+                            <small>Apenas JPG/JPEG • Máx: 100MB por arquivo ou 100MB total</small>
+                        </div>
+                        <label for="arquivos" class="visually-hidden">Selecionar imagens para compressão</label>
+                        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" 
+                               accept="image/jpeg,image/jpg" />
+                    </div>
+                    
+                    <!-- Selected Files Display -->
+                    <div id="selectedFiles" class="selected-files" style="display: none;">
+                        <div class="files-header">
+                            <i data-feather="check-circle"></i>
+                            <span id="fileCount">0</span> imagem(s) selecionada(s)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Compression Settings -->
+                <div class="workflow-step settings-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h2>Nível de Compressão</h2>
+                    </div>
+                    
+                    <div class="quality-control">
+                        <div class="quality-info">
+                            <label for="qualidade" class="quality-label">Qualidade JPEG:</label>
+                            <span class="quality-value" id="qualidadeValue">75</span>%
+                        </div>
+                        
+                        <input type="range" 
+                               id="qualidade" 
+                               name="qualidade" 
+                               min="10" 
+                               max="100" 
+                               value="75" 
+                               class="quality-slider"
+                               oninput="atualizarValorDaQuantidade(this.value)"
+                               aria-label="Ajustar nível de compressão" />
+                        
+                        <div class="quality-labels">
+                            <small>Menor Tamanho</small>
+                            <small>Melhor Qualidade</small>
+                        </div>
+                    </div>
+                    
+                    <div class="compression-presets">
+                        <h4>Presets de Compressão:</h4>
+                        <div class="preset-buttons">
+                            <button type="button" class="preset-btn" data-preset="90" data-tooltip="Qualidade alta, menor compressão">
+                                <i data-feather="award"></i>
+                                Alta Qualidade
+                            </button>
+                            <button type="button" class="preset-btn active" data-preset="75" data-tooltip="Equilíbrio entre qualidade e tamanho">
+                                <i data-feather="target"></i>
+                                Recomendada
+                            </button>
+                            <button type="button" class="preset-btn" data-preset="50" data-tooltip="Compressão alta, menor qualidade">
+                                <i data-feather="zap"></i>
+                                Otimizada
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-preview">
+                        <div class="preview-item">
+                            <div class="preview-icon">
+                                <i data-feather="trending-down"></i>
+                            </div>
+                            <div class="preview-text">
+                                <strong>Redução estimada:</strong>
+                                <small id="compressionEstimate">~40% menor</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Compress -->
+                <div class="workflow-step convert-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h2>Comprimir Imagens JPEG</h2>
+                    </div>
+                    
+                    <button type="submit" class="convert-button" id="convertButton" aria-label="Comprimir imagens JPEG">
+                        <i data-feather="minimize-2"></i>
+                        Comprimir JPEG Agora
+                    </button>
+                    
+                    <div class="convert-info">
+                        <small>Compressão JPEG com qualidade ajustável</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress & Download Sections -->
+            <div id="progressContainer" class="progress-section" style="display: none;">
+                <h3>Comprimindo suas imagens...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progressText">0%</p>
+            </div>
+
+            @if (ViewBag.DownloadLink != null)
+            {{
+                <div class="download-section">
+                    <div class="download-success">
+                        <i data-feather="check-circle"></i>
+                        <h3>Imagens JPEG Comprimidas!</h3>
+                        <p>Suas imagens JPEG foram comprimidas com sucesso.</p>
+                        <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar imagens comprimidas">
+                            <i data-feather="download"></i>
+                            Baixar Imagens Comprimidas
+                        </a>
+                        <small>Arquivo ZIP com todas as imagens otimizadas</small>
+                    </div>
+                </div>
+            }}
+        </form>
+    </div>
+</main>
+
+<!-- SEO Content -->
+<section class="seo-content">
+    <div class="container">
+        <!-- Compression Benefits -->
+        <section class="compression-benefits" aria-labelledby="benefits-title">
+            <h2 id="benefits-title" class="section-title">Por que Comprimir Imagens JPEG?</h2>
+            
+            <div class="benefits-grid">
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="trending-up"></i>
+                    </div>
+                    <h3>Carregamento Rápido de Sites</h3>
+                    <p>Imagens JPEG menores aceleram seu site, melhorando a experiência do usuário e o ranking no Google (SEO).</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="smartphone"></i>
+                    </div>
+                    <h3>Economia de Dados Móveis</h3>
+                    <p>Imagens mais leves consomem menos dados, o que é ideal para usuários em dispositivos móveis.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="save"></i>
+                    </div>
+                    <h3>Menos Espaço de Armazenamento</h3>
+                    <p>Reduza o espaço necessário para armazenar suas imagens em seu servidor ou dispositivo.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="share-2"></i>
+                    </div>
+                    <h3>Compartilhamento Fácil</h3>
+                    <p>Arquivos menores são mais fáceis e rápidos de compartilhar por e-mail ou em redes sociais.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- How-to Section -->
+        <section class="howto-section" aria-labelledby="howto-title">
+            <h2 id="howto-title" class="section-title">Como Comprimir JPEG Online</h2>
+            
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3>Selecione as Imagens</h3>
+                    <p>Arraste e solte seus arquivos JPG ou JPEG, ou clique para selecioná-los do seu computador.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3>Ajuste a Qualidade</h3>
+                    <p>Use o controle deslizante para encontrar o equilíbrio perfeito entre qualidade e tamanho do arquivo.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3>Comprima</h3>
+                    <p>Clique no botão para iniciar o processo de compressão. É rápido e totalmente online.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h3>Baixe os Arquivos</h3>
+                    <p>Faça o download das suas imagens JPEG comprimidas, individualmente ou em um arquivo ZIP.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" aria-labelledby="faq-title">
+            <h2 id="faq-title" class="section-title">Perguntas Frequentes sobre Compressão de JPEG</h2>
+            
+            <div class="faq-container">
+                <details class="faq-item">
+                    <summary>Qual a diferença entre JPG e JPEG?</summary>
+                    <p>Nenhuma! JPG e JPEG referem-se ao mesmo formato de arquivo. A diferença vem de versões mais antigas do Windows que exigiam extensões de três letras.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>A compressão JPEG perde qualidade?</summary>
+                    <p>JPEG é um formato com perdas, o que significa que alguma qualidade é perdida para reduzir o tamanho. No entanto, nosso compressor permite que você controle o nível de qualidade para que a perda seja imperceptível.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>É seguro enviar minhas imagens?</summary>
+                    <p>Sim. Suas imagens são enviadas por uma conexão segura e são excluídas de nossos servidores automaticamente após um curto período.</p>
+                </details>
+            </div>
+        </section>
+    </div>
+</section>
+
+@section Scripts {{
+    <script>
+        feather.replace();
+        
+        function atualizarValorDaQuantidade(value) {{
+            document.getElementById('qualidadeValue').textContent = value;
+            updateCompressionEstimate(value);
+            updateActivePreset(value);
+        }}
+        
+        function updateCompressionEstimate(value) {{
+            const compressionEstimate = document.getElementById('compressionEstimate');
+            if (compressionEstimate) {{
+                let estimate;
+                if (value <= 30) estimate = '~70% menor';
+                else if (value <= 50) estimate = '~60% menor';
+                else if (value <= 70) estimate = '~50% menor';
+                else if (value <= 85) estimate = '~35% menor';
+                else estimate = '~20% menor';
+                
+                compressionEstimate.textContent = estimate;
+            }}
+        }}
+        
+        function setCompressionPreset(value) {{
+            document.getElementById('qualidade').value = value;
+            atualizarValorDaQuantidade(value);
+        }}
+        
+        function updateActivePreset(value) {{
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (value >= 85) {{
+                document.querySelector('[data-preset="90"]').classList.add('active');
+            }} else if (value >= 60) {{
+                document.querySelector('[data-preset="75"]').classList.add('active');
+            }} else {{
+                document.querySelector('[data-preset="50"]').classList.add('active');
+            }}
+        }}
+
+        // Preset buttons event delegation
+        document.addEventListener('click', function(e) {{
+            if (e.target.closest('[data-preset]')) {{
+                const preset = e.target.closest('[data-preset]').dataset.preset;
+                if (preset) {{
+                    setCompressionPreset(parseInt(preset));
+                }}
+            }}
+        }});
+
+        // File upload handling
+        const fileInput = document.getElementById('arquivos');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileCount = document.getElementById('fileCount');
+        const uploadArea = document.getElementById('uploadArea');
+
+        fileInput.addEventListener('change', function(event) {{
+            const files = event.target.files;
+            updateFileDisplay(files);
+        }});
+
+        uploadArea.addEventListener('click', function(e) {{
+            if (e.target === fileInput) return;
+            fileInput.click();
+        }});
+
+        function updateFileDisplay(files) {{
+            if (files.length > 0) {{
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {{
+                    totalSize += files[i].size;
+                }}
+                const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+                
+                fileCount.textContent = `${files.length} imagem(s) • ${totalMB}MB total`;
+                selectedFiles.style.display = 'block';
+                uploadArea.classList.add('has-files');
+            }} else {{
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+            }}
+        }}
+    </script>
+}}
+ 
