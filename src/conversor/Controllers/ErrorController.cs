@@ -10,16 +10,25 @@ public class ErrorController(ILogger<ErrorController> logger) : Controller
     [Route("{statusCode:int}")]
     public IActionResult HandleError(int statusCode)
     {
-        _logger.LogWarning("Erro HTTP {StatusCode} capturado pelo ErrorController", statusCode);
+        var requestUrl = HttpContext.Request.Path + HttpContext.Request.QueryString;
+        var method = HttpContext.Request.Method;
+        var userAgent = HttpContext.Request.Headers.UserAgent.ToString();
+        
+        _logger.LogWarning("Erro HTTP {StatusCode} capturado pelo ErrorController - URL: {RequestUrl}, Método: {Method}, UserAgent: {UserAgent}", 
+            statusCode, requestUrl, method, userAgent);
         
         switch (statusCode)
         {
             case 404:
                 return View("NotFound");
+            case 405:
+                _logger.LogWarning("Método não permitido para URL: {RequestUrl} com método: {Method}", requestUrl, method);
+                // Redireciona para a página inicial ou retorna erro mais amigável
+                return RedirectToAction("Index", "Home");
             case 500:
                 return View("InternalServerError");
             default:
-                _logger.LogError("Status code não tratado: {StatusCode}", statusCode);
+                _logger.LogError("Status code não tratado: {StatusCode} para URL: {RequestUrl}", statusCode, requestUrl);
                 return View("GeneralError");
         }
     }

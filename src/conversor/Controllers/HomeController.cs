@@ -107,7 +107,7 @@ namespace GeraWebP.Controllers
             MultipartBodyLengthLimit = 104857600,
             ValueLengthLimit = 104857600,
             MultipartHeadersLengthLimit = 104857600)]
-        public async Task<IActionResult> Converter(List<IFormFile>? arquivos, int qualidade = 75)
+        public async Task<IActionResult> Converter(List<IFormFile>? arquivos, int qualidade = 75, string outputFormat = "webp", string sourceView = "Index")
         {   
             try
             {
@@ -116,58 +116,76 @@ namespace GeraWebP.Controllers
                 var availableProcessors = Environment.ProcessorCount;
                 var workingSetMB = Environment.WorkingSet / (1024.0 * 1024.0);
                 
-                _logger.LogInformation("Iniciando conversão de arquivos. Quantidade: {Count}, Qualidade: {Quality}. " +
+                _logger.LogInformation("Iniciando conversão de arquivos. Formato: {OutputFormat}, Quantidade: {Count}, Qualidade: {Quality}. " +
                     "Sistema - Memória: {MemoryMB:F1}MB, WorkingSet: {WorkingSetMB:F1}MB, CPUs: {CPUs}", 
-                    arquivos?.Count ?? 0, qualidade, totalMemoryMB, workingSetMB, availableProcessors);
+                    outputFormat, arquivos?.Count ?? 0, qualidade, totalMemoryMB, workingSetMB, availableProcessors);
                 
                 if (arquivos == null || arquivos.Count == 0)
                 {
                     _logger.LogWarning("Tentativa de conversão sem arquivos selecionados");
                     ModelState.AddModelError("files", "Por favor, selecione um ou mais arquivos.");
-                    return View("Index");
+                    return View(sourceView);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro no início do processo de conversão");
                 ModelState.AddModelError("", "Erro interno no servidor. Tente novamente.");
-                return View("Index");
+                return View(sourceView);
             }
             
             // Validar tipos de arquivo
-            var tiposPermitidos = new HashSet<string> { "image/jpeg", "image/png", "image/gif" };
-            foreach (var arquivo in arquivos)
+            if (outputFormat == "jpeg")
             {
-                if (!tiposPermitidos.Contains(arquivo.ContentType))
+                var tiposPermitidosJpeg = new HashSet<string> { "image/jpeg" };
+                foreach (var arquivo in arquivos)
                 {
-                    ModelState.AddModelError("files", $"Tipo de arquivo não permitido: {arquivo.ContentType}");
-                    return View("Index");
+                    if (!tiposPermitidosJpeg.Contains(arquivo.ContentType))
+                    {
+                        ModelState.AddModelError("files", $"Para compressão JPEG, apenas arquivos 'image/jpeg' são permitidos. Arquivo '{arquivo.FileName}' é do tipo '{arquivo.ContentType}'.");
+                        return View(sourceView);
+                    }
+                }
+            }
+            else // webp
+            {
+                var tiposPermitidosWebp = new HashSet<string> { "image/jpeg", "image/png", "image/gif" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidosWebp.Contains(arquivo.ContentType))
+                    {
+                        ModelState.AddModelError("files", $"Tipo de arquivo não permitido para conversão WebP: {arquivo.ContentType}");
+                        return View(sourceView);
+                    }
                 }
             }
             
-            // Validar dimensões das imagens antes da conversão
-            const int maxWebPWidth = 16383;
-            const int maxWebPHeight = 16383;
-            
-            foreach (var arquivo in arquivos)
+            // Validar dimensões das imagens antes da conversão (apenas para WebP)
+            if (outputFormat == "webp")
             {
-                try
+                const int maxWebPWidth = 16383;
+                const int maxWebPHeight = 16383;
+                
+                foreach (var arquivo in arquivos)
                 {
-                    using var imageStream = arquivo.OpenReadStream();
-                    using var image = await Image.LoadAsync(imageStream);
-                    
-                    if (image.Width > maxWebPWidth || image.Height > maxWebPHeight)
+                    try
                     {
-                        ModelState.AddModelError("files", 
-                            $"A imagem '{arquivo.FileName}' ({image.Width}x{image.Height}) excede o limite máximo de {maxWebPWidth}x{maxWebPHeight} pixels suportado pelo formato WebP.");
-                        return View("Index");
+                        using var imageStream = arquivo.OpenReadStream();
+                        using var image = await Image.LoadAsync(imageStream);
+                        
+                        if (image.Width > maxWebPWidth || image.Height > maxWebPHeight)
+                        {
+                            ModelState.AddModelError("files", 
+                                $"A imagem '{arquivo.FileName}' ({image.Width}x{image.Height}) excede o limite máximo de {maxWebPWidth}x{maxWebPHeight} pixels suportado pelo formato WebP.");
+                            return View(sourceView);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Erro ao validar dimensões da imagem {FileName}", arquivo.FileName);
-                    ModelState.AddModelError("files", $"Erro ao processar a imagem '{arquivo.FileName}': {ex.Message}");
-                    return View("Index");
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Erro ao validar dimensões da imagem {FileName}", arquivo.FileName);
+                        ModelState.AddModelError("files", $"Erro ao processar a imagem '{arquivo.FileName}': {ex.Message}");
+                        return View(sourceView);
+                    }
                 }
             }
             
@@ -180,7 +198,7 @@ namespace GeraWebP.Controllers
             {
                 var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
                 ModelState.AddModelError("files", $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB. Por favor, selecione menos arquivos ou arquivos menores.");
-                return View("Index");
+                return View(sourceView);
             }
             
             // Validar tamanho individual dos arquivos
@@ -190,7 +208,7 @@ namespace GeraWebP.Controllers
                 {
                     var fileMB = Math.Round(arquivo.Length / (1024.0 * 1024.0), 1);
                     ModelState.AddModelError("files", $"Arquivo '{arquivo.FileName}' ({fileMB}MB) excede o limite de 100MB por arquivo.");
-                    return View("Index");
+                    return View(sourceView);
                 }
             }
             
@@ -217,10 +235,9 @@ namespace GeraWebP.Controllers
 
                 List<Task> tasks = [];
                 
-                // Ajustar concorrência baseado nos recursos disponíveis
                 var currentWorkingSetMB = Environment.WorkingSet / (1024.0 * 1024.0);
-                var maxConcurrency = Environment.ProcessorCount > 2 ? 3 : 1; // Servidor com poucos recursos = 1 por vez
-                var memoryThresholdMB = 500; // Se usar mais que 500MB, reduzir concorrência
+                var maxConcurrency = Environment.ProcessorCount > 2 ? 3 : 1;
+                var memoryThresholdMB = 500;
                 
                 if (currentWorkingSetMB > memoryThresholdMB)
                 {
@@ -242,29 +259,38 @@ namespace GeraWebP.Controllers
                             if (arquivo.Length > 0)
                             {
                                 var threadStartTime = DateTime.UtcNow;
-                                _logger.LogInformation("Thread {ThreadId} - Iniciando conversão do arquivo {FileName} (Tamanho: {FileSize} bytes) às {StartTime}", 
-                                    Thread.CurrentThread.ManagedThreadId, arquivo.FileName, arquivo.Length, threadStartTime);
-                                
+                                _logger.LogInformation("Thread {ThreadId} - Iniciando processamento do arquivo {FileName} (Tamanho: {FileSize} bytes) para o formato {OutputFormat} às {StartTime}",
+                                    Thread.CurrentThread.ManagedThreadId, arquivo.FileName, arquivo.Length, outputFormat, threadStartTime);
+
                                 var caminhoOriginal = Path.Combine(caminhoUpload, arquivo.FileName);
                                 var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
-                                
-                                var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".webp");
+                                string caminhoCompletoConvertido;
+                                byte[] outputImage;
 
-                                _logger.LogDebug("Salvando arquivo original: {CaminhoOriginal}", caminhoOriginal);
                                 using (var fileStream = new FileStream(caminhoOriginal, FileMode.Create))
                                 {
                                     await arquivo.CopyToAsync(fileStream);
                                 }
 
-                                _logger.LogDebug("Iniciando conversão WebP para {FileName}", arquivo.FileName);
-                                byte[] webPImage = await ConvertToWebP(arquivo, qualidade);
-                                
+                                if (outputFormat == "jpeg")
+                                {
+                                    caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".jpeg");
+                                    _logger.LogDebug("Iniciando compressão JPEG para {FileName}", arquivo.FileName);
+                                    outputImage = await CompressJpeg(arquivo, qualidade);
+                                }
+                                else // default to webp
+                                {
+                                    caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".webp");
+                                    _logger.LogDebug("Iniciando conversão WebP para {FileName}", arquivo.FileName);
+                                    outputImage = await ConvertToWebP(arquivo, qualidade);
+                                }
+
                                 _logger.LogDebug("Salvando arquivo convertido: {CaminhoConvertido}", caminhoCompletoConvertido);
-                                await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, webPImage);
+                                await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, outputImage);
 
                                 Interlocked.Increment(ref arquivosProcessados);
                                 int progress = (int)((float)arquivosProcessados / totalFiles * 100);
-                                
+
                                 try 
                                 {
                                     await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
@@ -277,13 +303,12 @@ namespace GeraWebP.Controllers
                                 var threadEndTime = DateTime.UtcNow;
                                 var conversionDuration = (threadEndTime - threadStartTime).TotalMilliseconds;
                                 
-                                _logger.LogInformation("Thread {ThreadId} - Arquivo {FileName} convertido com sucesso em {DurationMs}ms. Progresso: {Progress}%", 
+                                _logger.LogInformation("Thread {ThreadId} - Arquivo {FileName} processado com sucesso em {DurationMs}ms. Progresso: {Progress}%", 
                                     Thread.CurrentThread.ManagedThreadId, arquivo.FileName, conversionDuration, progress);
                                 
-                                // Alertar se conversão demorar muito (pode indicar problema no servidor)
                                 if (conversionDuration > 30000) // 30 segundos
                                 {
-                                    _logger.LogWarning("⚠️ Conversão LENTA detectada! Arquivo {FileName} demorou {DurationMs}ms ({DurationSec:F1}s)", 
+                                    _logger.LogWarning("⚠️ Processamento LENTO detectado! Arquivo {FileName} demorou {DurationMs}ms ({DurationSec:F1}s)", 
                                         arquivo.FileName, conversionDuration, conversionDuration / 1000.0);
                                 }
                             }
@@ -305,7 +330,7 @@ namespace GeraWebP.Controllers
                                 _logger.LogError(ex, "Erro ao converter arquivo {FileName}. Detalhes: {ErrorDetails}", 
                                     arquivo.FileName, ex.ToString());
                             }
-                            throw; // Re-throw para ser capturado pelo Task.WhenAll
+                            throw;
                         }
                         finally
                         {
@@ -317,13 +342,11 @@ namespace GeraWebP.Controllers
 
                 _logger.LogInformation("Aguardando conclusão de {TaskCount} tarefas de conversão", tasks.Count);
                 
-                // Monitorar recursos do sistema durante conversão
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 var initialMemory = GC.GetTotalMemory(false);
                 
                 try
                 {
-                    // Timeout para operações de conversão (5 minutos para múltiplos arquivos)
                     using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
                     await Task.WhenAll(tasks).WaitAsync(cts.Token);
                     
@@ -351,13 +374,13 @@ namespace GeraWebP.Controllers
                 IncrementarContadorGlobal(arquivos.Count);
 
                 ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
-                return View("Index");
+                return View(sourceView);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro durante o processo de conversão. SessionId: {SessionId}", sessionId);
                 ModelState.AddModelError("", "Erro interno durante a conversão. Tente novamente.");
-                return View("Index");
+                return View(sourceView);
             }
         }
 
@@ -528,6 +551,106 @@ namespace GeraWebP.Controllers
             }
         }
 
+        [HttpPost("api/comprimir-jpeg")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ComprimirJpegApi(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            try
+            {
+                _logger.LogWarning("API JPEG - Esta é a API que retorna JSON! Quantidade: {Count}, Qualidade: {Quality}, UserAgent: {UserAgent}",
+                    arquivos?.Count ?? 0, qualidade, Request.Headers.UserAgent.ToString());
+
+                if (arquivos == null || arquivos.Count == 0)
+                {
+                    _logger.LogWarning("API - Tentativa de compressão sem arquivos selecionados");
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Por favor, selecione um ou mais arquivos."
+                    });
+                }
+
+                // Validar tipos de arquivo
+                var tiposPermitidos = new HashSet<string> { "image/jpeg" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidos.Contains(arquivo.ContentType))
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"Tipo de arquivo não permitido: {arquivo.ContentType}. Apenas JPEG é suportado."
+                        });
+                    }
+                }
+
+                // Validar tamanho total dos arquivos (100MB máximo)
+                const long maxTotalSize = 100 * 1024 * 1024; // 100MB
+                long totalSize = arquivos.Sum(f => f.Length);
+                if (totalSize > maxTotalSize)
+                {
+                    var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB."
+                    });
+                }
+
+                var sessionId = Guid.NewGuid().ToString();
+                var caminhoUpload = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaUploads, sessionId);
+                var caminhoConvertido = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
+
+                Directory.CreateDirectory(caminhoUpload);
+                Directory.CreateDirectory(caminhoConvertido);
+
+                List<Task> tasks = [];
+                foreach (var arquivo in arquivos)
+                {
+                    var task = Task.Run(async () =>
+                    {
+                        if (arquivo.Length > 0)
+                        {
+                            var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
+                            var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".jpeg");
+
+                            byte[] jpegImage = await CompressJpeg(arquivo, qualidade);
+                            await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, jpegImage);
+                        }
+                    });
+                    tasks.Add(task);
+                }
+
+                await Task.WhenAll(tasks);
+
+                IncrementarContadorGlobal(arquivos.Count);
+
+                var downloadLink = Url.Action("DownloadFiles", new { sessionId });
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Compressão concluída com sucesso!",
+                    downloadLink = downloadLink,
+                    sessionId = sessionId,
+                    filesCount = arquivos.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro na compressão de arquivos JPEG");
+                return Json(new
+                {
+                    success = false,
+                    message = "Erro interno na compressão: " + ex.Message
+                });
+            }
+        }
+
         private async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
         {
             string threadId = Thread.CurrentThread.ManagedThreadId.ToString();
@@ -596,6 +719,21 @@ namespace GeraWebP.Controllers
                     threadId, file.FileName, ex.Message, ex.StackTrace);
                 throw; // Re-throw para ser capturado pelo middleware global
             }
+        }
+
+        private async Task<byte[]> CompressJpeg(IFormFile file, int quality)
+        {
+            using var imageStream = file.OpenReadStream();
+            using var image = await Image.LoadAsync(imageStream);
+
+            using var output = new MemoryStream();
+            var encoder = new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder
+            {
+                Quality = quality
+            };
+
+            await image.SaveAsJpegAsync(output, encoder);
+            return output.ToArray();
         }
 
         private static WebPOptimizationProfile DeterminarPerfilOtimizacao(double tamanhoMB, int qualidadeBase)
@@ -673,10 +811,12 @@ namespace GeraWebP.Controllers
                     var arquivo = arquivos[0];
                     var nomeArquivo = Path.GetFileName(arquivo);
                     var bytes = System.IO.File.ReadAllBytes(arquivo);
+                    var extension = Path.GetExtension(nomeArquivo).ToLowerInvariant();
+                    var contentType = extension == ".webp" ? "image/webp" : "image/jpeg";
 
                     var nomeDownload = $"wepper-{nomeArquivo}";
                     _logger.LogInformation("Download de arquivo único {FileName} para sessão {SessionId}", nomeArquivo, sessionId);
-                    return File(bytes, "image/webp", nomeDownload);
+                    return File(bytes, contentType, nomeDownload);
                 }
                 
                 // Se houver múltiplos arquivos, criar zip
@@ -748,6 +888,142 @@ namespace GeraWebP.Controllers
             ViewData["Description"] = "Comprima e otimize suas imagens online gratuitamente. Reduza o tamanho de JPG, PNG, GIF convertendo para WebP. Ferramenta profissional.";
             ViewData["Keywords"] = "compressor imagem online, comprimir foto, otimizar imagem web, reduzir tamanho imagem";
             return View("CompressorImagem");
+        }
+
+        [HttpGet("comprimir-jpeg")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ComprimirJpeg()
+        {
+            // Adicionar headers anti-cache específicos para evitar problemas de cache
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
+            Response.Headers.Append("Content-Type", "text/html; charset=utf-8");
+            
+            ViewData["Title"] = "Comprimir JPEG Online Gratuito";
+            ViewData["Description"] = "Comprima e otimize suas imagens JPEG online gratuitamente. Reduza o tamanho de arquivos JPG/JPEG mantendo a melhor qualidade para web.";
+            ViewData["Keywords"] = "comprimir jpeg, otimizar jpeg, reduzir tamanho jpeg, compressor de imagem jpeg";
+            
+            _logger.LogInformation("GET - Acesso à página comprimir-jpeg");
+            
+            return View("CompressorJpeg");
+        }
+
+        [HttpPost("comprimir-jpeg")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ComprimirJpegPost(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            try
+            {
+                _logger.LogInformation("POST - Iniciando compressão de arquivos JPEG. Quantidade: {Count}, Qualidade: {Quality}",
+                    arquivos?.Count ?? 0, qualidade);
+
+                if (arquivos == null || arquivos.Count == 0)
+                {
+                    _logger.LogWarning("POST - Tentativa de compressão sem arquivos selecionados");
+                    ModelState.AddModelError("files", "Por favor, selecione um ou mais arquivos.");
+                    return View("CompressorJpeg");
+                }
+
+                // Validar tipos de arquivo
+                var tiposPermitidos = new HashSet<string> { "image/jpeg" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidos.Contains(arquivo.ContentType))
+                    {
+                        ModelState.AddModelError("files", $"Tipo de arquivo não permitido: {arquivo.ContentType}. Apenas JPEG é suportado.");
+                        return View("CompressorJpeg");
+                    }
+                }
+
+                // Validar tamanho total dos arquivos (100MB máximo)
+                const long maxTotalSize = 100 * 1024 * 1024; // 100MB
+                long totalSize = arquivos.Sum(f => f.Length);
+                if (totalSize > maxTotalSize)
+                {
+                    var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
+                    ModelState.AddModelError("files", $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB.");
+                    return View("CompressorJpeg");
+                }
+
+                var sessionId = Guid.NewGuid().ToString();
+                var caminhoUpload = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaUploads, sessionId);
+                var caminhoConvertido = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
+
+                Directory.CreateDirectory(caminhoUpload);
+                Directory.CreateDirectory(caminhoConvertido);
+
+                int totalFiles = arquivos.Count;
+                int arquivosProcessados = 0;
+
+                List<Task> tasks = [];
+                var semaphore = new SemaphoreSlim(Environment.ProcessorCount > 2 ? 3 : 1, Environment.ProcessorCount > 2 ? 3 : 1);
+
+                foreach (var arquivo in arquivos)
+                {
+                    var task = Task.Run(async () =>
+                    {
+                        await semaphore.WaitAsync();
+                        try
+                        {
+                            if (arquivo.Length > 0)
+                            {
+                                var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
+                                var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".jpeg");
+
+                                byte[] jpegImage = await CompressJpeg(arquivo, qualidade);
+                                await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, jpegImage);
+
+                                Interlocked.Increment(ref arquivosProcessados);
+                                int progress = (int)((float)arquivosProcessados / totalFiles * 100);
+
+                                try 
+                                {
+                                    await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
+                                }
+                                catch (Exception hubEx)
+                                {
+                                    _logger.LogWarning(hubEx, "Erro ao enviar progresso via SignalR para {FileName}", arquivo.FileName);
+                                }
+
+                                _logger.LogInformation("Arquivo {FileName} comprimido com sucesso. Progresso: {Progress}%", 
+                                    arquivo.FileName, progress);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Erro ao comprimir arquivo {FileName}", arquivo.FileName);
+                            throw;
+                        }
+                        finally
+                        {
+                            semaphore.Release();
+                        }
+                    });
+                    tasks.Add(task);
+                }
+
+                await Task.WhenAll(tasks);
+
+                IncrementarContadorGlobal(arquivos.Count);
+
+                ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
+                ViewData["Title"] = "Compressão JPEG Concluída";
+                
+                _logger.LogInformation("Compressão JPEG concluída com sucesso para {TotalFiles} arquivos", arquivos.Count);
+                
+                return View("CompressorJpeg");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro na compressão de arquivos JPEG");
+                ModelState.AddModelError("", "Erro interno na compressão: " + ex.Message);
+                return View("CompressorJpeg");
+            }
         }
 
 
