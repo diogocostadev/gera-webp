@@ -13,22 +13,19 @@ src/conversor/wwwroot/ads.txt
 ```
 
 ### 2. Configuração Atual
-O arquivo contém a linha padrão:
+O arquivo contém a configuração correta:
 ```
-google.com, pub-XXXXXXXXX, DIRECT, f08c47fec0942fa0
+google.com, pub-4599273059062403, DIRECT, f08c47fec0942fa0
 ```
 
-### 3. Configuração Necessária
-**IMPORTANTE**: Substitua `pub-XXXXXXXXX` pelo seu Publisher ID real do Google AdSense.
+### 3. Configuração Aplicada
+✅ **CONCLUÍDO**: O arquivo já foi configurado com seu Publisher ID real do Google AdSense.
 
-Para encontrar seu Publisher ID:
-1. Acesse o [Google AdSense Console](https://www.google.com/adsense/)
-2. Vá em "Contas" > "Informações da conta"
-3. Copie o Publisher ID (formato: `pub-1234567890123456`)
+Seu Publisher ID: `pub-4599273059062403`
 
-### 4. Exemplo de Configuração Final
+### 4. Configuração Final
 ```
-google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
+google.com, pub-4599273059062403, DIRECT, f08c47fec0942fa0
 ```
 
 ### 5. Verificação
@@ -39,10 +36,10 @@ https://wepper.app/ads.txt
 
 ## Próximos Passos
 
-1. **Substituir o Publisher ID**: Edite o arquivo `src/conversor/wwwroot/ads.txt` com seu ID real
-2. **Fazer deploy**: Publique a atualização no servidor
-3. **Aguardar validação**: O Google AdSense pode levar até 24 horas para reconhecer as mudanças
-4. **Verificar status**: Monitore o console do AdSense para confirmação
+1. ✅ **Substituir o Publisher ID**: CONCLUÍDO - Arquivo configurado com `pub-4599273059062403`
+2. 🚀 **Fazer deploy**: Publique a atualização no servidor
+3. ⏳ **Aguardar validação**: O Google AdSense pode levar até 24 horas para reconhecer as mudanças
+4. 📊 **Verificar status**: Monitore o console do AdSense para confirmação
 
 ## Formato do Arquivo ads.txt
 

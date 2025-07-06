@@ -212,8 +212,9 @@ O arquivo `ads.txt` é obrigatório para evitar problemas de monetização no Go
 O arquivo foi criado em: `src/conversor/wwwroot/ads.txt`
 
 ### Configuração
-1. **Edite o arquivo**: Substitua `pub-XXXXXXXXX` pelo seu Publisher ID real
-2. **Formato correto**: `google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0`
+✅ **CONCLUÍDO**: O arquivo já foi configurado com seu Publisher ID real
+1. **Publisher ID**: `pub-4599273059062403`
+2. **Configuração atual**: `google.com, pub-4599273059062403, DIRECT, f08c47fec0942fa0`
 3. **Verificação**: Após deploy, acesse `https://wepper.app/ads.txt`
 
 ### Documentação Completa
@@ -222,11 +223,12 @@ Consulte `docs/CONFIGURACAO_ADS_TXT.md` para instruções detalhadas.
 ## Próximos Passos
 
 1. ✅ Solicitar aprovação do Google AdSense
-2. ✅ **Configurar arquivo ads.txt** (CRÍTICO)
-3. ✅ Substituir placeholders pelos códigos reais
-4. ✅ Testar em diferentes dispositivos
-5. ✅ Monitorar performance e ajustar posições
-6. ✅ Otimizar baseado nos relatórios
+2. ✅ **Configurar arquivo ads.txt** (CONCLUÍDO)
+3. 🚀 **Fazer deploy da aplicação** (PRÓXIMO)
+4. ✅ Substituir placeholders pelos códigos reais
+5. ✅ Testar em diferentes dispositivos
+6. ✅ Monitorar performance e ajustar posições
+7. ✅ Otimizar baseado nos relatórios
 
 ## Suporte
 
