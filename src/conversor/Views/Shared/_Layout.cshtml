@@ -29,10 +29,37 @@
     <link rel="canonical" href="@canonicalUrl" />
     
     <!-- Hreflang para SEO Internacional -->
-    <link rel="alternate" hreflang="pt-br" href="https://wepper.app/" />
-    <link rel="alternate" hreflang="en" href="https://wepper.app/en/" />
-    <link rel="alternate" hreflang="es" href="https://wepper.app/es/" />
-    <link rel="alternate" hreflang="x-default" href="https://wepper.app/" />
+    @{
+        var currentPath = Context.Request.Path.Value?.ToLower() ?? "/";
+        var baseUrl = "https://wepper.app";
+        
+        // Mapear URLs para suas versões em diferentes idiomas
+        var urlMappings = new Dictionary<string, Dictionary<string, string>>
+        {
+            ["/"] = new() { ["pt-br"] = "/", ["en"] = "/en/", ["es"] = "/es/" },
+            ["/comprimir-jpeg"] = new() { ["pt-br"] = "/comprimir-jpeg", ["en"] = "/en/compress-jpeg", ["es"] = "/es/comprimir-jpeg" },
+            ["/comprimir-png"] = new() { ["pt-br"] = "/comprimir-png", ["en"] = "/en/compress-png", ["es"] = "/es/comprimir-png" },
+            ["/en/compress-jpeg"] = new() { ["pt-br"] = "/comprimir-jpeg", ["en"] = "/en/compress-jpeg", ["es"] = "/es/comprimir-jpeg" },
+            ["/en/compress-png"] = new() { ["pt-br"] = "/comprimir-png", ["en"] = "/en/compress-png", ["es"] = "/es/comprimir-png" },
+            ["/es/comprimir-jpeg"] = new() { ["pt-br"] = "/comprimir-jpeg", ["en"] = "/en/compress-jpeg", ["es"] = "/es/comprimir-jpeg" },
+            ["/es/comprimir-png"] = new() { ["pt-br"] = "/comprimir-png", ["en"] = "/en/compress-png", ["es"] = "/es/comprimir-png" },
+            ["/en/"] = new() { ["pt-br"] = "/", ["en"] = "/en/", ["es"] = "/es/" },
+            ["/es/"] = new() { ["pt-br"] = "/", ["en"] = "/en/", ["es"] = "/es/" },
+            ["/privacidade"] = new() { ["pt-br"] = "/privacidade", ["en"] = "/en/privacy", ["es"] = "/es/privacidad" },
+            ["/en/privacy"] = new() { ["pt-br"] = "/privacidade", ["en"] = "/en/privacy", ["es"] = "/es/privacidad" },
+            ["/es/privacidad"] = new() { ["pt-br"] = "/privacidade", ["en"] = "/en/privacy", ["es"] = "/es/privacidad" }
+        };
+        
+        // Obter mapeamentos para a página atual
+        var currentMappings = urlMappings.ContainsKey(currentPath) 
+            ? urlMappings[currentPath] 
+            : new Dictionary<string, string> { ["pt-br"] = "/", ["en"] = "/en/", ["es"] = "/es/" };
+    }
+    
+    <link rel="alternate" hreflang="pt-br" href="@(baseUrl + currentMappings["pt-br"])" />
+    <link rel="alternate" hreflang="en" href="@(baseUrl + currentMappings["en"])" />
+    <link rel="alternate" hreflang="es" href="@(baseUrl + currentMappings["es"])" />
+    <link rel="alternate" hreflang="x-default" href="@(baseUrl + currentMappings["pt-br"])" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />

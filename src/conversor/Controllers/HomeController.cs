@@ -909,6 +909,25 @@ namespace GeraWebP.Controllers
             return View("CompressorJpeg");
         }
 
+        [HttpGet("comprimir-png")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ComprimirPng()
+        {
+            // Adicionar headers anti-cache específicos para evitar problemas de cache
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
+            Response.Headers.Append("Content-Type", "text/html; charset=utf-8");
+            
+            ViewData["Title"] = "Comprimir PNG Online Gratuito";
+            ViewData["Description"] = "Comprima e otimize suas imagens PNG online gratuitamente. Reduza o tamanho de arquivos PNG mantendo transparência e a melhor qualidade para web.";
+            ViewData["Keywords"] = "comprimir png, otimizar png, reduzir tamanho png, compressor de imagem png, png transparência";
+            
+            _logger.LogInformation("GET - Acesso à página comprimir-png");
+            
+            return View("CompressorPng");
+        }
+
         [HttpPost("comprimir-jpeg")]
         [RequestSizeLimit(104857600)] // 100MB
         [RequestFormLimits(
@@ -1026,6 +1045,127 @@ namespace GeraWebP.Controllers
             }
         }
 
+        [HttpPost("comprimir-png")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ComprimirPngPost(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            try
+            {
+                _logger.LogInformation("POST - Iniciando compressão de arquivos PNG. Quantidade: {Count}, Qualidade: {Quality}",
+                    arquivos?.Count ?? 0, qualidade);
+
+                if (arquivos == null || arquivos.Count == 0)
+                {
+                    _logger.LogWarning("POST - Tentativa de compressão sem arquivos selecionados");
+                    ModelState.AddModelError("files", "Por favor, selecione um ou mais arquivos.");
+                    return View("CompressorPng");
+                }
+
+                // Validar tipos de arquivo
+                var tiposPermitidos = new HashSet<string> { "image/png" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidos.Contains(arquivo.ContentType))
+                    {
+                        ModelState.AddModelError("files", $"Tipo de arquivo não permitido: {arquivo.ContentType}. Apenas PNG é suportado.");
+                        return View("CompressorPng");
+                    }
+                }
+
+                // Validar tamanho total dos arquivos (100MB máximo)
+                const long maxTotalSize = 100 * 1024 * 1024; // 100MB
+                long totalSize = arquivos.Sum(f => f.Length);
+                if (totalSize > maxTotalSize)
+                {
+                    var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
+                    ModelState.AddModelError("files", $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB.");
+                    return View("CompressorPng");
+                }
+
+                var sessionId = Guid.NewGuid().ToString();
+                var caminhoUpload = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaUploads, sessionId);
+                var caminhoConvertido = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
+
+                Directory.CreateDirectory(caminhoUpload);
+                Directory.CreateDirectory(caminhoConvertido);
+
+                // Usar semáforo para controlar concorrência (máximo 4 processamentos simultâneos)
+                using var semaphore = new SemaphoreSlim(4, 4);
+                var tasks = new List<Task>();
+
+                int progress = 0;
+                int total = arquivos.Count;
+
+                foreach (var arquivo in arquivos)
+                {
+                    var task = Task.Run(async () =>
+                    {
+                        await semaphore.WaitAsync();
+                        try
+                        {
+                            using var progressScope = _logger.BeginScope(new Dictionary<string, object>
+                            {
+                                ["FileName"] = arquivo.FileName,
+                                ["SessionId"] = sessionId
+                            });
+
+                            _logger.LogInformation("Iniciando compressão PNG do arquivo {FileName}", arquivo.FileName);
+
+                            // Converter PNG para WebP (compressão superior mantendo transparência)
+                            var imagemComprimida = await ConvertToWebP(arquivo, qualidade);
+                            
+                            // Salvar arquivo comprimido com extensão .webp
+                            var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName) + ".webp";
+                            var caminhoArquivo = Path.Combine(caminhoConvertido, nomeArquivo);
+                            await System.IO.File.WriteAllBytesAsync(caminhoArquivo, imagemComprimida);
+
+                            // Calcular e reportar progresso
+                            var currentProgress = Interlocked.Increment(ref progress);
+                            var progressPercent = (int)((double)currentProgress / total * 100);
+
+                            if (_progressHub != null)
+                            {
+                                await _progressHub.Clients.All.SendAsync("UpdateProgress", sessionId, progressPercent);
+                                _logger.LogInformation("Arquivo {FileName} comprimido com sucesso. Progresso: {Progress}%", 
+                                    arquivo.FileName, progress);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Erro ao comprimir arquivo {FileName}", arquivo.FileName);
+                            throw;
+                        }
+                        finally
+                        {
+                            semaphore.Release();
+                        }
+                    });
+                    tasks.Add(task);
+                }
+
+                await Task.WhenAll(tasks);
+
+                IncrementarContadorGlobal(arquivos.Count);
+
+                ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
+                ViewData["Title"] = "Compressão PNG Concluída";
+                
+                _logger.LogInformation("Compressão PNG concluída com sucesso para {TotalFiles} arquivos", arquivos.Count);
+                
+                return View("CompressorPng");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro na compressão de arquivos PNG");
+                ModelState.AddModelError("", "Erro interno na compressão: " + ex.Message);
+                return View("CompressorPng");
+            }
+        }
+
 
 
         // Rotas específicas para idiomas
@@ -1061,6 +1201,60 @@ namespace GeraWebP.Controllers
         {
             SetCultureContent("es");
             return View("Privacidad");
+        }
+
+        // Rotas para páginas de compressão JPEG em inglês e espanhol
+        [HttpGet("en/compress-jpeg")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ComprimirJpegEnglish()
+        {
+            SetCultureContent("en");
+            ViewData["Title"] = "Compress JPEG Online Free - Reduce Image Size";
+            ViewData["Description"] = "Free JPEG compressor online. Reduce JPEG file size while maintaining excellent quality. Batch compression up to 100MB. No watermarks, fast processing.";
+            ViewData["Keywords"] = "compress jpeg, optimize jpeg, reduce jpeg size, jpeg compressor, jpg optimizer, image compression";
+            
+            _logger.LogInformation("GET - Acesso à página compress-jpeg (English)");
+            return View("CompressorJpegEnglish");
+        }
+
+        [HttpGet("es/comprimir-jpeg")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ComprimirJpegSpanish()
+        {
+            SetCultureContent("es");
+            ViewData["Title"] = "Comprimir JPEG Online Gratis - Reducir Tamaño de Imágenes";
+            ViewData["Description"] = "Compresor JPEG gratis online. Reduce el tamaño de archivos JPEG manteniendo excelente calidad. Compresión por lotes hasta 100MB. Sin marcas de agua.";
+            ViewData["Keywords"] = "comprimir jpeg, optimizar jpeg, reducir tamaño jpeg, compresor de imagen jpeg, optimizador jpg";
+            
+            _logger.LogInformation("GET - Acesso à página comprimir-jpeg (Spanish)");
+            return View("CompressorJpegSpanish");
+        }
+
+        // Rotas para páginas de compressão PNG em inglês e espanhol
+        [HttpGet("en/compress-png")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ComprimirPngEnglish()
+        {
+            SetCultureContent("en");
+            ViewData["Title"] = "Compress PNG Online Free - Preserve Transparency";
+            ViewData["Description"] = "Free PNG compressor online. Reduce PNG file size while preserving transparency and alpha channel. Perfect for logos and icons. Batch processing available.";
+            ViewData["Keywords"] = "compress png, optimize png, reduce png size, png compressor, png transparency, image compression";
+            
+            _logger.LogInformation("GET - Acesso à página compress-png (English)");
+            return View("CompressorPngEnglish");
+        }
+
+        [HttpGet("es/comprimir-png")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ComprimirPngSpanish()
+        {
+            SetCultureContent("es");
+            ViewData["Title"] = "Comprimir PNG Online Gratis - Preservar Transparencia";
+            ViewData["Description"] = "Compresor PNG gratis online. Reduce el tamaño de archivos PNG preservando transparencia y canal alfa. Perfecto para logos e iconos. Procesamiento por lotes.";
+            ViewData["Keywords"] = "comprimir png, optimizar png, reducir tamaño png, compresor de imagen png, transparencia png";
+            
+            _logger.LogInformation("GET - Acesso à página comprimir-png (Spanish)");
+            return View("CompressorPngSpanish");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

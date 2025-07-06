@@ -1,0 +1,483 @@
+@{
+    ViewData["Title"] = "Compress PNG Online - Preserve Transparency";
+    ViewData["Description"] = "Free PNG compressor online. Reduce PNG file size while preserving transparency and alpha channel. Perfect for logos and icons. Batch processing available.";
+    ViewData["Keywords"] = "compress png, optimize png, reduce png size, png compressor, png transparency, image compression";
+}
+
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Online PNG Compressor</h1>
+            <div class="hero-subtitle">
+                <p>Reduce PNG file size while preserving transparency and quality. Perfect for logos, icons, and graphics.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <!-- Hero Banner -->
+    <div class="feature-banner">
+        <div class="feature-content">
+            <div class="feature-icon">
+                <i class="fas fa-image"></i>
+            </div>
+            <div class="feature-text">
+                <span><strong>PNG Compressor</strong> • Preserve Transparency • Quality Maintained</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mt-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/en/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Compress PNG</li>
+        </ol>
+    </nav>
+
+    <!-- Upload Area -->
+    <div class="upload-section">
+        <div class="upload-container" id="uploadArea">
+            <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">
+                <h3>Select or drag PNG images</h3>
+                <p>Supports PNG format with transparency • Up to 100MB total</p>
+            </div>
+            <div class="upload-input-container">
+                <input type="file" id="arquivos" name="arquivos" multiple accept="image/png" 
+                       class="upload-input" aria-label="Select PNG images to compress">
+                <label for="arquivos" class="upload-button">
+                    <i class="fas fa-plus"></i> Select Images
+                </label>
+            </div>
+        </div>
+
+        <!-- File List -->
+        <div id="fileList" class="file-list mt-3" style="display: none;">
+            <h4>Selected Files:</h4>
+            <div id="fileListContent"></div>
+        </div>
+    </div>
+
+    <!-- Quality Settings -->
+    <div class="quality-section">
+        <div class="quality-controls">
+            <div class="quality-header">
+                <h2>Configure PNG Compression</h2>
+                <p>Choose the compression level that best fits your needs</p>
+            </div>
+
+            <div class="quality-slider-container">
+                <label for="qualidade" class="quality-label">
+                    <span>Quality: <span id="qualityValue">75</span>%</span>
+                    <small id="qualityDescription">Balanced (recommended)</small>
+                </label>
+                <input type="range" id="qualidade" name="qualidade" min="10" max="100" value="75" 
+                       class="quality-slider" aria-label="Compression quality">
+                <div class="quality-marks">
+                    <span>Smaller file</span>
+                    <span>Better quality</span>
+                </div>
+            </div>
+
+            <!-- Quality Presets -->
+            <div class="preset-buttons">
+                <button type="button" class="preset-btn" data-quality="90" aria-label="Maximum quality preset">
+                    <i class="fas fa-gem"></i>
+                    <span>Maximum</span>
+                    <small>90% quality</small>
+                </button>
+                <button type="button" class="preset-btn active" data-quality="75" aria-label="Balanced quality preset">
+                    <i class="fas fa-balance-scale"></i>
+                    <span>Balanced</span>
+                    <small>75% quality</small>
+                </button>
+                <button type="button" class="preset-btn" data-quality="60" aria-label="Logo optimized preset">
+                    <i class="fas fa-certificate"></i>
+                    <span>Logo</span>
+                    <small>60% quality</small>
+                </button>
+                <button type="button" class="preset-btn" data-quality="40" aria-label="Icon optimized preset">
+                    <i class="fas fa-star"></i>
+                    <span>Icon</span>
+                    <small>40% quality</small>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Convert Section -->
+    <div class="convert-section">
+        <form id="converterForm" method="post" action="/en/compress-png" enctype="multipart/form-data">
+            <h2>Compress PNG Images</h2>
+            <div class="convert-content">
+                <button type="submit" class="convert-button" id="convertButton" aria-label="Compress PNG images">
+                    <i class="fas fa-compress-alt"></i>
+                    Compress PNG Now
+                </button>
+            </div>
+            <small>PNG compression preserving transparency</small>
+        </form>
+
+        <!-- Progress -->
+        <div id="progressSection" class="progress-section" style="display: none;">
+            <div class="progress-content">
+                <div class="progress-icon">
+                    <i class="fas fa-cog fa-spin"></i>
+                </div>
+                <div class="progress-text">
+                    <h3>Compressing your PNG images...</h3>
+                    <p>Please wait while we optimize your files</p>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultSection" class="result-section" style="display: none;">
+            <div class="result-content">
+                <div class="result-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="result-text">
+                    <h3>Compression Complete!</h3>
+                    <p id="resultSummary">Your PNG images have been compressed successfully</p>
+                </div>
+                <div class="result-actions">
+                    <a href="#" id="downloadLink" class="download-button">
+                        <i class="fas fa-download"></i> Download Compressed Images
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="benefits-section">
+        <h2 id="benefits-title" class="section-title">Why Compress PNG Images?</h2>
+        <div class="compression-benefits benefits-grid">
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-magic"></i></div>
+                <h3>Preserve Transparency</h3>
+                <p>Our PNG compression preserves the alpha channel, keeping transparent areas perfect for logos and icons.</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <h3>Faster Loading</h3>
+                <p>Reduce file size by up to 70% for faster website and app loading times without losing quality.</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Mobile Optimized</h3>
+                <p>Smaller PNG files consume less mobile data and load faster on slow connections.</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-layer-group"></i></div>
+                <h3>Batch Processing</h3>
+                <p>Compress multiple PNG files simultaneously. Upload up to 100MB total for maximum efficiency.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- How To Section -->
+    <div class="howto-section">
+        <h2 id="howto-title" class="section-title">How to Compress PNG Online</h2>
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Select Images</h3>
+                    <p>Click "Select Images" or drag PNG files with transparency to the upload area.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Choose Quality</h3>
+                    <p>Adjust compression quality or use our optimized presets for logos and icons.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Compress</h3>
+                    <p>Click "Compress PNG Now" and wait for processing while transparency is preserved.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Download</h3>
+                    <p>Download your compressed PNG images with preserved transparency as individual files or ZIP.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2 id="faq-title" class="section-title">Frequently Asked Questions about PNG Compression</h2>
+        <div class="faq-container">
+            <details class="faq-item">
+                <summary>Will PNG compression preserve transparency?</summary>
+                <div class="faq-content">
+                    <p>With our smart compression, you can reduce PNG files by up to 70% while maintaining excellent visual quality and preserving transparency.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>Can I compress many PNG images at once?</summary>
+                <div class="faq-content">
+                    <p>Yes! Our compressor supports batch upload up to 100MB total. Compress dozens of PNGs simultaneously.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>Does PNG compression work for logos and icons?</summary>
+                <div class="faq-content">
+                    <p>Absolutely! PNG compression is perfect for logos and icons as it preserves sharp edges, transparency, and reduces file size significantly.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>What's the maximum file size I can upload?</summary>
+                <div class="faq-content">
+                    <p>You can upload up to 100MB total. This allows you to compress dozens of PNG images simultaneously for maximum efficiency.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>Are my images safe and private?</summary>
+                <div class="faq-content">
+                    <p>Yes! All compression happens on our secure servers and files are automatically deleted after processing. We never store or share your images.</p>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Compress Your PNG Images?</h2>
+            <p>Start now and reduce your PNG file sizes while preserving transparency and quality</p>
+            <a href="#uploadArea" class="cta-button" aria-label="Start PNG compression">
+                <i class="fas fa-rocket"></i>
+                Start PNG Compression
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Same styles as other compressor pages */
+.compression-benefits .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.compression-benefits .benefit-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.compression-benefits .benefit-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.1);
+}
+
+.compression-benefits .benefit-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.compression-benefits .benefit-item h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.compression-benefits .benefit-item p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.howto-section .steps-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.howto-section .step-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.howto-section .step-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary-color);
+}
+
+.howto-section .step-number {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.howto-section .step-content h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.howto-section .step-content p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.preset-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.preset-btn:hover,
+.preset-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.preset-btn i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.preset-btn span {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.preset-btn small {
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+@@media (max-width: 1024px) {
+    .compression-benefits .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .howto-section .steps-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .preset-buttons {
+        gap: 0.75rem;
+    }
+    
+    .preset-btn {
+        min-width: 100px;
+        padding: 0.75rem;
+    }
+}
+
+@@media (max-width: 768px) {
+    .compression-benefits .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .howto-section .steps-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .preset-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .preset-btn {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+@@media (max-width: 480px) {
+    .compression-benefits .benefit-item {
+        min-height: 220px;
+        padding: 1.5rem;
+    }
+    
+    .howto-section .step-item {
+        min-height: 200px;
+        padding: 1.5rem;
+    }
+    
+    .howto-section .step-number {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+}
+</style>
+
+<!-- Other Tools -->
+@await Html.PartialAsync("_ToolsGrid")
+
+@section Scripts {
+    <script src="~/js/site.js"></script>
+} 
