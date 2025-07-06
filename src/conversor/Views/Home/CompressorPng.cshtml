@@ -1,0 +1,617 @@
+@{
+    ViewData["Title"] = "Comprimir PNG Online - Reduza o Tamanho de Imagens PNG";
+    ViewData["Description"] = "Comprima suas imagens PNG online gratuitamente. Reduza o tamanho de arquivos PNG mantendo transparência e a melhor qualidade para web. Ferramenta rápida e segura.";
+    ViewData["Keywords"] = "comprimir png, otimizar png, reduzir tamanho png, compressor de imagem png, png transparência";
+}
+
+<!-- SEO Hero Section -->
+<section class="hero-seo">
+    <div class="container">
+        <header class="hero-content">
+            <h1>Compressor de PNG Online</h1>
+            <p class="hero-description">
+                <strong>Comprima suas imagens PNG online</strong> gratuitamente e reduza o tamanho do arquivo
+                mantendo transparência e máxima qualidade visual. Ideal para logos, ícones e imagens com transparência.
+            </p>
+            <div class="hero-features">
+                <span class="feature-badge">🔄 Mantém Transparência</span>
+                <span class="feature-badge">🔒 Seguro e Privado</span>
+                <span class="feature-badge">👌 Controle de Qualidade</span>
+                <span class="feature-badge">📦 Lote</span>
+            </div>
+        </header>
+    </div>
+</section>
+
+<!-- Service Notice -->
+<div class="free-service-notice">
+    <div class="container">
+        <div class="notice-content">
+            <i data-feather="layers"></i>
+            <span><strong>Compressor de PNG</strong> • Preserva Transparência • Qualidade Mantida</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Compressor -->
+<main class="main-converter">
+    <div class="converter-container">
+        <form id="converterForm" method="post" action="/comprimir-png" enctype="multipart/form-data">
+            
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Comprimir PNG</li>
+                </ol>
+            </nav>
+            
+            <!-- Compression Workflow -->
+            <div class="converter-workflow">
+                <!-- Step 1: Upload -->
+                <div class="workflow-step upload-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h2>Selecionar Imagens PNG</h2>
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon" style="color: var(--primary-color);">
+                            <i data-feather="layers"></i>
+                        </div>
+                        <p>Arraste imagens PNG ou clique para selecionar</p>
+                        <div class="upload-button" style="background: var(--primary-color);">
+                            <i data-feather="folder"></i>
+                            Escolher Imagens PNG
+                        </div>
+                        <div class="upload-info">
+                            <small>Apenas PNG • Máx: 100MB por arquivo ou 100MB total</small>
+                        </div>
+                        <label for="arquivos" class="visually-hidden">Selecionar imagens para compressão</label>
+                        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" 
+                               accept="image/png" />
+                    </div>
+                    
+                    <!-- Selected Files Display -->
+                    <div id="selectedFiles" class="selected-files" style="display: none;">
+                        <div class="files-header">
+                            <i data-feather="check-circle"></i>
+                            <span id="fileCount">0</span> imagem(s) PNG selecionada(s)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Quality Settings -->
+                <div class="workflow-step quality-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h2>Configurar Compressão PNG</h2>
+                    </div>
+                    
+                    <div class="quality-control">
+                        <label for="qualidade" class="quality-label">
+                            Nível de Compressão: <strong id="qualidadeValue">75</strong>
+                        </label>
+                        <input type="range" id="qualidade" name="qualidade" min="30" max="95" value="75" 
+                               class="quality-slider" oninput="atualizarValorDaQuantidade(this.value)">
+                        <div class="quality-marks">
+                            <span class="quality-mark low">Máxima Compressão</span>
+                            <span class="quality-mark high">Máxima Qualidade</span>
+                        </div>
+                    </div>
+                    
+                    <div class="compression-presets">
+                        <h4>Presets de Compressão:</h4>
+                        <div class="preset-buttons">
+                            <button type="button" class="preset-btn" data-preset="90" data-tooltip="Qualidade alta, menor compressão">
+                                <i data-feather="award"></i>
+                                Alta Qualidade
+                            </button>
+                            <button type="button" class="preset-btn active" data-preset="75" data-tooltip="Equilíbrio entre qualidade e tamanho">
+                                <i data-feather="target"></i>
+                                Recomendada
+                            </button>
+                            <button type="button" class="preset-btn" data-preset="50" data-tooltip="Compressão alta, menor qualidade">
+                                <i data-feather="zap"></i>
+                                Otimizada
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-preview">
+                        <div class="preview-item">
+                            <div class="preview-icon">
+                                <i data-feather="trending-down"></i>
+                            </div>
+                            <div class="preview-text">
+                                <strong>Redução estimada:</strong>
+                                <small id="compressionEstimate">~50% menor</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Compress -->
+                <div class="workflow-step convert-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h2>Comprimir Imagens PNG</h2>
+                    </div>
+                    
+                    <button type="submit" class="convert-button" id="convertButton" aria-label="Comprimir imagens PNG">
+                        <i data-feather="minimize-2"></i>
+                        Comprimir PNG Agora
+                    </button>
+                    
+                    <div class="convert-info">
+                        <small>Compressão PNG preservando transparência</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress & Download Sections -->
+            <div id="progressContainer" class="progress-section" style="display: none;">
+                <h3>Comprimindo suas imagens...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progressText">0%</p>
+            </div>
+
+            @if (ViewBag.DownloadLink != null)
+            {
+                <div class="download-section">
+                    <div class="download-success">
+                        <i data-feather="check-circle"></i>
+                        <h3>Imagens PNG Comprimidas!</h3>
+                        <p>Suas imagens PNG foram comprimidas com sucesso mantendo transparência.</p>
+                        <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar imagens comprimidas">
+                            <i data-feather="download"></i>
+                            Baixar Imagens Comprimidas
+                        </a>
+                        <small>Arquivo ZIP com todas as imagens PNG otimizadas</small>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
+</main>
+
+<!-- SEO Content -->
+<section class="seo-content">
+    <div class="container">
+        
+        <!-- Benefits Section -->
+        <section class="compression-benefits" aria-labelledby="benefits-title">
+            <h2 id="benefits-title" class="section-title">Por que Comprimir Imagens PNG?</h2>
+            
+            <div class="benefits-grid">
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="layers"></i>
+                    </div>
+                    <h3>Mantém Transparência</h3>
+                    <p>Nossa compressão PNG preserva o canal alfa, mantendo áreas transparentes perfeitas para logos e ícones.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="trending-down"></i>
+                    </div>
+                    <h3>Redução Significativa</h3>
+                    <p>Comprima arquivos PNG em até 70% mantendo qualidade visual. Ideal para otimização web e mobile.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="zap"></i>
+                    </div>
+                    <h3>Velocidade do Site</h3>
+                    <p>PNGs menores carregam mais rápido, melhorando a experiência do usuário e SEO do seu site.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="smartphone"></i>
+                    </div>
+                    <h3>Otimizado para Mobile</h3>
+                    <p>Economize dados móveis dos seus usuários com PNGs comprimidos e otimizados para dispositivos móveis.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- How-to Section -->
+        <section class="howto-section" aria-labelledby="howto-title">
+            <h2 id="howto-title" class="section-title">Como Comprimir PNG Online</h2>
+            
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3>Upload das Imagens PNG</h3>
+                    <p>Selecione ou arraste as imagens PNG que deseja comprimir. Suportamos múltiplos arquivos simultaneamente.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3>Ajuste a Compressão</h3>
+                    <p>Escolha o nível de compressão ideal: alta qualidade para arquivos profissionais ou otimizada para web.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3>Compressão Inteligente</h3>
+                    <p>Nossa tecnologia comprime PNG preservando transparência e qualidade com algoritmos avançados.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h3>Download Imediato</h3>
+                    <p>Baixe suas imagens PNG comprimidas em ZIP. Prontas para uso em sites, apps e impressões!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" aria-labelledby="faq-title">
+            <h2 id="faq-title" class="section-title">Perguntas Frequentes sobre Compressão PNG</h2>
+            
+            <div class="faq-container">
+                <details class="faq-item">
+                    <summary>Quanto posso reduzir o tamanho dos meus arquivos PNG?</summary>
+                    <p>Com nossa compressão inteligente, você pode reduzir arquivos PNG em até 70% mantendo qualidade visual excelente e preservando transparência.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>A transparência PNG é preservada na compressão?</summary>
+                    <p>Sim! Nossa tecnologia preserva completamente o canal alfa (transparência) dos arquivos PNG, mantendo áreas transparentes perfeitas.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Qual a diferença entre PNG e JPEG comprimido?</summary>
+                    <p>PNG suporta transparência e é ideal para logos/ícones. JPEG é melhor para fotos. Nossa compressão otimiza cada formato adequadamente.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Posso comprimir muitas imagens PNG de uma vez?</summary>
+                    <p>Sim! Nosso compressor suporta upload em lote até 100MB total. Comprima dezenas de PNGs simultaneamente.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>A compressão PNG funciona em logos e ícones?</summary>
+                    <p>Perfeito! PNG comprimido é ideal para logos, ícones e gráficos com transparência, mantendo bordas nítidas e áreas transparentes.</p>
+                </details>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Comprima seus PNGs Agora!</h2>
+                <p>Otimize suas imagens PNG gratuitamente e melhore a performance do seu site.</p>
+                <a href="#uploadArea" class="cta-button" aria-label="Começar compressão PNG">
+                    <i data-feather="layers"></i>
+                    Começar Compressão PNG
+                </a>
+            </div>
+        </section>
+
+        <!-- Outras Ferramentas -->
+        @await Html.PartialAsync("_ToolsGrid")
+    </div>
+</section>
+
+<style>
+        /* CSS específico para a página PNG - baseado nas correções do JPEG */
+        .compression-benefits .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .compression-benefits .benefit-item {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .compression-benefits .benefit-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-color);
+        }
+        
+        .compression-benefits .benefit-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .compression-benefits .benefit-item h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .compression-benefits .benefit-item p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        
+        .howto-section .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .howto-section .step-item {
+            background: white;
+            padding: 2rem 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        
+        .howto-section .step-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .howto-section .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .howto-section .step-item h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+        
+        .howto-section .step-item p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .compression-presets {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        
+        .compression-presets h4 {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .preset-btn {
+            padding: 0.75rem 1.25rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .preset-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .preset-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
+        }
+        
+        /* Responsivo */
+        @@media (max-width: 1024px) {
+            .compression-benefits .benefits-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+            
+            .howto-section .steps-container {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+        
+        @@media (max-width: 768px) {
+            .compression-benefits .benefits-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .howto-section .steps-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .compression-benefits .benefit-item {
+                padding: 2rem 1.5rem;
+                min-height: 240px;
+            }
+            
+            .howto-section .step-item {
+                padding: 1.5rem 1rem;
+                min-height: 200px;
+            }
+            
+            .preset-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .preset-btn {
+                min-width: 200px;
+            }
+        }
+        
+        @@media (max-width: 480px) {
+            .compression-benefits .benefit-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .howto-section .step-number {
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+
+@section Scripts {
+    <script>
+        feather.replace();
+        
+        function atualizarValorDaQuantidade(value) {
+            document.getElementById('qualidadeValue').textContent = value;
+            updateCompressionEstimate(value);
+            updateActivePreset(value);
+        }
+        
+        function updateCompressionEstimate(value) {
+            const compressionEstimate = document.getElementById('compressionEstimate');
+            if (compressionEstimate) {
+                let estimate;
+                if (value <= 30) estimate = '~70% menor';
+                else if (value <= 50) estimate = '~60% menor';
+                else if (value <= 70) estimate = '~50% menor';
+                else if (value <= 85) estimate = '~40% menor';
+                else estimate = '~30% menor';
+                compressionEstimate.textContent = estimate;
+            }
+        }
+        
+        function updateActivePreset(value) {
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            presetButtons.forEach(btn => btn.classList.remove('active'));
+            
+            const targetPreset = presetButtons[1]; // Default to middle preset
+            if (value <= 60) presetButtons[2]?.classList.add('active');
+            else if (value >= 85) presetButtons[0]?.classList.add('active');
+            else presetButtons[1]?.classList.add('active');
+        }
+
+        // File upload handling
+        const fileInput = document.getElementById('arquivos');
+        const uploadArea = document.getElementById('uploadArea');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileCount = document.getElementById('fileCount');
+
+        fileInput.addEventListener('change', function(e) {
+            updateFileDisplay(e.target.files);
+        });
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(file => 
+                file.type === 'image/png'
+            );
+            if (files.length > 0) {
+                const dt = new DataTransfer();
+                files.forEach(file => dt.items.add(file));
+                fileInput.files = dt.files;
+                updateFileDisplay(files);
+            }
+        });
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const preset = this.dataset.preset;
+                document.getElementById('qualidade').value = preset;
+                atualizarValorDaQuantidade(preset);
+            });
+        });
+
+        function updateFileDisplay(files) {
+            if (files.length > 0) {
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSize += files[i].size;
+                }
+                const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+                
+                fileCount.textContent = `${files.length} imagem(s) PNG • ${totalMB}MB total`;
+                selectedFiles.style.display = 'block';
+                uploadArea.classList.add('has-files');
+            } else {
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+            }
+        }
+    </script>
+    <script src="~/js/site.js"></script>
+} 

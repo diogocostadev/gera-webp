@@ -1,0 +1,85 @@
+// Template de Rotas para Controller - SEO Multilíngue Wepper.app
+// Substitua [URL-PT], [URL-EN], [URL-ES] e [METODO] pelos valores específicos
+
+// PORTUGUÊS (Padrão)
+[HttpGet("[URL-PT]")]
+public IActionResult [METODO]()
+{
+    SetCultureContent("pt-br");
+    return View();
+}
+
+// INGLÊS
+[HttpGet("en/[URL-EN]")]
+public IActionResult [METODO]English()
+{
+    SetCultureContent("en");
+    return View();
+}
+
+// ESPANHOL
+[HttpGet("es/[URL-ES]")]
+public IActionResult [METODO]Spanish()
+{
+    SetCultureContent("es");
+    return View();
+}
+
+// ===============================================
+// EXEMPLO PRÁTICO:
+// ===============================================
+
+[HttpGet("redimensionar-imagem")]
+public IActionResult RedimensionarImagem()
+{
+    SetCultureContent("pt-br");
+    return View();
+}
+
+[HttpGet("en/resize-image")]
+public IActionResult RedimensionarImagemEnglish()
+{
+    SetCultureContent("en");
+    return View();
+}
+
+[HttpGet("es/redimensionar-imagen")]
+public IActionResult RedimensionarImagemSpanish()
+{
+    SetCultureContent("es");
+    return View();
+}
+
+// ===============================================
+// PADRÕES DE URL CORRETOS:
+// ===============================================
+
+// Compressão:
+// comprimir-[formato] → compress-[format] → comprimir-[formato]
+
+// Conversão:
+// converter-[de]-para-[para] → convert-[from]-to-[to] → convertir-[de]-a-[para]
+
+// Redimensionamento:
+// redimensionar-[tipo] → resize-[type] → redimensionar-[tipo]
+
+// Otimização:
+// otimizar-[formato] → optimize-[format] → optimizar-[formato]
+
+// ===============================================
+// SITEMAP ENTRIES (adicionar no SeoController):
+// ===============================================
+
+new { Url = "/[URL-PT]", Priority = "0.9", ChangeFreq = "weekly" },
+new { Url = "/en/[URL-EN]", Priority = "0.9", ChangeFreq = "weekly" },
+new { Url = "/es/[URL-ES]", Priority = "0.9", ChangeFreq = "weekly" },
+
+// ===============================================
+// HREFLANG MAPPING (adicionar no _Layout.cshtml):
+// ===============================================
+
+["/[URL-PT]"] = new() { 
+    ["pt-br"] = "/[URL-PT]", 
+    ["en"] = "/en/[URL-EN]", 
+    ["es"] = "/es/[URL-ES]" 
+} 

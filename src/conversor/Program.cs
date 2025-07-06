@@ -12,12 +12,19 @@ var builder = WebApplication.CreateBuilder(args);
 var seqServerUrl = builder.Configuration["Seq:ServerUrl"];
 var seqApiKey = builder.Configuration["Seq:ApiKey"];
 
-Log.Logger = new LoggerConfiguration()
+var loggerConfiguration = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
-    .WriteTo.Console()
-    .WriteTo.Seq(seqServerUrl, apiKey: seqApiKey)
+    .WriteTo.Console();
+
+// Adicionar Seq apenas se a URL estiver configurada
+if (!string.IsNullOrWhiteSpace(seqServerUrl))
+{
+    loggerConfiguration = loggerConfiguration.WriteTo.Seq(seqServerUrl, apiKey: seqApiKey);
+}
+
+Log.Logger = loggerConfiguration
     .Enrich.WithProperty("Application", builder.Configuration["Application:Name"])
     .Enrich.WithProperty("Version", builder.Configuration["Application:Version"])
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)

@@ -197,73 +197,8 @@
 <!-- SEO Content Sections -->
 <section class="seo-content">
     <div class="container">
-        <!-- Format Conversion Cards -->
-        <section class="conversion-formats" aria-labelledby="conversion-title">
-            <h2 id="conversion-title" class="section-title">Conversões de Formato Suportadas</h2>
-            <p class="section-subtitle">
-                Converta qualquer formato de imagem para WebP com nossa ferramenta online avançada
-            </p>
-            
-            <div class="format-cards">
-                <a href="/converter-jpg-para-webp" class="format-card-link">
-                    <div class="format-card">
-                        <div class="format-icon jpg">
-                            <i data-feather="image"></i>
-                        </div>
-                        <div class="format-text">
-                            <strong>JPG para WebP</strong>
-                            <small>Otimização ideal para fotos</small>
-                        </div>
-                    </div>
-                </a>
-                
-                <div class="format-arrow">
-                    <i data-feather="arrow-right"></i>
-                </div>
-                
-                <a href="/converter-png-para-webp" class="format-card-link">
-                    <div class="format-card">
-                        <div class="format-icon png">
-                            <i data-feather="image"></i>
-                        </div>
-                        <div class="format-text">
-                            <strong>PNG para WebP</strong>
-                            <small>Mantém transparência</small>
-                        </div>
-                    </div>
-                </a>
-                
-                <div class="format-arrow">
-                    <i data-feather="arrow-right"></i>
-                </div>
-                
-                <a href="/converter-gif-para-webp" class="format-card-link">
-                    <div class="format-card">
-                        <div class="format-icon gif">
-                            <i data-feather="image"></i>
-                        </div>
-                        <div class="format-text">
-                            <strong>GIF para WebP</strong>
-                            <small>Compressão máxima</small>
-                        </div>
-                    </div>
-                </a>
-                
-                <div class="format-arrow">
-                    <i data-feather="arrow-right"></i>
-                </div>
-                
-                <div class="format-card webp-result">
-                    <div class="format-icon webp">
-                        <i data-feather="zap"></i>
-                    </div>
-                    <div class="format-text">
-                        <strong>WebP Otimizado</strong>
-                        <small>Até 90% menor</small>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Grid de Ferramentas Centralizada -->
+        @await Html.PartialAsync("_ToolsGrid")
 
         <!-- Features Section -->
         <section class="features-section" aria-labelledby="features-title">
