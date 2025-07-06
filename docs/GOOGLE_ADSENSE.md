@@ -203,13 +203,30 @@ Os espaços de anúncios já estão estilizados com:
 - **Google Analytics**: Integração com AdSense
 - **PageSpeed Insights**: Monitorar performance
 
+## Configuração do Arquivo ads.txt
+
+### Importância
+O arquivo `ads.txt` é obrigatório para evitar problemas de monetização no Google AdSense. Sem ele, você pode receber avisos como "Ganhos em risco" no console do AdSense.
+
+### Localização
+O arquivo foi criado em: `src/conversor/wwwroot/ads.txt`
+
+### Configuração
+1. **Edite o arquivo**: Substitua `pub-XXXXXXXXX` pelo seu Publisher ID real
+2. **Formato correto**: `google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0`
+3. **Verificação**: Após deploy, acesse `https://wepper.app/ads.txt`
+
+### Documentação Completa
+Consulte `docs/CONFIGURACAO_ADS_TXT.md` para instruções detalhadas.
+
 ## Próximos Passos
 
 1. ✅ Solicitar aprovação do Google AdSense
-2. ✅ Substituir placeholders pelos códigos reais
-3. ✅ Testar em diferentes dispositivos
-4. ✅ Monitorar performance e ajustar posições
-5. ✅ Otimizar baseado nos relatórios
+2. ✅ **Configurar arquivo ads.txt** (CRÍTICO)
+3. ✅ Substituir placeholders pelos códigos reais
+4. ✅ Testar em diferentes dispositivos
+5. ✅ Monitorar performance e ajustar posições
+6. ✅ Otimizar baseado nos relatórios
 
 ## Suporte
 
