@@ -1,0 +1,385 @@
+@{
+    var language = ViewData["Language"]?.ToString();
+    
+    // Função para obter URLs baseadas no idioma
+    string GetLocalizedUrl(string baseUrl, string lang)
+    {
+        return lang switch
+        {
+            "en" => $"/en{baseUrl}",
+            "es" => $"/es{baseUrl}",
+            _ => baseUrl
+        };
+    }
+    
+    // Textos por idioma
+    var texts = language switch
+    {
+        "es" => new {
+            ConversionsTitle = "Conversiones a WebP",
+            ConversionsSubtitle = "Convierte cualquier formato a WebP y reduce hasta 90% el tamaño",
+            CompressionsTitle = "Compresores de Imagen",
+            CompressionsSubtitle = "Optimiza tus imágenes manteniendo la máxima calidad",
+            
+            JpgToWebP = new { Title = "JPG a WebP", Desc = "Optimización ideal para fotos" },
+            PngToWebP = new { Title = "PNG a WebP", Desc = "Mantiene transparencia" },
+            GifToWebP = new { Title = "GIF a WebP", Desc = "Compresión máxima" },
+            
+            CompressJpeg = new { Title = "Comprimir JPEG", Desc = "Optimiza JPEGs para web" },
+            CompressPng = new { Title = "Comprimir PNG", Desc = "Preserva transparencia" },
+            
+            Result = new { Title = "WebP Optimizado", Desc = "Hasta 90% más pequeño" }
+        },
+        "en" => new {
+            ConversionsTitle = "WebP Conversions",
+            ConversionsSubtitle = "Convert any format to WebP and reduce file size by up to 90%",
+            CompressionsTitle = "Image Compressors",
+            CompressionsSubtitle = "Optimize your images while maintaining maximum quality",
+            
+            JpgToWebP = new { Title = "JPG to WebP", Desc = "Optimal optimization for photos" },
+            PngToWebP = new { Title = "PNG to WebP", Desc = "Keeps transparency" },
+            GifToWebP = new { Title = "GIF to WebP", Desc = "Maximum compression" },
+            
+            CompressJpeg = new { Title = "Compress JPEG", Desc = "Optimize JPEGs for web" },
+            CompressPng = new { Title = "Compress PNG", Desc = "Preserves transparency" },
+            
+            Result = new { Title = "Optimized WebP", Desc = "Up to 90% smaller" }
+        },
+        _ => new {
+            ConversionsTitle = "Conversões para WebP",
+            ConversionsSubtitle = "Converta qualquer formato para WebP e reduza até 90% o tamanho",
+            CompressionsTitle = "Compressores de Imagem",
+            CompressionsSubtitle = "Otimize suas imagens mantendo a máxima qualidade",
+            
+            JpgToWebP = new { Title = "JPG para WebP", Desc = "Otimização ideal para fotos" },
+            PngToWebP = new { Title = "PNG para WebP", Desc = "Mantém transparência" },
+            GifToWebP = new { Title = "GIF para WebP", Desc = "Compressão máxima" },
+            
+            CompressJpeg = new { Title = "Comprimir JPEG", Desc = "Otimize JPEGs para web" },
+            CompressPng = new { Title = "Comprimir PNG", Desc = "Preserva transparência" },
+            
+            Result = new { Title = "WebP Otimizado", Desc = "Até 90% menor" }
+        }
+    };
+}
+
+<!-- 🚀 Conversões para WebP -->
+<section class="tools-section conversion-tools" aria-labelledby="conversions-title">
+    <div class="tools-header">
+        <h2 id="conversions-title" class="section-title">@texts.ConversionsTitle</h2>
+        <p class="section-subtitle">@texts.ConversionsSubtitle</p>
+    </div>
+    
+    <div class="tools-grid">
+        <!-- JPG → WebP -->
+        <a href="@GetLocalizedUrl("/converter-jpg-para-webp", language ?? "")" class="tool-card-link">
+            <div class="tool-card conversion-card">
+                <div class="tool-icon jpg">
+                    <i data-feather="image"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>@texts.JpgToWebP.Title</h3>
+                    <p>@texts.JpgToWebP.Desc</p>
+                </div>
+                <div class="tool-arrow">
+                    <i data-feather="arrow-right"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- PNG → WebP -->
+        <a href="@GetLocalizedUrl("/converter-png-para-webp", language ?? "")" class="tool-card-link">
+            <div class="tool-card conversion-card">
+                <div class="tool-icon png">
+                    <i data-feather="layers"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>@texts.PngToWebP.Title</h3>
+                    <p>@texts.PngToWebP.Desc</p>
+                </div>
+                <div class="tool-arrow">
+                    <i data-feather="arrow-right"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- GIF → WebP -->
+        <a href="@GetLocalizedUrl("/converter-gif-para-webp", language ?? "")" class="tool-card-link">
+            <div class="tool-card conversion-card">
+                <div class="tool-icon gif">
+                    <i data-feather="film"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>@texts.GifToWebP.Title</h3>
+                    <p>@texts.GifToWebP.Desc</p>
+                </div>
+                <div class="tool-arrow">
+                    <i data-feather="arrow-right"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- Resultado WebP -->
+        <div class="tool-card result-card">
+            <div class="tool-icon webp">
+                <i data-feather="zap"></i>
+            </div>
+            <div class="tool-content">
+                <h3>@texts.Result.Title</h3>
+                <p>@texts.Result.Desc</p>
+            </div>
+            <div class="tool-badge">
+                <i data-feather="check-circle"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 🗜️ Compressores de Imagem -->
+<section class="tools-section compression-tools" aria-labelledby="compressions-title">
+    <div class="tools-header">
+        <h2 id="compressions-title" class="section-title">@texts.CompressionsTitle</h2>
+        <p class="section-subtitle">@texts.CompressionsSubtitle</p>
+    </div>
+    
+    <div class="tools-grid compression-grid">
+        <!-- Comprimir JPEG -->
+        <a href="@GetLocalizedUrl("/comprimir-jpeg", language ?? "")" class="tool-card-link">
+            <div class="tool-card compression-card">
+                <div class="tool-icon jpeg-comp">
+                    <i data-feather="minimize-2"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>@texts.CompressJpeg.Title</h3>
+                    <p>@texts.CompressJpeg.Desc</p>
+                </div>
+                <div class="compression-indicator">
+                    <span class="compression-percent">-70%</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Comprimir PNG -->
+        <a href="@GetLocalizedUrl("/comprimir-png", language ?? "")" class="tool-card-link">
+            <div class="tool-card compression-card">
+                <div class="tool-icon png-comp">
+                    <i data-feather="minimize-2"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>@texts.CompressPng.Title</h3>
+                    <p>@texts.CompressPng.Desc</p>
+                </div>
+                <div class="compression-indicator">
+                    <span class="compression-percent">-60%</span>
+                </div>
+            </div>
+        </a>
+    </div>
+</section>
+
+<style>
+/* 🎨 Estilos da Grid de Ferramentas */
+.tools-section {
+    margin: 2rem 0;
+    padding: 1.5rem 0;
+}
+
+.tools-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.tools-header .section-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.tools-header .section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.compression-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    max-width: 700px;
+}
+
+.tool-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.tool-card-link:hover {
+    transform: translateY(-5px);
+}
+
+.tool-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.tool-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 32px rgba(0, 123, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tool-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Ícones específicos por tipo */
+.tool-icon.jpg { background: linear-gradient(135deg, #ff6b35, #ff8e53); color: white; }
+.tool-icon.png { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+.tool-icon.gif { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+.tool-icon.webp { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+.tool-icon.jpeg-comp { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
+.tool-icon.png-comp { background: linear-gradient(135deg, #a8edea, #fed6e3); color: white; }
+
+.tool-content h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--text-color);
+}
+
+.tool-content p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Setas de conversão */
+.tool-arrow {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.tool-card:hover .tool-arrow {
+    right: 0.5rem;
+    opacity: 1;
+}
+
+/* Card resultado */
+.result-card {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(102, 126, 234, 0.1));
+    border-color: var(--primary-color);
+}
+
+.tool-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: #22c55e;
+    font-size: 1.5rem;
+}
+
+/* Indicadores de compressão */
+.compression-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.compression-percent {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Responsivo */
+@@media (max-width: 768px) {
+    .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+    
+    .tool-card {
+        min-height: 160px;
+        padding: 1.25rem;
+    }
+    
+    .tool-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .tools-header .section-title {
+        font-size: 1.9rem;
+    }
+    
+    .tools-header .section-subtitle {
+        font-size: 1rem;
+    }
+}
+
+@@media (max-width: 480px) {
+    .tools-section {
+        margin: 1.5rem 0;
+        padding: 1rem 0;
+    }
+    
+    .tools-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .tool-card {
+        padding: 1rem;
+        min-height: 140px;
+    }
+    
+    .tools-header .section-title {
+        font-size: 1.7rem;
+    }
+}
+</style> 

@@ -293,106 +293,13 @@
                 </a>
             </div>
         </section>
+
+        <!-- Outras Ferramentas -->
+        @await Html.PartialAsync("_ToolsGrid")
     </div>
 </section>
 
-@section Scripts {
-    <script>
-        feather.replace();
-        
-        function atualizarValorDaQuantidade(value) {
-            document.getElementById('qualidadeValue').textContent = value;
-            updateCompressionEstimate(value);
-            updateActivePreset(value);
-        }
-        
-        function updateCompressionEstimate(value) {
-            const compressionEstimate = document.getElementById('compressionEstimate');
-            if (compressionEstimate) {
-                let estimate;
-                if (value <= 30) estimate = '~70% menor';
-                else if (value <= 50) estimate = '~60% menor';
-                else if (value <= 70) estimate = '~50% menor';
-                else if (value <= 85) estimate = '~40% menor';
-                else estimate = '~30% menor';
-                compressionEstimate.textContent = estimate;
-            }
-        }
-        
-        function updateActivePreset(value) {
-            const presetButtons = document.querySelectorAll('.preset-btn');
-            presetButtons.forEach(btn => btn.classList.remove('active'));
-            
-            const targetPreset = presetButtons[1]; // Default to middle preset
-            if (value <= 60) presetButtons[2]?.classList.add('active');
-            else if (value >= 85) presetButtons[0]?.classList.add('active');
-            else presetButtons[1]?.classList.add('active');
-        }
-
-        // File upload handling
-        const fileInput = document.getElementById('arquivos');
-        const uploadArea = document.getElementById('uploadArea');
-        const selectedFiles = document.getElementById('selectedFiles');
-        const fileCount = document.getElementById('fileCount');
-
-        fileInput.addEventListener('change', function(e) {
-            updateFileDisplay(e.target.files);
-        });
-
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('drag-over');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('drag-over');
-            const files = Array.from(e.dataTransfer.files).filter(file => 
-                file.type === 'image/png'
-            );
-            if (files.length > 0) {
-                const dt = new DataTransfer();
-                files.forEach(file => dt.items.add(file));
-                fileInput.files = dt.files;
-                updateFileDisplay(files);
-            }
-        });
-
-        // Preset buttons
-        document.querySelectorAll('.preset-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const preset = this.dataset.preset;
-                document.getElementById('qualidade').value = preset;
-                atualizarValorDaQuantidade(preset);
-            });
-        });
-
-        function updateFileDisplay(files) {
-            if (files.length > 0) {
-                let totalSize = 0;
-                for (let i = 0; i < files.length; i++) {
-                    totalSize += files[i].size;
-                }
-                const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
-                
-                fileCount.textContent = `${files.length} imagem(s) PNG • ${totalMB}MB total`;
-                selectedFiles.style.display = 'block';
-                uploadArea.classList.add('has-files');
-            } else {
-                selectedFiles.style.display = 'none';
-                uploadArea.classList.remove('has-files');
-            }
-        }
-    </script>
-    
-    <style>
+<style>
         /* CSS específico para a página PNG - baseado nas correções do JPEG */
         .compression-benefits .benefits-grid {
             display: grid;
@@ -425,7 +332,7 @@
         .compression-benefits .benefit-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-color-light));
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -479,7 +386,7 @@
         .howto-section .step-number {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-color-light));
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -610,4 +517,101 @@
             }
         }
     </style>
+
+@section Scripts {
+    <script>
+        feather.replace();
+        
+        function atualizarValorDaQuantidade(value) {
+            document.getElementById('qualidadeValue').textContent = value;
+            updateCompressionEstimate(value);
+            updateActivePreset(value);
+        }
+        
+        function updateCompressionEstimate(value) {
+            const compressionEstimate = document.getElementById('compressionEstimate');
+            if (compressionEstimate) {
+                let estimate;
+                if (value <= 30) estimate = '~70% menor';
+                else if (value <= 50) estimate = '~60% menor';
+                else if (value <= 70) estimate = '~50% menor';
+                else if (value <= 85) estimate = '~40% menor';
+                else estimate = '~30% menor';
+                compressionEstimate.textContent = estimate;
+            }
+        }
+        
+        function updateActivePreset(value) {
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            presetButtons.forEach(btn => btn.classList.remove('active'));
+            
+            const targetPreset = presetButtons[1]; // Default to middle preset
+            if (value <= 60) presetButtons[2]?.classList.add('active');
+            else if (value >= 85) presetButtons[0]?.classList.add('active');
+            else presetButtons[1]?.classList.add('active');
+        }
+
+        // File upload handling
+        const fileInput = document.getElementById('arquivos');
+        const uploadArea = document.getElementById('uploadArea');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileCount = document.getElementById('fileCount');
+
+        fileInput.addEventListener('change', function(e) {
+            updateFileDisplay(e.target.files);
+        });
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(file => 
+                file.type === 'image/png'
+            );
+            if (files.length > 0) {
+                const dt = new DataTransfer();
+                files.forEach(file => dt.items.add(file));
+                fileInput.files = dt.files;
+                updateFileDisplay(files);
+            }
+        });
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const preset = this.dataset.preset;
+                document.getElementById('qualidade').value = preset;
+                atualizarValorDaQuantidade(preset);
+            });
+        });
+
+        function updateFileDisplay(files) {
+            if (files.length > 0) {
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSize += files[i].size;
+                }
+                const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+                
+                fileCount.textContent = `${files.length} imagem(s) PNG • ${totalMB}MB total`;
+                selectedFiles.style.display = 'block';
+                uploadArea.classList.add('has-files');
+            } else {
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+            }
+        }
+    </script>
+    <script src="~/js/site.js"></script>
 } 

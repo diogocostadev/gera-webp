@@ -262,73 +262,8 @@
 <!-- SEO Content Sections -->
 <section class="seo-content">
     <div class="container">
-        <!-- Format Conversion Cards -->
-        <section class="conversion-formats" aria-labelledby="conversion-title">
-            <h2 id="conversion-title" class="section-title">Supported Format Conversions</h2>
-            <p class="section-subtitle">
-                Convert any image format to WebP with our advanced online tool
-            </p>
-            
-            <div class="format-cards">
-                <a href="/converter-jpg-para-webp" class="format-card-link">
-                    <div class="format-card">
-                        <div class="format-icon jpg">
-                            <i data-feather="image"></i>
-                        </div>
-                        <div class="format-text">
-                            <strong>JPG to WebP</strong>
-                            <small>Optimal optimization for photos</small>
-                        </div>
-                    </div>
-                </a>
-                
-                <div class="format-arrow">
-                    <i data-feather="arrow-right"></i>
-                </div>
-                
-                <a href="/converter-png-para-webp" class="format-card-link">
-                    <div class="format-card">
-                        <div class="format-icon png">
-                            <i data-feather="image"></i>
-                        </div>
-                        <div class="format-text">
-                            <strong>PNG to WebP</strong>
-                            <small>Keeps transparency</small>
-                        </div>
-                    </div>
-                </a>
-                
-                <div class="format-arrow">
-                    <i data-feather="arrow-right"></i>
-                </div>
-                
-                <a href="/converter-gif-para-webp" class="format-card-link">
-                    <div class="format-card">
-                        <div class="format-icon gif">
-                            <i data-feather="image"></i>
-                        </div>
-                        <div class="format-text">
-                            <strong>GIF to WebP</strong>
-                            <small>Maximum compression</small>
-                        </div>
-                    </div>
-                </a>
-                
-                <div class="format-arrow">
-                    <i data-feather="arrow-right"></i>
-                </div>
-                
-                <div class="format-card webp-result">
-                    <div class="format-icon webp">
-                        <i data-feather="zap"></i>
-                    </div>
-                    <div class="format-text">
-                        <strong>Optimized WebP</strong>
-                        <small>Up to 90% smaller</small>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Grid de Ferramentas Centralizada -->
+        @await Html.PartialAsync("_ToolsGrid")
 
         <!-- Features Section -->
         <section class="features-section" aria-labelledby="features-title">
