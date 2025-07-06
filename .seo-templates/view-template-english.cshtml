@@ -1,0 +1,251 @@
+@{
+    ViewData["Title"] = "[ACTION] [FORMAT] Online Free - [MAIN_BENEFIT]";
+    ViewData["Description"] = "Free [format] [tool] online. [Main benefit] while maintaining excellent quality. Batch processing up to 100MB. [Specific features].";
+    ViewData["Keywords"] = "[action], [format], [benefit], free tool, online, no watermark";
+    ViewData["Culture"] = "en";
+}
+
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1>[ACTION] [FORMAT] Online</h1>
+            <div class="hero-subtitle">
+                <p>[Main benefit] while maintaining [specific quality]. [Unique tool characteristics].</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <!-- Hero Banner -->
+    <div class="feature-banner">
+        <div class="feature-content">
+            <div class="feature-icon">
+                <i class="fas fa-[ICON_NAME]"></i>
+            </div>
+            <div class="feature-text">
+                <span><strong>[TOOL_NAME]</strong> • [Feature 1] • [Feature 2]</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mt-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/en/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">[PAGE_NAME]</li>
+        </ol>
+    </nav>
+
+    <!-- Upload Area -->
+    <div class="upload-section">
+        <div class="upload-container" id="uploadArea">
+            <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">
+                <h3>Select or drag [FILE_TYPE]</h3>
+                <p>Support for [ACCEPTED_FORMATS] • Up to 100MB total</p>
+            </div>
+            <div class="upload-input-container">
+                <input type="file" id="arquivos" name="arquivos" multiple accept="[MIME_TYPES]" 
+                       class="upload-input" aria-label="Select [file_type] to [action]">
+                <label for="arquivos" class="upload-button">
+                    <i class="fas fa-plus"></i> Select Files
+                </label>
+            </div>
+        </div>
+
+        <!-- File List -->
+        <div id="fileList" class="file-list mt-3" style="display: none;">
+            <h4>Selected Files:</h4>
+            <div id="fileListContent"></div>
+        </div>
+    </div>
+
+    <!-- Quality/Settings Section -->
+    <div class="quality-section">
+        <div class="quality-controls">
+            <div class="quality-header">
+                <h2>Configure [PROCESS]</h2>
+                <p>Choose the settings that best suit your needs</p>
+            </div>
+
+            <!-- Tool-specific settings here -->
+            [SPECIFIC_SETTINGS]
+
+        </div>
+    </div>
+
+    <!-- Process Section -->
+    <div class="convert-section">
+        <form id="converterForm" method="post" action="/en/[URL_ACTION]" enctype="multipart/form-data">
+            <h2>[ACTION] [FILE_TYPE]</h2>
+            <div class="convert-content">
+                <button type="submit" class="convert-button" id="convertButton" aria-label="[Action] [file_type]">
+                    <i class="fas fa-[ACTION_ICON]"></i>
+                    [ACTION] Now
+                </button>
+            </div>
+            <small>[Process description]</small>
+        </form>
+
+        <!-- Progress -->
+        <div id="progressSection" class="progress-section" style="display: none;">
+            <div class="progress-content">
+                <div class="progress-icon">
+                    <i class="fas fa-cog fa-spin"></i>
+                </div>
+                <div class="progress-text">
+                    <h3>[Processing] your files...</h3>
+                    <p>Please wait while we optimize your files</p>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultSection" class="result-section" style="display: none;">
+            <div class="result-content">
+                <div class="result-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="result-text">
+                    <h3>[Process] Complete!</h3>
+                    <p id="resultSummary">Your files have been [processed] successfully</p>
+                </div>
+                <div class="result-actions">
+                    <a href="#" id="downloadLink" class="download-button">
+                        <i class="fas fa-download"></i> Download [Processed] Files
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="benefits-section">
+        <h2 id="benefits-title" class="section-title">Why [ACTION] [FORMAT]?</h2>
+        <div class="compression-benefits benefits-grid">
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-[BENEFIT1_ICON]"></i></div>
+                <h3>[BENEFIT_1_TITLE]</h3>
+                <p>[Detailed explanation of the first main benefit of the tool].</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-[BENEFIT2_ICON]"></i></div>
+                <h3>[BENEFIT_2_TITLE]</h3>
+                <p>[Detailed explanation of the second benefit focused on performance].</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-[BENEFIT3_ICON]"></i></div>
+                <h3>[BENEFIT_3_TITLE]</h3>
+                <p>[Detailed explanation of the third benefit focused on mobile/usability].</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-[BENEFIT4_ICON]"></i></div>
+                <h3>[BENEFIT_4_TITLE]</h3>
+                <p>[Detailed explanation of the fourth benefit focused on batch/efficiency].</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- How To Section -->
+    <div class="howto-section">
+        <h2 id="howto-title" class="section-title">How to [ACTION] [FORMAT] Online</h2>
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Select Files</h3>
+                    <p>Click "Select Files" or drag [file_type] to the upload area.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>[STEP2_TITLE]</h3>
+                    <p>[Specific instruction for tool configuration/option selection].</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>[ACTION]</h3>
+                    <p>Click "[ACTION] Now" and wait for processing to complete.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Download</h3>
+                    <p>Download your [processed] files individually or as a ZIP file.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2 id="faq-title" class="section-title">Frequently Asked Questions about [PROCESS] [FORMAT]</h2>
+        <div class="faq-container">
+            <details class="faq-item">
+                <summary>[FAQ1_QUALITY_QUESTION]?</summary>
+                <div class="faq-content">
+                    <p>[Answer about quality and possible loss during the process].</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>What's the maximum file size I can upload?</summary>
+                <div class="faq-content">
+                    <p>You can upload up to 100MB in total. This allows you to [process] dozens of files simultaneously for maximum efficiency.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>Are my files secure and private?</summary>
+                <div class="faq-content">
+                    <p>Yes! All processing happens on our secure servers and files are automatically deleted after processing. We never store or share your files.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>[FAQ4_BATCH_QUESTION]?</summary>
+                <div class="faq-content">
+                    <p>[Answer about batch processing and multiple capabilities].</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>[FAQ5_SPECIFIC_QUESTION]?</summary>
+                <div class="faq-content">
+                    <p>[Specific answer about the implemented functionality].</p>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to [ACTION] your [FORMAT]?</h2>
+            <p>Start now and [main benefit] while maintaining [specific quality]</p>
+            <a href="#uploadArea" class="cta-button" aria-label="Start [process]">
+                <i class="fas fa-rocket"></i>
+                Start [PROCESS]
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Tool-specific CSS -->
+<style>
+/* Add specific styles here if needed */
+[SPECIFIC_STYLES]
+</style>
+
+@section Scripts {
+    <script src="~/js/site.js"></script>
+    <!-- Tool-specific scripts -->
+    [SPECIFIC_SCRIPTS]
+} 

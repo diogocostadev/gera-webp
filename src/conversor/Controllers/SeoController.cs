@@ -50,6 +50,10 @@ public class SeoController : Controller
             new { Url = "/converter-gif-para-webp", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/compressor-imagem", Priority = "0.8", ChangeFreq = "weekly" },
             
+            // Ferramentas de compressão específicas - Português
+            new { Url = "/comprimir-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/comprimir-png", Priority = "0.9", ChangeFreq = "weekly" },
+            
             // Páginas informativas
             new { Url = "/como-converter-webp", Priority = "0.7", ChangeFreq = "monthly" },
             new { Url = "/vantagens-formato-webp", Priority = "0.7", ChangeFreq = "monthly" },
@@ -64,6 +68,8 @@ public class SeoController : Controller
             new { Url = "/en/jpg-to-webp-converter", Priority = "0.8", ChangeFreq = "weekly" },
             new { Url = "/en/png-to-webp-converter", Priority = "0.8", ChangeFreq = "weekly" },
             new { Url = "/en/gif-to-webp-converter", Priority = "0.8", ChangeFreq = "weekly" },
+            new { Url = "/en/compress-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/en/compress-png", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/en/privacy", Priority = "0.4", ChangeFreq = "monthly" },
             new { Url = "/en/terms", Priority = "0.4", ChangeFreq = "monthly" },
             
@@ -71,6 +77,8 @@ public class SeoController : Controller
             new { Url = "/es/convertir-jpg-webp", Priority = "0.8", ChangeFreq = "weekly" },
             new { Url = "/es/convertir-png-webp", Priority = "0.8", ChangeFreq = "weekly" },
             new { Url = "/es/convertir-gif-webp", Priority = "0.8", ChangeFreq = "weekly" },
+            new { Url = "/es/comprimir-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/es/comprimir-png", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/es/privacidad", Priority = "0.4", ChangeFreq = "monthly" },
             new { Url = "/es/terminos", Priority = "0.4", ChangeFreq = "monthly" }
         };

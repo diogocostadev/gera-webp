@@ -1,0 +1,480 @@
+@{
+    ViewData["Title"] = "Comprimir JPEG Online - Reducir Tamaño de Imágenes JPG";
+    ViewData["Description"] = "Compresor JPEG gratis online. Reduce el tamaño de archivos JPEG manteniendo excelente calidad. Compresión por lotes hasta 100MB. Sin marcas de agua.";
+    ViewData["Keywords"] = "comprimir jpeg, optimizar jpeg, reducir tamaño jpeg, compresor de imagen jpeg, optimizador jpg";
+}
+
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Compresor de JPEG Online</h1>
+            <div class="hero-subtitle">
+                <p>Reduce el tamaño de archivos JPEG manteniendo excelente calidad. Rápido, gratis y seguro.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <!-- Hero Banner -->
+    <div class="feature-banner">
+        <div class="feature-content">
+            <div class="feature-icon">
+                <i class="fas fa-file-image"></i>
+            </div>
+            <div class="feature-text">
+                <span><strong>Compresor de JPEG</strong> • Optimización Inteligente • Calidad Preservada</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mt-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/es/">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Comprimir JPEG</li>
+        </ol>
+    </nav>
+
+    <!-- Upload Area -->
+    <div class="upload-section">
+        <div class="upload-container" id="uploadArea">
+            <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">
+                <h3>Selecciona o arrastra imágenes JPEG</h3>
+                <p>Soporta formatos JPG y JPEG • Hasta 100MB total</p>
+            </div>
+            <div class="upload-input-container">
+                <input type="file" id="arquivos" name="arquivos" multiple accept="image/jpeg,image/jpg" 
+                       class="upload-input" aria-label="Seleccionar imágenes JPEG para comprimir">
+                <label for="arquivos" class="upload-button">
+                    <i class="fas fa-plus"></i> Seleccionar Imágenes
+                </label>
+            </div>
+        </div>
+
+        <!-- File List -->
+        <div id="fileList" class="file-list mt-3" style="display: none;">
+            <h4>Archivos Seleccionados:</h4>
+            <div id="fileListContent"></div>
+        </div>
+    </div>
+
+    <!-- Quality Settings -->
+    <div class="quality-section">
+        <div class="quality-controls">
+            <div class="quality-header">
+                <h2>Configurar Compresión JPEG</h2>
+                <p>Elige el nivel de compresión que mejor se adapte a tus necesidades</p>
+            </div>
+
+            <div class="quality-slider-container">
+                <label for="qualidade" class="quality-label">
+                    <span>Calidad: <span id="qualityValue">75</span>%</span>
+                    <small id="qualityDescription">Equilibrado (recomendado)</small>
+                </label>
+                <input type="range" id="qualidade" name="qualidade" min="10" max="100" value="75" 
+                       class="quality-slider" aria-label="Calidad de compresión">
+                <div class="quality-marks">
+                    <span>Archivo más pequeño</span>
+                    <span>Mejor calidad</span>
+                </div>
+            </div>
+
+            <!-- Quality Presets -->
+            <div class="preset-buttons">
+                <button type="button" class="preset-btn" data-quality="90" aria-label="Preset calidad máxima">
+                    <i class="fas fa-gem"></i>
+                    <span>Máxima</span>
+                    <small>90% calidad</small>
+                </button>
+                <button type="button" class="preset-btn active" data-quality="75" aria-label="Preset calidad equilibrada">
+                    <i class="fas fa-balance-scale"></i>
+                    <span>Equilibrado</span>
+                    <small>75% calidad</small>
+                </button>
+                <button type="button" class="preset-btn" data-quality="60" aria-label="Preset optimizado para web">
+                    <i class="fas fa-globe"></i>
+                    <span>Web</span>
+                    <small>60% calidad</small>
+                </button>
+                <button type="button" class="preset-btn" data-quality="40" aria-label="Preset optimizado para email">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                    <small>40% calidad</small>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Convert Section -->
+    <div class="convert-section">
+        <form id="converterForm" method="post" action="/es/comprimir-jpeg" enctype="multipart/form-data">
+            <h2>Comprimir Imágenes JPEG</h2>
+            <div class="convert-content">
+                <button type="submit" class="convert-button" id="convertButton" aria-label="Comprimir imágenes JPEG">
+                    <i class="fas fa-compress-alt"></i>
+                    Comprimir JPEG Ahora
+                </button>
+            </div>
+            <small>Compresión JPEG con calidad ajustable</small>
+        </form>
+
+        <!-- Progress -->
+        <div id="progressSection" class="progress-section" style="display: none;">
+            <div class="progress-content">
+                <div class="progress-icon">
+                    <i class="fas fa-cog fa-spin"></i>
+                </div>
+                <div class="progress-text">
+                    <h3>Comprimiendo tus imágenes JPEG...</h3>
+                    <p>Por favor espera mientras optimizamos tus archivos</p>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultSection" class="result-section" style="display: none;">
+            <div class="result-content">
+                <div class="result-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="result-text">
+                    <h3>¡Compresión Completada!</h3>
+                    <p id="resultSummary">Tus imágenes JPEG han sido comprimidas exitosamente</p>
+                </div>
+                <div class="result-actions">
+                    <a href="#" id="downloadLink" class="download-button">
+                        <i class="fas fa-download"></i> Descargar Imágenes Comprimidas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="benefits-section">
+        <h2 id="benefits-title" class="section-title">¿Por qué Comprimir Imágenes JPEG?</h2>
+        <div class="compression-benefits benefits-grid">
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <h3>Carga Más Rápida</h3>
+                <p>Reduce el tamaño del archivo hasta un 80% para tiempos de carga más rápidos en sitios web y aplicaciones.</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Móvil Amigable</h3>
+                <p>Archivos más pequeños consumen menos datos móviles y cargan más rápido en conexiones lentas.</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-eye"></i></div>
+                <h3>Calidad Preservada</h3>
+                <p>Nuestra compresión inteligente mantiene la calidad visual mientras reduce significativamente el tamaño del archivo.</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon"><i class="fas fa-layer-group"></i></div>
+                <h3>Procesamiento por Lotes</h3>
+                <p>Comprime múltiples archivos JPEG simultáneamente. Sube hasta 100MB en total.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- How To Section -->
+    <div class="howto-section">
+        <h2 id="howto-title" class="section-title">Cómo Comprimir JPEG Online</h2>
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Seleccionar Imágenes</h3>
+                    <p>Haz clic en "Seleccionar Imágenes" o arrastra archivos JPEG al área de subida.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Elegir Calidad</h3>
+                    <p>Ajusta la calidad de compresión o usa nuestros presets optimizados.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Comprimir</h3>
+                    <p>Haz clic en "Comprimir JPEG Ahora" y espera a que se complete el procesamiento.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Descargar</h3>
+                    <p>Descarga tus imágenes JPEG comprimidas individualmente o como archivo ZIP.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2 id="faq-title" class="section-title">Preguntas Frecuentes sobre Compresión JPEG</h2>
+        <div class="faq-container">
+            <details class="faq-item">
+                <summary>¿La compresión JPEG pierde calidad?</summary>
+                <div class="faq-content">
+                    <p>Con nuestra compresión inteligente, puedes reducir archivos JPEG hasta un 80% manteniendo excelente calidad visual y preservando detalles importantes.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>¿Cuál es el tamaño máximo de archivo que puedo subir?</summary>
+                <div class="faq-content">
+                    <p>Puedes subir hasta 100MB en total. Esto te permite comprimir docenas de imágenes JPEG simultáneamente para máxima eficiencia.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>¿Mis imágenes están seguras y privadas?</summary>
+                <div class="faq-content">
+                    <p>¡Sí! Toda compresión ocurre en nuestros servidores seguros y los archivos se eliminan automáticamente después del procesamiento. Nunca almacenamos o compartimos tus imágenes.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>¿Puedo comprimir muchas imágenes JPEG a la vez?</summary>
+                <div class="faq-content">
+                    <p>¡Sí! Nuestro compresor soporta subida por lotes hasta 100MB total. Comprime docenas de JPEGs simultáneamente.</p>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>¿Qué nivel de calidad debo elegir?</summary>
+                <div class="faq-content">
+                    <p>Para uso web, 60-75% de calidad es ideal. Para impresión, usa 80-90%. Nuestro preset "Equilibrado" (75%) funciona genial para la mayoría de casos.</p>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+        <div class="cta-content">
+            <h2>¿Listo para Comprimir tus Imágenes JPEG?</h2>
+            <p>Comienza ahora y reduce el tamaño de tus archivos de imagen manteniendo excelente calidad</p>
+            <a href="#uploadArea" class="cta-button" aria-label="Comenzar compresión JPEG">
+                <i class="fas fa-rocket"></i>
+                Comenzar Compresión JPEG
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Same styles as CompressorJpegEnglish.cshtml */
+.compression-benefits .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.compression-benefits .benefit-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.compression-benefits .benefit-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.1);
+}
+
+.compression-benefits .benefit-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.compression-benefits .benefit-item h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.compression-benefits .benefit-item p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.howto-section .steps-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.howto-section .step-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.howto-section .step-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary-color);
+}
+
+.howto-section .step-number {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.howto-section .step-content h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.howto-section .step-content p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.preset-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.preset-btn:hover,
+.preset-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.preset-btn i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.preset-btn span {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.preset-btn small {
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+@@media (max-width: 1024px) {
+    .compression-benefits .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .howto-section .steps-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .preset-buttons {
+        gap: 0.75rem;
+    }
+    
+    .preset-btn {
+        min-width: 100px;
+        padding: 0.75rem;
+    }
+}
+
+@@media (max-width: 768px) {
+    .compression-benefits .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .howto-section .steps-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .preset-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .preset-btn {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+@@media (max-width: 480px) {
+    .compression-benefits .benefit-item {
+        min-height: 220px;
+        padding: 1.5rem;
+    }
+    
+    .howto-section .step-item {
+        min-height: 200px;
+        padding: 1.5rem;
+    }
+    
+    .howto-section .step-number {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+}
+</style>
+
+@section Scripts {
+    <script src="~/js/site.js"></script>
+} 

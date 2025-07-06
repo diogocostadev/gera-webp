@@ -1,0 +1,254 @@
+# 🌐 Checklist SEO Multilíngue Wepper.app
+# Este arquivo define as regras obrigatórias que toda nova página deve seguir
+# Versão: 1.0
+
+seo_multilingual_rules:
+  version: "1.0"
+  mandatory: true
+  languages:
+    - code: "pt-br"
+      prefix: "/"
+      name: "Português"
+    - code: "en"
+      prefix: "/en/"
+      name: "Inglês"
+    - code: "es"
+      prefix: "/es/"
+      name: "Espanhol"
+
+# Verificações obrigatórias para cada nova página
+required_checks:
+
+  # 1. VIEWS TRADUZIDAS
+  views:
+    - name: "view_portuguese"
+      description: "View em português deve existir"
+      path_pattern: "src/conversor/Views/Home/{feature}.cshtml"
+      required: true
+      
+    - name: "view_english"
+      description: "View em inglês deve existir"
+      path_pattern: "src/conversor/Views/Home/{feature}English.cshtml"
+      required: true
+      
+    - name: "view_spanish"
+      description: "View em espanhol deve existir"
+      path_pattern: "src/conversor/Views/Home/{feature}Spanish.cshtml"
+      required: true
+
+  # 2. ROTAS NO CONTROLLER
+  routes:
+    - name: "route_portuguese"
+      description: "Rota em português no HomeController"
+      file: "src/conversor/Controllers/HomeController.cs"
+      pattern: 'HttpGet\("([^"]+)"\)'
+      required: true
+      
+    - name: "route_english"
+      description: "Rota em inglês no HomeController"
+      file: "src/conversor/Controllers/HomeController.cs"
+      pattern: 'HttpGet\("en/([^"]+)"\)'
+      required: true
+      
+    - name: "route_spanish"
+      description: "Rota em espanhol no HomeController"
+      file: "src/conversor/Controllers/HomeController.cs"
+      pattern: 'HttpGet\("es/([^"]+)"\)'
+      required: true
+
+  # 3. META TAGS
+  meta_tags:
+    - name: "meta_title"
+      description: "ViewData Title em todas as views"
+      pattern: 'ViewData\["Title"\]'
+      required_in_all_views: true
+      
+    - name: "meta_description"
+      description: "ViewData Description em todas as views"
+      pattern: 'ViewData\["Description"\]'
+      required_in_all_views: true
+      
+    - name: "meta_keywords"
+      description: "ViewData Keywords em todas as views"
+      pattern: 'ViewData\["Keywords"\]'
+      required_in_all_views: true
+
+  # 4. CONTEÚDO ESTRUTURADO
+  content_structure:
+    - name: "h1_tag"
+      description: "Tag H1 principal"
+      pattern: '<h1[^>]*>.*</h1>'
+      required_in_all_views: true
+      
+    - name: "benefits_section"
+      description: "Seção de benefícios"
+      pattern: 'benefits-section'
+      required_in_all_views: true
+      
+    - name: "howto_section"
+      description: "Seção como usar"
+      pattern: 'howto-section'
+      required_in_all_views: true
+      
+    - name: "faq_section"
+      description: "Seção FAQ"
+      pattern: 'faq-section'
+      required_in_all_views: true
+      
+    - name: "breadcrumbs"
+      description: "Navegação breadcrumb"
+      pattern: 'breadcrumb'
+      required_in_all_views: true
+
+  # 5. SEO TÉCNICO
+  technical_seo:
+    - name: "hreflang_mapping"
+      description: "Mapeamento hreflang no Layout"
+      file: "src/conversor/Views/Shared/_Layout.cshtml"
+      pattern: '\["/([^"]+)"\]\s*=\s*new\(\)'
+      required: true
+      
+    - name: "sitemap_urls"
+      description: "URLs no sitemap.xml"
+      file: "src/conversor/Controllers/SeoController.cs"
+      pattern: 'new\s*{\s*Url\s*=\s*"/([^"]+)"'
+      required: true
+
+# Padrões de nomenclatura obrigatórios
+naming_patterns:
+  url_structure:
+    portuguese: "verbo-substantivo"
+    english: "verb-noun"
+    spanish: "verbo-sustantivo"
+    
+  examples:
+    compression:
+      portuguese: "comprimir-{formato}"
+      english: "compress-{format}"
+      spanish: "comprimir-{formato}"
+      
+    conversion:
+      portuguese: "converter-{de}-para-{para}"
+      english: "convert-{from}-to-{to}"
+      spanish: "convertir-{de}-a-{para}"
+      
+    resizing:
+      portuguese: "redimensionar-{tipo}"
+      english: "resize-{type}"
+      spanish: "redimensionar-{tipo}"
+
+# Templates de meta tags obrigatórios
+meta_templates:
+  compression:
+    title:
+      portuguese: "[Formato] Online Grátis - [Ação] Sem Perder Qualidade"
+      english: "[Action] [Format] Online Free - [Main Benefit]"
+      spanish: "[Acción] [Formato] Online Gratis - [Beneficio Principal]"
+      
+    description:
+      portuguese: "[Ferramenta] [formato] grátis. [Benefício principal] mantendo qualidade. Processamento por lotes até 100MB."
+      english: "Free [format] [tool] online. [Main benefit] while maintaining quality. Batch processing up to 100MB."
+      spanish: "[Herramienta] [formato] gratis. [Beneficio principal] manteniendo calidad. Procesamiento por lotes hasta 100MB."
+
+# Configurações de qualidade
+quality_standards:
+  max_title_length: 60
+  max_description_length: 160
+  min_faq_questions: 5
+  required_benefits: 4
+  required_steps: 4
+  
+  # Palavras proibidas em views não-inglesas
+  forbidden_english_words:
+    - "click"
+    - "download"
+    - "upload"
+    - "select"
+    - "start"
+    - "process"
+    - "free"
+    - "online"
+
+# Scripts de validação
+validation_scripts:
+  - name: "validar-nova-pagina.sh"
+    description: "Validação completa de nova página"
+    usage: "./scripts/validar-nova-pagina.sh {feature-name}"
+    
+  - name: "verificar-seo-multilingual.sh"
+    description: "Verificação geral do sistema SEO"
+    usage: "./scripts/verificar-seo-multilingual.sh"
+
+# Ferramentas externas recomendadas
+external_tools:
+  validation:
+    - name: "Google Search Console"
+      url: "https://search.google.com/search-console"
+      purpose: "Verificar indexação"
+      
+    - name: "PageSpeed Insights"
+      url: "https://pagespeed.web.dev/"
+      purpose: "Performance e Core Web Vitals"
+      
+    - name: "Mobile-Friendly Test"
+      url: "https://search.google.com/test/mobile-friendly"
+      purpose: "Compatibilidade móvel"
+      
+    - name: "hreflang.org"
+      url: "https://www.hreflang.org/"
+      purpose: "Validar tags hreflang"
+
+# KPIs e métricas esperadas
+expected_kpis:
+  performance:
+    page_load_time: "< 3 segundos"
+    core_web_vitals: "todas verdes"
+    mobile_usability: "sem erros"
+    
+  seo:
+    indexation_time: "< 7 dias"
+    organic_traffic_increase: "+300% internacional"
+    search_visibility: "+250% palavras-chave"
+    
+# Configuração para CI/CD
+ci_cd:
+  pre_commit_hooks:
+    - run: "./scripts/validar-nova-pagina.sh {changed_feature}"
+      condition: "new_view_files"
+      
+  pre_deploy_checks:
+    - run: "./scripts/verificar-seo-multilingual.sh"
+      required: true
+      
+  post_deploy_validation:
+    - run: "curl -f {base_url}/{new_routes}"
+      timeout: "30s"
+
+# Responsabilidades por área
+responsibilities:
+  backend_dev:
+    - "Implementar rotas no controller"
+    - "Configurar cultura/idioma"
+    - "Adicionar URLs no sitemap"
+    
+  frontend_dev:
+    - "Criar views traduzidas"
+    - "Implementar meta tags"
+    - "Configurar breadcrumbs"
+    
+  seo_specialist:
+    - "Validar hreflang"
+    - "Revisar meta tags"
+    - "Verificar ferramentas Google"
+    
+  content_creator:
+    - "Revisar traduções"
+    - "Validar tom de voz"
+    - "Criar conteúdo FAQ"
+
+# Última atualização
+metadata:
+  last_updated: "2024-12-26"
+  version: "1.0"
+  status: "active"
+  maintainer: "Equipe Wepper.app" 
