@@ -32,9 +32,9 @@ A página de compressão PNG foi criada seguindo o mesmo padrão da página de c
 5. **Validação**: Aceita apenas arquivos `image/png`
 
 #### **Compressão Utilizada**
-- **Método**: Conversão PNG → WebP
-- **Vantagem**: WebP oferece compressão superior mantendo transparência
-- **Resultado**: Redução típica de 50-70% no tamanho do arquivo
+- **Método**: Compressão PNG → PNG otimizado
+- **Vantagem**: Mantém formato PNG preservando transparência e compatibilidade
+- **Resultado**: Redução típica de 20-50% no tamanho do arquivo mantendo formato original
 
 ### 📱 **Layout e Responsividade**
 
@@ -82,7 +82,7 @@ A página de compressão PNG foi criada seguindo o mesmo padrão da página de c
   - **Otimizada** (50): Máxima compressão
 
 #### **Processamento**
-- Conversão PNG → WebP com preservação de transparência
+- Compressão PNG → PNG otimizado com preservação de transparência
 - Processamento em lote (até 4 arquivos simultâneos)
 - Feedback de progresso em tempo real
 - Download em arquivo ZIP
