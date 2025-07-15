@@ -1112,7 +1112,7 @@ namespace GeraWebP.Controllers
 
                 // Usar semáforo para controlar concorrência (máximo 4 processamentos simultâneos)
                 using var semaphore = new SemaphoreSlim(4, 4);
-                var tasks = new List<Task>();
+                List<Task> tasks = [];
 
                 int progress = 0;
                 int total = arquivos.Count;
