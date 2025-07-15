@@ -736,6 +736,23 @@ namespace GeraWebP.Controllers
             return output.ToArray();
         }
 
+        private async Task<byte[]> CompressPng(IFormFile file, int compressionLevel = 6)
+        {
+            using var imageStream = file.OpenReadStream();
+            using var image = await Image.LoadAsync(imageStream);
+
+            using var output = new MemoryStream();
+            var encoder = new SixLabors.ImageSharp.Formats.Png.PngEncoder
+            {
+                CompressionLevel = (SixLabors.ImageSharp.Formats.Png.PngCompressionLevel)compressionLevel,
+                ColorType = SixLabors.ImageSharp.Formats.Png.PngColorType.RgbWithAlpha, // Preservar transparência
+                TransparentColorMode = SixLabors.ImageSharp.Formats.Png.PngTransparentColorMode.Preserve
+            };
+
+            await image.SaveAsPngAsync(output, encoder);
+            return output.ToArray();
+        }
+
         private static WebPOptimizationProfile DeterminarPerfilOtimizacao(double tamanhoMB, int qualidadeBase)
         {
             return tamanhoMB switch
@@ -1095,7 +1112,7 @@ namespace GeraWebP.Controllers
 
                 // Usar semáforo para controlar concorrência (máximo 4 processamentos simultâneos)
                 using var semaphore = new SemaphoreSlim(4, 4);
-                var tasks = new List<Task>();
+                List<Task> tasks = [];
 
                 int progress = 0;
                 int total = arquivos.Count;
@@ -1115,11 +1132,12 @@ namespace GeraWebP.Controllers
 
                             _logger.LogInformation("Iniciando compressão PNG do arquivo {FileName}", arquivo.FileName);
 
-                            // Converter PNG para WebP (compressão superior mantendo transparência)
-                            var imagemComprimida = await ConvertToWebP(arquivo, qualidade);
+                            // Comprimir PNG mantendo formato PNG e transparência
+                            var compressionLevel = Math.Max(1, Math.Min(9, 10 - (qualidade / 10))); // Converter qualidade 0-100 para compression level 1-9
+                            var imagemComprimida = await CompressPng(arquivo, compressionLevel);
                             
-                            // Salvar arquivo comprimido com extensão .webp
-                            var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName) + ".webp";
+                            // Salvar arquivo comprimido com extensão .png
+                            var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName) + ".png";
                             var caminhoArquivo = Path.Combine(caminhoConvertido, nomeArquivo);
                             await System.IO.File.WriteAllBytesAsync(caminhoArquivo, imagemComprimida);
 
@@ -1249,7 +1267,7 @@ namespace GeraWebP.Controllers
         public IActionResult ComprimirPngSpanish()
         {
             SetCultureContent("es");
-            ViewData["Title"] = "Comprimir PNG Online Gratis - Preservar Transparencia";
+            ViewData["Title"] = "Comprimir PNG Online Gratis - Preservar Transparência";
             ViewData["Description"] = "Compresor PNG gratis online. Reduce el tamaño de archivos PNG preservando transparencia y canal alfa. Perfecto para logos e iconos. Procesamiento por lotes.";
             ViewData["Keywords"] = "comprimir png, optimizar png, reducir tamaño png, compresor de imagen png, transparencia png";
             
