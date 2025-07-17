@@ -44,7 +44,7 @@ public class SeoController : Controller
             new { Url = "/en/", Priority = "0.9", ChangeFreq = "daily" },
             new { Url = "/es/", Priority = "0.9", ChangeFreq = "daily" },
             
-            // Ferramentas de conversão (baseado no site real)
+            // Ferramentas de conversão WebP (baseado no site real)
             new { Url = "/converter-jpg-para-webp", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/converter-png-para-webp", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/converter-gif-para-webp", Priority = "0.9", ChangeFreq = "weekly" },
@@ -53,6 +53,9 @@ public class SeoController : Controller
             // Ferramentas de compressão específicas - Português
             new { Url = "/comprimir-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/comprimir-png", Priority = "0.9", ChangeFreq = "weekly" },
+            
+            // Nova funcionalidade - Conversor PNG - Português
+            new { Url = "/converter-para-png", Priority = "0.9", ChangeFreq = "weekly" },
             
             // Páginas informativas
             new { Url = "/como-converter-webp", Priority = "0.7", ChangeFreq = "monthly" },
@@ -70,6 +73,7 @@ public class SeoController : Controller
             new { Url = "/en/gif-to-webp-converter", Priority = "0.8", ChangeFreq = "weekly" },
             new { Url = "/en/compress-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/en/compress-png", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/en/convert-to-png", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/en/privacy", Priority = "0.4", ChangeFreq = "monthly" },
             new { Url = "/en/terms", Priority = "0.4", ChangeFreq = "monthly" },
             
@@ -79,6 +83,7 @@ public class SeoController : Controller
             new { Url = "/es/convertir-gif-webp", Priority = "0.8", ChangeFreq = "weekly" },
             new { Url = "/es/comprimir-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/es/comprimir-png", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/es/convertir-a-png", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/es/privacidad", Priority = "0.4", ChangeFreq = "monthly" },
             new { Url = "/es/terminos", Priority = "0.4", ChangeFreq = "monthly" }
         };
