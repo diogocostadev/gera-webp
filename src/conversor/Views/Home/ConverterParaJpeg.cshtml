@@ -1,0 +1,435 @@
+@{
+    ViewData["Title"] = "Conversor JPEG Online Gratuito - Converta Imagens para JPEG";
+    ViewData["Description"] = "Conversor JPEG online gratuito e rápido. Converta imagens PNG, GIF, WebP para formato JPEG com controle de qualidade. Otimize suas imagens para web em segundos!";
+    ViewData["Keywords"] = "conversor jpeg, converter para jpeg, png para jpeg, gif para jpeg, webp para jpeg, conversor de imagens";
+}
+
+<!-- SEO Hero Section -->
+<section class="hero-seo">
+    <div class="container">
+        <header class="hero-content">
+            <h1>Conversor de Imagens para JPEG Online</h1>
+            <p class="hero-description">
+                <strong>Converta suas imagens para formato JPEG online</strong> gratuitamente e obtenha máxima qualidade
+                com compressão inteligente. Ideal para fotografias e imagens web otimizadas.
+            </p>
+            <div class="hero-features">
+                <span class="feature-badge">🔄 Compressão Inteligente</span>
+                <span class="feature-badge">🔒 Seguro e Privado</span>
+                <span class="feature-badge">📸 Ideal para Fotos</span>
+                <span class="feature-badge">📦 Lote</span>
+            </div>
+        </header>
+    </div>
+</section>
+
+<!-- Service Notice -->
+<div class="free-service-notice">
+    <div class="container">
+        <div class="notice-content">
+            <i data-feather="image"></i>
+            <span><strong>Conversor para JPEG</strong> • Compressão Universal • Compatibilidade Total</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Converter -->
+<main class="main-converter">
+    <div class="converter-container">
+        <form id="converterForm" method="post" action="/converter-para-jpeg" enctype="multipart/form-data">
+            
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Converter para JPEG</li>
+                </ol>
+            </nav>
+            
+            <!-- Conversion Workflow -->
+            <div class="converter-workflow">
+                <!-- Step 1: Upload -->
+                <div class="workflow-step upload-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h2>Selecionar Imagens</h2>
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon" style="color: #ff6b35;">
+                            <i data-feather="upload"></i>
+                        </div>
+                        <p>Arraste imagens ou clique para selecionar</p>
+                        <div class="upload-button" style="background: #ff6b35;">
+                            <i data-feather="folder"></i>
+                            Escolher Imagens
+                        </div>
+                        <div class="upload-info">
+                            <small>PNG, GIF, WebP • Máx: 100MB por arquivo ou 100MB total</small>
+                        </div>
+                        <label for="arquivos" class="visually-hidden">Selecionar imagens para conversão</label>
+                        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" 
+                               accept="image/png,image/gif,image/webp" />
+                    </div>
+                    
+                    <!-- Selected Files Display -->
+                    <div id="selectedFiles" class="selected-files" style="display: none;">
+                        <div class="files-header">
+                            <i data-feather="check-circle"></i>
+                            <span id="fileCount">0</span> imagem(s) selecionada(s)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Quality Settings -->
+                <div class="workflow-step quality-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h2>Configurar Qualidade JPEG</h2>
+                    </div>
+                    
+                    <div class="quality-control">
+                        <label for="qualidade" class="quality-label">
+                            Qualidade JPEG: <strong id="qualidadeValue">75</strong>%
+                        </label>
+                        <input type="range" id="qualidade" name="qualidade" min="10" max="100" value="75" 
+                               class="quality-slider" oninput="atualizarValorDaQuantidade(this.value)">
+                        <div class="quality-marks">
+                            <span class="quality-mark low">Menor Arquivo</span>
+                            <span class="quality-mark high">Melhor Qualidade</span>
+                        </div>
+                    </div>
+                    
+                    <div class="compression-presets">
+                        <h4>Presets de Qualidade:</h4>
+                        <div class="preset-buttons">
+                            <button type="button" class="preset-btn" data-preset="95" data-tooltip="Alta qualidade para impressão">
+                                <i data-feather="award"></i>
+                                Alta Qualidade
+                            </button>
+                            <button type="button" class="preset-btn active" data-preset="75" data-tooltip="Ideal para web">
+                                <i data-feather="target"></i>
+                                Web Otimizada
+                            </button>
+                            <button type="button" class="preset-btn" data-preset="60" data-tooltip="Menor tamanho para thumbnails">
+                                <i data-feather="zap"></i>
+                                Compacta
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-preview">
+                        <div class="preview-item">
+                            <div class="preview-icon">
+                                <i data-feather="image"></i>
+                            </div>
+                            <div class="preview-text">
+                                <strong>Formato final:</strong>
+                                <small>JPEG universalmente compatível</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Convert -->
+                <div class="workflow-step convert-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h2>Converter para JPEG</h2>
+                    </div>
+                    
+                    <button type="submit" class="convert-button" id="convertButton" aria-label="Converter imagens para JPEG">
+                        <i data-feather="image"></i>
+                        Converter para JPEG Agora
+                    </button>
+                    
+                    <div class="convert-info">
+                        <small>Conversão JPEG com compressão inteligente</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress & Download Sections -->
+            <div id="progressContainer" class="progress-section" style="display: none;">
+                <h3>Convertendo suas imagens...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progressText">0%</p>
+            </div>
+
+            @if (ViewBag.DownloadLink != null)
+            {
+                <div class="download-section">
+                    <div class="download-success">
+                        <i data-feather="check-circle"></i>
+                        <h3>Imagens Convertidas para JPEG!</h3>
+                        <p>Suas imagens foram convertidas para JPEG com sucesso.</p>
+                        <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Baixar imagens convertidas">
+                            <i data-feather="download"></i>
+                            Baixar Imagens JPEG
+                        </a>
+                        <small>Arquivo ZIP com todas as imagens em formato JPEG</small>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
+</main>
+
+<!-- SEO Content -->
+<section class="seo-content">
+    <div class="container">
+        
+        <!-- Benefits Section -->
+        <section class="conversion-benefits" aria-labelledby="benefits-title">
+            <h2 id="benefits-title" class="section-title">Por que Converter Imagens para JPEG?</h2>
+            
+            <div class="benefits-grid">
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="image"></i>
+                    </div>
+                    <h3>Compatibilidade Universal</h3>
+                    <p>JPEG é o formato mais aceito em todos os dispositivos, navegadores e aplicações. Ideal para web e impressão.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="minimize-2"></i>
+                    </div>
+                    <h3>Compressão Inteligente</h3>
+                    <p>Reduza drasticamente o tamanho dos arquivos mantendo a qualidade visual ideal para suas necessidades.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="camera"></i>
+                    </div>
+                    <h3>Ideal para Fotografias</h3>
+                    <p>Formato otimizado para imagens com muitas cores e gradientes, oferecendo excelente qualidade visual.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="globe"></i>
+                    </div>
+                    <h3>Perfeito para Web</h3>
+                    <p>Ideal para fotografias, banners web e qualquer imagem que precise de compressão eficiente e compatibilidade universal.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- How-to Section -->
+        <section class="howto-section" aria-labelledby="howto-title">
+            <h2 id="howto-title" class="section-title">Como Converter Imagens para JPEG Online</h2>
+            
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3>Upload das Imagens</h3>
+                    <p>Selecione ou arraste imagens PNG, GIF ou WebP que deseja converter para JPEG. Suportamos múltiplos arquivos simultaneamente.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3>Ajuste a Qualidade</h3>
+                    <p>Configure o nível de qualidade JPEG: alta qualidade para impressão ou web otimizada para sites e redes sociais.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3>Conversão Inteligente</h3>
+                    <p>Nossa tecnologia converte para JPEG aplicando compressão inteligente e otimizando para o uso pretendido.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h3>Download Imediato</h3>
+                    <p>Baixe suas imagens JPEG convertidas em ZIP. Prontas para uso em sites, impressão e redes sociais!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" aria-labelledby="faq-title">
+            <h2 id="faq-title" class="section-title">Perguntas Frequentes sobre Conversão JPEG</h2>
+            
+            <div class="faq-container">
+                <details class="faq-item">
+                    <summary>Quais formatos posso converter para JPEG?</summary>
+                    <p>Você pode converter imagens PNG, GIF e WebP para JPEG. O formato JPEG é ideal para fotografias e imagens com muitas cores, oferecendo excelente compressão.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Como escolher a qualidade ideal para JPEG?</summary>
+                    <p>Para uso web, recomendamos 70-85% de qualidade. Para impressão, use 90-95%. Para thumbnails ou previews, 60-70% é suficiente. Nossa ferramenta oferece presets para facilitar a escolha.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>O que acontece com imagens transparentes?</summary>
+                    <p>JPEG não suporta transparência. Áreas transparentes em PNG ou GIF serão automaticamente preenchidas com fundo branco durante a conversão.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Qual a diferença entre JPEG e outros formatos?</summary>
+                    <p>JPEG oferece excelente compressão para fotografias, compatibilidade universal e arquivos menores. PNG mantém transparência e qualidade sem perdas. WebP oferece melhor compressão mas menor compatibilidade.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>É seguro converter imagens online?</summary>
+                    <p>Sim! Todo processamento acontece localmente no seu navegador. Suas imagens não são enviadas para nossos servidores e são automaticamente excluídas após 1 hora.</p>
+                </details>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Converta suas Imagens para JPEG Agora!</h2>
+                <p>Obtenha máxima compatibilidade e compressão inteligente convertendo para JPEG gratuitamente.</p>
+                <a href="#uploadArea" class="cta-button" aria-label="Começar conversão JPEG">
+                    <i data-feather="image"></i>
+                    Começar Conversão JPEG
+                </a>
+            </div>
+        </section>
+
+        <!-- Outras Ferramentas -->
+        @await Html.PartialAsync("_ToolsGrid")
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        feather.replace();
+        
+        function atualizarValorDaQuantidade(value) {
+            document.getElementById('qualidadeValue').textContent = value;
+            updateActivePreset(value);
+        }
+        
+        function updateActivePreset(value) {
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            presetButtons.forEach(btn => btn.classList.remove('active'));
+            
+            if (value <= 65) presetButtons[2]?.classList.add('active');
+            else if (value >= 90) presetButtons[0]?.classList.add('active');
+            else presetButtons[1]?.classList.add('active');
+        }
+
+        // File upload handling
+        const fileInput = document.getElementById('arquivos');
+        const uploadArea = document.getElementById('uploadArea');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileCount = document.getElementById('fileCount');
+
+        fileInput.addEventListener('change', function(e) {
+            updateFileDisplay(e.target.files);
+        });
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(file => 
+                ['image/png', 'image/gif', 'image/webp'].includes(file.type)
+            );
+            if (files.length > 0) {
+                const dt = new DataTransfer();
+                files.forEach(file => dt.items.add(file));
+                fileInput.files = dt.files;
+                updateFileDisplay(files);
+            }
+        });
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const preset = this.dataset.preset;
+                document.getElementById('qualidade').value = preset;
+                atualizarValorDaQuantidade(preset);
+            });
+        });
+
+        function updateFileDisplay(files) {
+            if (files.length > 0) {
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSize += files[i].size;
+                }
+                const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+                
+                fileCount.textContent = `${files.length} imagem(s) • ${totalMB}MB total`;
+                selectedFiles.style.display = 'block';
+                uploadArea.classList.add('has-files');
+            } else {
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+            }
+        }
+
+        // Form submission with progress
+        document.getElementById('converterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const progressContainer = document.getElementById('progressContainer');
+            const convertButton = document.getElementById('convertButton');
+            
+            progressContainer.style.display = 'block';
+            convertButton.disabled = true;
+            convertButton.innerHTML = '<i data-feather="loader"></i> Convertendo...';
+            feather.replace();
+            
+            // Enviar o formulário usando fetch mas tratar como HTML response
+            fetch('/converter-para-jpeg', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text(); // Obter como texto (HTML)
+            })
+            .then(html => {
+                // Parse do HTML para extrair o link de download
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const downloadLink = doc.querySelector('a[download]');
+                
+                if (downloadLink) {
+                    // Se encontrou link de download, redirecionar
+                    window.location.href = downloadLink.href;
+                } else {
+                    // Se não encontrou, substituir a página atual
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro na conversão. Tente novamente.');
+            })
+            .finally(() => {
+                progressContainer.style.display = 'none';
+                convertButton.disabled = false;
+                convertButton.innerHTML = '<i data-feather="image"></i> Converter para JPEG Agora';
+                feather.replace();
+            });
+        });
+    </script>
+    <script src="~/js/site.js"></script>
+}

@@ -1,0 +1,358 @@
+@{
+    ViewData["Title"] = ViewData["Title"] ?? "Free Online JPEG Converter - Convert Images to JPEG";
+    ViewData["Description"] = ViewData["Description"] ?? "Free and fast online JPEG converter. Convert PNG, GIF, WebP images to JPEG format with quality control. Optimize your images for web in seconds!";
+    ViewData["Keywords"] = ViewData["Keywords"] ?? "jpeg converter, convert to jpeg, png to jpeg, gif to jpeg, webp to jpeg, image converter";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="hero-section">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">
+            <i class="fas fa-file-image text-orange-600 mr-3"></i>
+            Free Online JPEG Converter
+        </h1>
+        <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto text-lg">
+            Convert your PNG, GIF, WebP images to JPEG format quickly and for free. 
+            Control quality and optimize your images for web in seconds!
+        </p>
+    </div>
+
+    <div class="converter-container max-w-4xl mx-auto">
+        <div class="upload-section bg-white rounded-xl shadow-lg p-8 mb-8">
+            @using (Html.BeginForm("ConvertToJpegEnglish", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @class = "space-y-6" }))
+            {
+                <div class="upload-area border-2 border-dashed border-orange-300 rounded-lg p-8 text-center bg-orange-50 hover:bg-orange-100 transition-colors duration-300">
+                    <div class="upload-icon mb-4">
+                        <i class="fas fa-cloud-upload-alt text-6xl text-orange-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                        Select your images
+                    </h3>
+                    <p class="text-gray-600 mb-4">
+                        Drag and drop or click to select PNG, GIF, WebP files
+                    </p>
+                    <input type="file" name="arquivos" multiple accept="image/png,image/gif,image/webp" 
+                           class="file-input hidden" id="fileInput" />
+                    <label for="fileInput" class="btn-upload cursor-pointer inline-block bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors duration-300">
+                        <i class="fas fa-plus mr-2"></i>
+                        Choose Files
+                    </label>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Max 50MB per file • Multiple files supported
+                    </p>
+                </div>
+
+                <div class="quality-section">
+                    <label for="qualidade" class="block text-sm font-medium text-gray-700 mb-2">
+                        JPEG Quality: <span id="qualityValue" class="font-bold text-orange-600">75</span>%
+                    </label>
+                    <input type="range" id="qualidade" name="qualidade" min="10" max="100" value="75" 
+                           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider" />
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Smaller file</span>
+                        <span>Better quality</span>
+                    </div>
+                </div>
+
+                <div class="selected-files hidden" id="selectedFiles">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-3">Selected Files:</h4>
+                    <div id="filesList" class="space-y-2 mb-4"></div>
+                </div>
+
+                <button type="submit" id="convertBtn" class="w-full bg-orange-600 text-white py-4 px-6 rounded-lg text-lg font-semibold hover:bg-orange-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-magic mr-2"></i>
+                    Convert to JPEG
+                </button>
+
+                @Html.ValidationSummary(true, "", new { @class = "text-red-600 mt-4" })
+            }
+        </div>
+
+        <div id="progressSection" class="hidden bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">
+                <i class="fas fa-cog fa-spin text-orange-600 mr-2"></i>
+                Converting your images...
+            </h3>
+            <div class="progress-bar bg-gray-200 rounded-full h-4 mb-4">
+                <div id="progressFill" class="bg-gradient-to-r from-orange-500 to-orange-600 h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p class="text-center text-gray-600">
+                <span id="progressText">Preparing conversion...</span>
+            </p>
+        </div>
+
+        @if (ViewBag.DownloadLink != null)
+        {
+            <div class="download-section bg-green-50 border border-green-200 rounded-xl p-8 mb-8">
+                <div class="text-center">
+                    <i class="fas fa-check-circle text-4xl text-green-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-green-800 mb-4">
+                        Conversion Completed Successfully!
+                    </h3>
+                    <p class="text-green-700 mb-6">
+                        Your images have been converted to JPEG and are ready for download.
+                    </p>
+                    <a href="@ViewBag.DownloadLink" class="inline-block bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors duration-300">
+                        <i class="fas fa-download mr-2"></i>
+                        Download JPEG Files
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="benefits-section max-w-6xl mx-auto mt-16 mb-16">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+            Why use our JPEG Converter?
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="benefit-card bg-white p-6 rounded-xl shadow-lg text-center">
+                <div class="icon-circle bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-compress-alt text-2xl text-orange-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Smart Compression</h3>
+                <p class="text-gray-600">
+                    Full control over quality and compression. Reduce file size while maintaining optimal visual quality.
+                </p>
+            </div>
+            <div class="benefit-card bg-white p-6 rounded-xl shadow-lg text-center">
+                <div class="icon-circle bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-universal-access text-2xl text-orange-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Universal Compatibility</h3>
+                <p class="text-gray-600">
+                    JPEG is supported by all browsers and devices. Perfect for websites and web applications.
+                </p>
+            </div>
+            <div class="benefit-card bg-white p-6 rounded-xl shadow-lg text-center">
+                <div class="icon-circle bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-2xl text-orange-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Safe and Private</h3>
+                <p class="text-gray-600">
+                    Your images are processed locally and automatically deleted after conversion.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section max-w-4xl mx-auto mt-16">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+            Frequently Asked Questions
+        </h2>
+        <div class="space-y-6">
+            <div class="faq-item bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                    <i class="fas fa-question-circle text-orange-600 mr-2"></i>
+                    Which formats can I convert to JPEG?
+                </h3>
+                <p class="text-gray-600">
+                    You can convert PNG, GIF, and WebP images to JPEG. JPEG format is ideal for photographs and images with many colors.
+                </p>
+            </div>
+            <div class="faq-item bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                    <i class="fas fa-question-circle text-orange-600 mr-2"></i>
+                    How to choose the ideal quality?
+                </h3>
+                <p class="text-gray-600">
+                    For web use, we recommend 75-85% quality. For printing, use 90-95%. For thumbnails, 60-70% is sufficient.
+                </p>
+            </div>
+            <div class="faq-item bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                    <i class="fas fa-question-circle text-orange-600 mr-2"></i>
+                    What happens to transparency?
+                </h3>
+                <p class="text-gray-600">
+                    JPEG doesn't support transparency. Transparent areas will be filled with white color by default.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@@media (max-width: 768px) {
+    .converter-container {
+        margin: 0 1rem;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .benefits-section {
+        margin: 0 1rem;
+    }
+    
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.jpeg-converter {
+    background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+}
+
+.converter-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #ea580c;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.slider::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #ea580c;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('fileInput');
+    const selectedFilesDiv = document.getElementById('selectedFiles');
+    const filesList = document.getElementById('filesList');
+    const qualitySlider = document.getElementById('qualidade');
+    const qualityValue = document.getElementById('qualityValue');
+    const convertBtn = document.getElementById('convertBtn');
+    const progressSection = document.getElementById('progressSection');
+
+    // Update quality value
+    qualitySlider.addEventListener('input', function() {
+        qualityValue.textContent = this.value;
+    });
+
+    // Handle file selection
+    fileInput.addEventListener('change', function() {
+        const files = Array.from(this.files);
+        if (files.length > 0) {
+            selectedFilesDiv.classList.remove('hidden');
+            filesList.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'flex items-center justify-between bg-gray-50 p-3 rounded-lg';
+                fileItem.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas fa-file-image text-orange-600 mr-3"></i>
+                        <span class="text-gray-800">${file.name}</span>
+                        <span class="text-sm text-gray-500 ml-2">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    </div>
+                    <button type="button" class="text-red-500 hover:text-red-700" onclick="removeFile(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                filesList.appendChild(fileItem);
+            });
+            
+            convertBtn.disabled = false;
+        } else {
+            selectedFilesDiv.classList.add('hidden');
+            convertBtn.disabled = true;
+        }
+    });
+
+    // Drag and drop
+    const uploadArea = document.querySelector('.upload-area');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        uploadArea.classList.add('border-orange-500', 'bg-orange-200');
+    }
+
+    function unhighlight(e) {
+        uploadArea.classList.remove('border-orange-500', 'bg-orange-200');
+    }
+
+    uploadArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        fileInput.dispatchEvent(new Event('change'));
+    }
+});
+
+function removeFile(index) {
+    const fileInput = document.getElementById('fileInput');
+    const dt = new DataTransfer();
+    const files = Array.from(fileInput.files);
+    
+    files.forEach((file, i) => {
+        if (i !== index) {
+            dt.items.add(file);
+        }
+    });
+    
+    fileInput.files = dt.files;
+    fileInput.dispatchEvent(new Event('change'));
+}
+
+// Progress tracking with SignalR
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/progressHub")
+    .build();
+
+connection.start().then(function () {
+    console.log("Connected to progress hub");
+}).catch(function (err) {
+    console.error("Connection error:", err.toString());
+});
+
+connection.on("ReceiveProgress", function (progress) {
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    if (progressFill) {
+        progressFill.style.width = progress + '%';
+        progressText.textContent = `Converting: ${progress}%`;
+        
+        if (progress >= 100) {
+            progressText.textContent = 'Conversion completed! Redirecting...';
+        }
+    }
+});
+
+// Show progress on form submit
+document.querySelector('form').addEventListener('submit', function() {
+    const progressSection = document.getElementById('progressSection');
+    if (progressSection) {
+        progressSection.classList.remove('hidden');
+        window.scrollTo({ top: progressSection.offsetTop, behavior: 'smooth' });
+    }
+});
+</script>

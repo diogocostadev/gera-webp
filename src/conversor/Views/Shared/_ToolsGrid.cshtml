@@ -31,6 +31,7 @@
             CompressPng = new { Title = "Comprimir PNG", Desc = "Preserva transparencia" },
             
             ConvertToPng = new { Title = "Convertir a PNG", Desc = "Transparencia perfecta" },
+            ConvertToJpeg = new { Title = "Convertir a JPEG", Desc = "Compresión universal" },
             
             Result = new { Title = "WebP Optimizado", Desc = "Hasta 90% más pequeño" }
         },
@@ -50,6 +51,7 @@
             CompressPng = new { Title = "Compress PNG", Desc = "Preserves transparency" },
             
             ConvertToPng = new { Title = "Convert to PNG", Desc = "Perfect transparency" },
+            ConvertToJpeg = new { Title = "Convert to JPEG", Desc = "Universal compression" },
             
             Result = new { Title = "Optimized WebP", Desc = "Up to 90% smaller" }
         },
@@ -69,6 +71,7 @@
             CompressPng = new { Title = "Comprimir PNG", Desc = "Preserva transparência" },
             
             ConvertToPng = new { Title = "Converter para PNG", Desc = "Transparência perfeita" },
+            ConvertToJpeg = new { Title = "Converter para JPEG", Desc = "Compressão universal" },
             
             Result = new { Title = "WebP Otimizado", Desc = "Até 90% menor" }
         }
@@ -212,6 +215,22 @@
                 </div>
             </div>
         </a>
+
+        <!-- Converter para JPEG -->
+        <a href="@GetLocalizedUrl("/converter-para-jpeg", language ?? "")" class="tool-card-link">
+            <div class="tool-card converter-card">
+                <div class="tool-icon jpeg-converter">
+                    <i data-feather="image"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>@texts.ConvertToJpeg.Title</h3>
+                    <p>@texts.ConvertToJpeg.Desc</p>
+                </div>
+                <div class="format-indicator">
+                    <span class="format-badge jpeg-badge">JPEG</span>
+                </div>
+            </div>
+        </a>
     </div>
 </section>
 
@@ -317,6 +336,7 @@
 .tool-icon.jpeg-comp { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
 .tool-icon.png-comp { background: linear-gradient(135deg, #a8edea, #fed6e3); color: white; }
 .tool-icon.png-converter { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+.tool-icon.jpeg-converter { background: linear-gradient(135deg, #ff6b35, #ff8e53); color: white; }
 
 .tool-content h3 {
     font-size: 1.3rem;
@@ -393,6 +413,10 @@
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
+}
+
+.format-badge.jpeg-badge {
+    background: linear-gradient(135deg, #ff6b35, #ff8e53);
 }
 
 /* Responsivo */

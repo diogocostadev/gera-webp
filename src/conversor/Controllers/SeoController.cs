@@ -57,6 +57,9 @@ public class SeoController : Controller
             // Nova funcionalidade - Conversor PNG - Português
             new { Url = "/converter-para-png", Priority = "0.9", ChangeFreq = "weekly" },
             
+            // Nova funcionalidade - Conversor JPEG - Português
+            new { Url = "/converter-para-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
+            
             // Páginas informativas
             new { Url = "/como-converter-webp", Priority = "0.7", ChangeFreq = "monthly" },
             new { Url = "/vantagens-formato-webp", Priority = "0.7", ChangeFreq = "monthly" },
@@ -74,6 +77,7 @@ public class SeoController : Controller
             new { Url = "/en/compress-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/en/compress-png", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/en/convert-to-png", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/en/convert-to-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/en/privacy", Priority = "0.4", ChangeFreq = "monthly" },
             new { Url = "/en/terms", Priority = "0.4", ChangeFreq = "monthly" },
             
@@ -84,6 +88,7 @@ public class SeoController : Controller
             new { Url = "/es/comprimir-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/es/comprimir-png", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/es/convertir-a-png", Priority = "0.9", ChangeFreq = "weekly" },
+            new { Url = "/es/convertir-a-jpeg", Priority = "0.9", ChangeFreq = "weekly" },
             new { Url = "/es/privacidad", Priority = "0.4", ChangeFreq = "monthly" },
             new { Url = "/es/terminos", Priority = "0.4", ChangeFreq = "monthly" }
         };

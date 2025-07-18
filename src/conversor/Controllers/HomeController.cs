@@ -131,6 +131,37 @@ namespace GeraWebP.Controllers
                     break;
             }
         }
+
+        private void SetCultureContentJpeg(string culture)
+        {
+            switch (culture?.ToLower())
+            {
+                case "en":
+                    ViewData["Title"] = "Free Online JPEG Converter - Convert Images to JPEG";
+                    ViewData["Description"] = "Free and fast online JPEG converter. Convert PNG, GIF, WebP images to JPEG format with quality control. Optimize your images for web in seconds!";
+                    ViewData["Keywords"] = "jpeg converter, convert to jpeg, png to jpeg, gif to jpeg, webp to jpeg, image converter";
+                    ViewData["Language"] = "en";
+                    ViewData["Culture"] = "en-US";
+                    ViewData["DebugLang"] = "EN_SET";
+                    break;
+                case "es":
+                    ViewData["Title"] = "Convertidor JPEG Online Gratuito - Convierte Imágenes a JPEG";
+                    ViewData["Description"] = "Convertidor JPEG online gratuito y rápido. Convierte imágenes PNG, GIF, WebP a formato JPEG con control de calidad. ¡Optimiza tus imágenes para web en segundos!";
+                    ViewData["Keywords"] = "convertidor jpeg, convertir a jpeg, png a jpeg, gif a jpeg, webp a jpeg, convertidor de imágenes";
+                    ViewData["Language"] = "es";
+                    ViewData["Culture"] = "es-ES";
+                    ViewData["DebugLang"] = "ES_SET";
+                    break;
+                default:
+                    ViewData["Title"] = "Conversor JPEG Online Gratuito - Converta Imagens para JPEG";
+                    ViewData["Description"] = "Conversor JPEG online gratuito e rápido. Converta imagens PNG, GIF, WebP para formato JPEG com controle de qualidade. Otimize suas imagens para web em segundos!";
+                    ViewData["Keywords"] = "conversor jpeg, converter para jpeg, png para jpeg, gif para jpeg, webp para jpeg, conversor de imagens";
+                    ViewData["Language"] = "pt";
+                    ViewData["Culture"] = "pt-BR";
+                    ViewData["DebugLang"] = "PT_SET";
+                    break;
+            }
+        }
         
         [HttpPost]
         [RequestSizeLimit(104857600)] // 100MB
@@ -186,6 +217,18 @@ namespace GeraWebP.Controllers
                     if (!tiposPermitidosPng.Contains(arquivo.ContentType))
                     {
                         ModelState.AddModelError("files", $"Tipo de arquivo não permitido para conversão PNG: {arquivo.ContentType}");
+                        return View(sourceView);
+                    }
+                }
+            }
+            else if (outputFormat == "jpegconvert")
+            {
+                var tiposPermitidosJpeg = new HashSet<string> { "image/png", "image/gif", "image/webp" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidosJpeg.Contains(arquivo.ContentType))
+                    {
+                        ModelState.AddModelError("files", $"Tipo de arquivo não permitido para conversão JPEG: {arquivo.ContentType}");
                         return View(sourceView);
                     }
                 }
@@ -326,6 +369,12 @@ namespace GeraWebP.Controllers
                                     caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".png");
                                     _logger.LogDebug("Iniciando conversão PNG para {FileName}", arquivo.FileName);
                                     outputImage = await ConvertToPng(arquivo, qualidade);
+                                }
+                                else if (outputFormat == "jpegconvert")
+                                {
+                                    caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".jpeg");
+                                    _logger.LogDebug("Iniciando conversão JPEG para {FileName}", arquivo.FileName);
+                                    outputImage = await ConvertToJpeg(arquivo, qualidade);
                                 }
                                 else // default to webp
                                 {
@@ -785,6 +834,57 @@ namespace GeraWebP.Controllers
             return output.ToArray();
         }
 
+        private async Task<byte[]> ConvertToJpeg(IFormFile file, int qualidade)
+        {
+            string threadId = Thread.CurrentThread.ManagedThreadId.ToString();
+            try
+            {
+                _logger.LogInformation("Thread {ThreadId} - Iniciando conversão JPEG do arquivo {FileName} (Tamanho: {FileSizeMB:F2}MB, Qualidade: {Quality})", 
+                    threadId, file.FileName, file.Length / (1024.0 * 1024.0), qualidade);
+                
+                // Carregar o arquivo em memória para evitar problemas de concorrência no stream
+                byte[] fileBytes;
+                await using (var imageStream = file.OpenReadStream())
+                {
+                    using var memoryStream = new MemoryStream();
+                    await imageStream.CopyToAsync(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                }
+                
+                _logger.LogDebug("Thread {ThreadId} - Arquivo {FileName} carregado em memória ({Bytes} bytes)", 
+                    threadId, file.FileName, fileBytes.Length);
+                
+                using var image = Image.Load(fileBytes);
+                
+                _logger.LogInformation("Thread {ThreadId} - Imagem carregada: {FileName} - Dimensões: {Width}x{Height}, Formato: {Format}", 
+                    threadId, file.FileName, image.Width, image.Height, image.Metadata.DecodedImageFormat?.Name ?? "Desconhecido");
+                
+                using var output = new MemoryStream();
+                
+                // Configurações do JPEG encoder baseadas na qualidade
+                var encoder = new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder
+                {
+                    Quality = qualidade
+                };
+                
+                await image.SaveAsJpegAsync(output, encoder);
+                var resultBytes = output.ToArray();
+                
+                _logger.LogInformation("Thread {ThreadId} - Conversão JPEG concluída para {FileName}. Tamanho final: {FinalSizeMB:F2}MB (Redução: {ReductionPercent:F1}%)", 
+                    threadId, file.FileName, 
+                    resultBytes.Length / (1024.0 * 1024.0),
+                    (1 - (double)resultBytes.Length / file.Length) * 100);
+                
+                return resultBytes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Thread {ThreadId} - Erro durante conversão JPEG do arquivo {FileName}: {ErrorMessage}. StackTrace: {StackTrace}", 
+                    threadId, file.FileName, ex.Message, ex.StackTrace);
+                throw; // Re-throw para ser capturado pelo middleware global
+            }
+        }
+
         private async Task<byte[]> ConvertToPng(IFormFile file, int qualidade)
         {
             string threadId = Thread.CurrentThread.ManagedThreadId.ToString();
@@ -1031,6 +1131,40 @@ namespace GeraWebP.Controllers
             return View("CompressorJpeg");
         }
 
+        [HttpGet("converter-para-jpeg")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ConverterParaJpeg(string? culture = null)
+        {
+            // Se culture vier da rota, usá-la
+            if (string.IsNullOrEmpty(culture))
+            {
+                culture = RouteData.Values["culture"]?.ToString();
+            }
+            
+            // Adicionar headers anti-cache específicos
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
+            Response.Headers.Append("Content-Type", "text/html; charset=utf-8");
+            
+            SetCultureContentJpeg(culture ?? "pt");
+            
+            _logger.LogInformation("GET - Acesso à página converter-para-jpeg. Culture: {Culture}", culture ?? "pt");
+            
+            return View("ConverterParaJpeg");
+        }
+
+        [HttpPost("converter-para-jpeg")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ConverterParaJpegPost(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            return await Converter(arquivos, qualidade, "jpegconvert", "ConverterParaJpeg");
+        }
+
         [HttpGet("converter-para-png")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult ConverterParaPng(string? culture = null)
@@ -1262,6 +1396,23 @@ namespace GeraWebP.Controllers
         {
             SetCultureContentPng("es");
             return View("ConverterParaPngSpanish");
+        }
+
+        // Rotas JPEG específicas para idiomas
+        [HttpGet("en/convert-to-jpeg")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ConvertToJpegEnglish()
+        {
+            SetCultureContentJpeg("en");
+            return View("ConverterParaJpegEnglish");
+        }
+
+        [HttpGet("es/convertir-a-jpeg")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ConvertirAJpegSpanish()
+        {
+            SetCultureContentJpeg("es");
+            return View("ConverterParaJpegSpanish");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
