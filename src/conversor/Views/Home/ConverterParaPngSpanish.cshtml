@@ -1,0 +1,641 @@
+@{
+    ViewData["Title"] = "Convertidor PNG Online Gratuito - Convierte Imágenes a PNG";
+    ViewData["Description"] = "Convertidor PNG online gratuito y rápido. Convierte imágenes JPG, GIF, WebP a formato PNG con soporte de transparencia. ¡Optimiza tus imágenes para web en segundos!";
+    ViewData["Keywords"] = "convertidor png, convertir a png, jpg a png, gif a png, webp a png, convertidor de imágenes";
+}
+
+<!-- SEO Hero Section -->
+<section class="hero-seo">
+    <div class="container">
+        <header class="hero-content">
+            <h1>Convertidor de Imágenes a PNG Online</h1>
+            <p class="hero-description">
+                <strong>Convierte tus imágenes a formato PNG online</strong> gratis y obtén la máxima calidad
+                con soporte completo a transparencia. Ideal para logos, iconos y gráficos profesionales.
+            </p>
+            <div class="hero-features">
+                <span class="feature-badge">🔄 Soporte Transparencia</span>
+                <span class="feature-badge">🔒 Seguro y Privado</span>
+                <span class="feature-badge">👌 Alta Calidad</span>
+                <span class="feature-badge">📦 Lote</span>
+            </div>
+        </header>
+    </div>
+</section>
+
+<!-- Service Notice -->
+<div class="free-service-notice">
+    <div class="container">
+        <div class="notice-content">
+            <i data-feather="layers"></i>
+            <span><strong>Convertidor a PNG</strong> • Transparencia Preservada • Calidad Máxima</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Converter -->
+<main class="main-converter">
+    <div class="converter-container">
+        <form id="converterForm" method="post" action="/es/convertir-a-png" enctype="multipart/form-data">
+            
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/es">Inicio</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Convertir a PNG</li>
+                </ol>
+            </nav>
+            
+            <!-- Conversion Workflow -->
+            <div class="converter-workflow">
+                <!-- Step 1: Upload -->
+                <div class="workflow-step upload-step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h2>Seleccionar Imágenes</h2>
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon" style="color: var(--primary-color);">
+                            <i data-feather="upload"></i>
+                        </div>
+                        <p>Arrastra imágenes o haz clic para seleccionar</p>
+                        <div class="upload-button" style="background: var(--primary-color);">
+                            <i data-feather="folder"></i>
+                            Elegir Imágenes
+                        </div>
+                        <div class="upload-info">
+                            <small>JPG, GIF, WebP • Máx: 100MB por archivo o 100MB total</small>
+                        </div>
+                        <label for="arquivos" class="visually-hidden">Seleccionar imágenes para conversión</label>
+                        <input type="file" name="arquivos" id="arquivos" multiple="multiple" class="file-input" 
+                               accept="image/jpeg,image/jpg,image/gif,image/webp" />
+                    </div>
+                    
+                    <!-- Selected Files Display -->
+                    <div id="selectedFiles" class="selected-files" style="display: none;">
+                        <div class="files-header">
+                            <i data-feather="check-circle"></i>
+                            <span id="fileCount">0</span> imagen(es) seleccionada(s)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Quality Settings -->
+                <div class="workflow-step quality-step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h2>Configurar Calidad PNG</h2>
+                    </div>
+                    
+                    <div class="quality-control">
+                        <label for="qualidade" class="quality-label">
+                            Calidad PNG: <strong id="qualidadeValue">75</strong>
+                        </label>
+                        <input type="range" id="qualidade" name="qualidade" min="30" max="95" value="75" 
+                               class="quality-slider" oninput="atualizarValorDaQuantidade(this.value)">
+                        <div class="quality-marks">
+                            <span class="quality-mark low">Máxima Compresión</span>
+                            <span class="quality-mark high">Máxima Calidad</span>
+                        </div>
+                    </div>
+                    
+                    <div class="compression-presets">
+                        <h4>Presets de Calidad:</h4>
+                        <div class="preset-buttons">
+                            <button type="button" class="preset-btn" data-preset="90" data-tooltip="Alta calidad, archivo más grande">
+                                <i data-feather="award"></i>
+                                Alta Calidad
+                            </button>
+                            <button type="button" class="preset-btn active" data-preset="75" data-tooltip="Balance entre calidad y tamaño">
+                                <i data-feather="target"></i>
+                                Recomendada
+                            </button>
+                            <button type="button" class="preset-btn" data-preset="50" data-tooltip="Alta compresión, archivo más pequeño">
+                                <i data-feather="zap"></i>
+                                Optimizada
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quality-preview">
+                        <div class="preview-item">
+                            <div class="preview-icon">
+                                <i data-feather="layers"></i>
+                            </div>
+                            <div class="preview-text">
+                                <strong>Formato final:</strong>
+                                <small>PNG con transparencia</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Convert -->
+                <div class="workflow-step convert-step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h2>Convertir a PNG</h2>
+                    </div>
+                    
+                    <button type="submit" class="convert-button" id="convertButton" aria-label="Convertir imágenes a PNG">
+                        <i data-feather="layers"></i>
+                        Convertir a PNG Ahora
+                    </button>
+                    
+                    <div class="convert-info">
+                        <small>Conversión PNG con soporte completo a transparencia</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress & Download Sections -->
+            <div id="progressContainer" class="progress-section" style="display: none;">
+                <h3>Convirtiendo tus imágenes...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p id="progressText">0%</p>
+            </div>
+
+            @if (ViewBag.DownloadLink != null)
+            {
+                <div class="download-section">
+                    <div class="download-success">
+                        <i data-feather="check-circle"></i>
+                        <h3>¡Imágenes Convertidas a PNG!</h3>
+                        <p>Tus imágenes han sido convertidas a formato PNG con éxito.</p>
+                        <a href="@ViewBag.DownloadLink" class="download-button" download aria-label="Descargar imágenes convertidas">
+                            <i data-feather="download"></i>
+                            Descargar Imágenes PNG
+                        </a>
+                        <small>Archivo ZIP con todas las imágenes en formato PNG</small>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
+</main>
+
+<!-- SEO Content -->
+<section class="seo-content">
+    <div class="container">
+        
+        <!-- Benefits Section -->
+        <section class="conversion-benefits" aria-labelledby="benefits-title">
+            <h2 id="benefits-title" class="section-title">¿Por qué Convertir Imágenes a PNG?</h2>
+            
+            <div class="benefits-grid">
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="layers"></i>
+                    </div>
+                    <h3>Soporte Total a Transparencia</h3>
+                    <p>PNG preserva completamente áreas transparentes, ideal para logos, iconos y gráficos profesionales con fondos transparentes.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="award"></i>
+                    </div>
+                    <h3>Calidad sin Pérdidas</h3>
+                    <p>El formato PNG mantiene calidad perfecta sin compresión destructiva. Ideal para imágenes con texto, bordes nítidos y detalles.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="monitor"></i>
+                    </div>
+                    <h3>Compatibilidad Universal</h3>
+                    <p>PNG es ampliamente soportado por todos los navegadores, editores gráficos y plataformas. Estándar para web y diseño.</p>
+                </article>
+                
+                <article class="benefit-item">
+                    <div class="benefit-icon">
+                        <i data-feather="palette"></i>
+                    </div>
+                    <h3>Ideal para Diseño</h3>
+                    <p>Perfecto para logos, iconos, ilustraciones y cualquier imagen que necesite mantener transparencia y calidad máxima.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- How-to Section -->
+        <section class="howto-section" aria-labelledby="howto-title">
+            <h2 id="howto-title" class="section-title">Cómo Convertir Imágenes a PNG Online</h2>
+            
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3>Subir Imágenes</h3>
+                    <p>Selecciona o arrastra imágenes JPG, GIF o WebP que deseas convertir a PNG. Soportamos múltiples archivos simultáneamente.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3>Ajustar Calidad</h3>
+                    <p>Configura el nivel de calidad PNG: alta calidad para uso profesional u optimizada para reducir el tamaño del archivo.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3>Conversión Inteligente</h3>
+                    <p>Nuestra tecnología convierte a PNG preservando transparencia y aplicando compresión inteligente sin pérdida de calidad.</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h3>Descarga Inmediata</h3>
+                    <p>¡Descarga tus imágenes PNG convertidas en ZIP. Listas para usar en sitios web, aplicaciones y proyectos gráficos!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" aria-labelledby="faq-title">
+            <h2 id="faq-title" class="section-title">Preguntas Frecuentes sobre Conversión PNG</h2>
+            
+            <div class="faq-container">
+                <details class="faq-item">
+                    <summary>¿Por qué convertir a PNG en lugar de otros formatos?</summary>
+                    <p>PNG ofrece calidad sin pérdidas con soporte completo a transparencia, siendo ideal para logos, iconos e imágenes que necesitan mantener detalles nítidos y áreas transparentes.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>¿Se preserva la transparencia en la conversión a PNG?</summary>
+                    <p>¡Sí! PNG soporta nativamente transparencia y nuestra conversión preserva completamente todas las áreas transparentes de las imágenes originales.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>¿Cuál es la diferencia entre PNG y otros formatos de imagen?</summary>
+                    <p>PNG es sin pérdidas (preserva calidad original), soporta transparencia y es ideal para gráficos. JPG es más pequeño pero con pérdidas, WebP es moderno pero con menor compatibilidad.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>¿Puedo convertir muchas imágenes a PNG de una vez?</summary>
+                    <p>¡Sí! Nuestro convertidor soporta conversión en lote hasta 100MB total. Convierte docenas de imágenes a PNG simultáneamente.</p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>¿Es PNG adecuado para sitios web y aplicaciones web?</summary>
+                    <p>¡Absolutamente! PNG es ampliamente soportado, ideal para logos, iconos e imágenes con transparencia en sitios web y aplicaciones modernas.</p>
+                </details>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>¡Convierte tus Imágenes a PNG Ahora!</h2>
+                <p>Obtén máxima calidad y transparencia convirtiendo a PNG gratuitamente.</p>
+                <a href="#uploadArea" class="cta-button" aria-label="Comenzar conversión PNG">
+                    <i data-feather="layers"></i>
+                    Comenzar Conversión PNG
+                </a>
+            </div>
+        </section>
+
+        <!-- Otras Herramientas -->
+        @await Html.PartialAsync("_ToolsGrid")
+    </div>
+</section>
+
+<style>
+        /* CSS específico para la página PNG */
+        .conversion-benefits .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .conversion-benefits .benefit-item {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .conversion-benefits .benefit-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-color);
+        }
+        
+        .conversion-benefits .benefit-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .conversion-benefits .benefit-item h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .conversion-benefits .benefit-item p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        
+        .howto-section .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .howto-section .step-item {
+            background: white;
+            padding: 2rem 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        
+        .howto-section .step-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .howto-section .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .howto-section .step-item h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+        
+        .howto-section .step-item p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .compression-presets {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        
+        .compression-presets h4 {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .preset-btn {
+            padding: 0.75rem 1.25rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .preset-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .preset-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
+        }
+        
+        /* Responsivo */
+        @@media (max-width: 1024px) {
+            .conversion-benefits .benefits-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+            
+            .howto-section .steps-container {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+        
+        @@media (max-width: 768px) {
+            .conversion-benefits .benefits-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .howto-section .steps-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .conversion-benefits .benefit-item {
+                padding: 2rem 1.5rem;
+                min-height: 240px;
+            }
+            
+            .howto-section .step-item {
+                padding: 1.5rem 1rem;
+                min-height: 200px;
+            }
+            
+            .preset-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .preset-btn {
+                min-width: 200px;
+            }
+        }
+        
+        @@media (max-width: 480px) {
+            .conversion-benefits .benefit-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .howto-section .step-number {
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+
+@section Scripts {
+    <script>
+        feather.replace();
+        
+        function atualizarValorDaQuantidade(value) {
+            document.getElementById('qualidadeValue').textContent = value;
+            updateActivePreset(value);
+        }
+        
+        function updateActivePreset(value) {
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            presetButtons.forEach(btn => btn.classList.remove('active'));
+            
+            const targetPreset = presetButtons[1]; // Default to middle preset
+            if (value <= 60) presetButtons[2]?.classList.add('active');
+            else if (value >= 85) presetButtons[0]?.classList.add('active');
+            else presetButtons[1]?.classList.add('active');
+        }
+
+        // File upload handling
+        const fileInput = document.getElementById('arquivos');
+        const uploadArea = document.getElementById('uploadArea');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileCount = document.getElementById('fileCount');
+
+        fileInput.addEventListener('change', function(e) {
+            updateFileDisplay(e.target.files);
+        });
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(file => 
+                ['image/jpeg', 'image/jpg', 'image/gif', 'image/webp'].includes(file.type)
+            );
+            if (files.length > 0) {
+                const dt = new DataTransfer();
+                files.forEach(file => dt.items.add(file));
+                fileInput.files = dt.files;
+                updateFileDisplay(files);
+            }
+        });
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const preset = this.dataset.preset;
+                document.getElementById('qualidade').value = preset;
+                atualizarValorDaQuantidade(preset);
+            });
+        });
+
+        function updateFileDisplay(files) {
+            if (files.length > 0) {
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSize += files[i].size;
+                }
+                const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
+                
+                fileCount.textContent = `${files.length} imagen(es) • ${totalMB}MB total`;
+                selectedFiles.style.display = 'block';
+                uploadArea.classList.add('has-files');
+            } else {
+                selectedFiles.style.display = 'none';
+                uploadArea.classList.remove('has-files');
+            }
+        }
+
+        // Form submission with progress
+        document.getElementById('converterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const progressContainer = document.getElementById('progressContainer');
+            const convertButton = document.getElementById('convertButton');
+            
+            progressContainer.style.display = 'block';
+            convertButton.disabled = true;
+            convertButton.innerHTML = '<i data-feather="loader"></i> Convirtiendo...';
+            feather.replace();
+            
+            fetch('/api/converter-para-png', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirecionar para download
+                    window.location.href = data.downloadLink;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error en la conversión. Inténtalo de nuevo.');
+            })
+            .finally(() => {
+                progressContainer.style.display = 'none';
+                convertButton.disabled = false;
+                convertButton.innerHTML = '<i data-feather="layers"></i> Convertir a PNG Ahora';
+                feather.replace();
+            });
+        });
+    </script>
+    <script src="~/js/site.js"></script>
+} 

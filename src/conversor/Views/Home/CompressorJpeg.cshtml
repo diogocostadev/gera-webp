@@ -37,7 +37,9 @@
 <!-- Main Compressor -->
 <main class="main-converter">
     <div class="converter-container">
-        <form id="converterForm" method="post" action="/comprimir-jpeg" enctype="multipart/form-data">
+        <form id="converterForm" method="post" action="/Home/Converter" enctype="multipart/form-data">
+            <input type="hidden" name="outputFormat" value="jpeg" />
+            <input type="hidden" name="sourceView" value="CompressorJpeg" />
             
             <!-- Breadcrumbs -->
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
