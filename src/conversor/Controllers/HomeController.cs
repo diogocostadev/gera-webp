@@ -100,6 +100,68 @@ namespace GeraWebP.Controllers
                     break;
             }
         }
+
+        private void SetCultureContentPng(string culture)
+        {
+            switch (culture?.ToLower())
+            {
+                case "en":
+                    ViewData["Title"] = "Free Online PNG Converter - Convert Images to PNG";
+                    ViewData["Description"] = "Free and fast online PNG converter. Convert JPG, GIF, WebP images to PNG format with transparency support. Optimize your images for web in seconds!";
+                    ViewData["Keywords"] = "png converter, convert to png, jpg to png, gif to png, webp to png, image converter";
+                    ViewData["Language"] = "en";
+                    ViewData["Culture"] = "en-US";
+                    ViewData["DebugLang"] = "EN_SET";
+                    break;
+                case "es":
+                    ViewData["Title"] = "Convertidor PNG Online Gratuito - Convierte Imágenes a PNG";
+                    ViewData["Description"] = "Convertidor PNG online gratuito y rápido. Convierte imágenes JPG, GIF, WebP a formato PNG con soporte de transparencia. ¡Optimiza tus imágenes para web en segundos!";
+                    ViewData["Keywords"] = "convertidor png, convertir a png, jpg a png, gif a png, webp a png, convertidor de imágenes";
+                    ViewData["Language"] = "es";
+                    ViewData["Culture"] = "es-ES";
+                    ViewData["DebugLang"] = "ES_SET";
+                    break;
+                default:
+                    ViewData["Title"] = "Conversor PNG Online Gratuito - Converta Imagens para PNG";
+                    ViewData["Description"] = "Conversor PNG online gratuito e rápido. Converta imagens JPG, GIF, WebP para formato PNG com suporte a transparência. Otimize suas imagens para web em segundos!";
+                    ViewData["Keywords"] = "conversor png, converter para png, jpg para png, gif para png, webp para png, conversor de imagens";
+                    ViewData["Language"] = "pt";
+                    ViewData["Culture"] = "pt-BR";
+                    ViewData["DebugLang"] = "PT_SET";
+                    break;
+            }
+        }
+
+        private void SetCultureContentJpeg(string culture)
+        {
+            switch (culture?.ToLower())
+            {
+                case "en":
+                    ViewData["Title"] = "Free Online JPEG Converter - Convert Images to JPEG";
+                    ViewData["Description"] = "Free and fast online JPEG converter. Convert PNG, GIF, WebP images to JPEG format with quality control. Optimize your images for web in seconds!";
+                    ViewData["Keywords"] = "jpeg converter, convert to jpeg, png to jpeg, gif to jpeg, webp to jpeg, image converter";
+                    ViewData["Language"] = "en";
+                    ViewData["Culture"] = "en-US";
+                    ViewData["DebugLang"] = "EN_SET";
+                    break;
+                case "es":
+                    ViewData["Title"] = "Convertidor JPEG Online Gratuito - Convierte Imágenes a JPEG";
+                    ViewData["Description"] = "Convertidor JPEG online gratuito y rápido. Convierte imágenes PNG, GIF, WebP a formato JPEG con control de calidad. ¡Optimiza tus imágenes para web en segundos!";
+                    ViewData["Keywords"] = "convertidor jpeg, convertir a jpeg, png a jpeg, gif a jpeg, webp a jpeg, convertidor de imágenes";
+                    ViewData["Language"] = "es";
+                    ViewData["Culture"] = "es-ES";
+                    ViewData["DebugLang"] = "ES_SET";
+                    break;
+                default:
+                    ViewData["Title"] = "Conversor JPEG Online Gratuito - Converta Imagens para JPEG";
+                    ViewData["Description"] = "Conversor JPEG online gratuito e rápido. Converta imagens PNG, GIF, WebP para formato JPEG com controle de qualidade. Otimize suas imagens para web em segundos!";
+                    ViewData["Keywords"] = "conversor jpeg, converter para jpeg, png para jpeg, gif para jpeg, webp para jpeg, conversor de imagens";
+                    ViewData["Language"] = "pt";
+                    ViewData["Culture"] = "pt-BR";
+                    ViewData["DebugLang"] = "PT_SET";
+                    break;
+            }
+        }
         
         [HttpPost]
         [RequestSizeLimit(104857600)] // 100MB
@@ -143,6 +205,30 @@ namespace GeraWebP.Controllers
                     if (!tiposPermitidosJpeg.Contains(arquivo.ContentType))
                     {
                         ModelState.AddModelError("files", $"Para compressão JPEG, apenas arquivos 'image/jpeg' são permitidos. Arquivo '{arquivo.FileName}' é do tipo '{arquivo.ContentType}'.");
+                        return View(sourceView);
+                    }
+                }
+            }
+            else if (outputFormat == "png")
+            {
+                var tiposPermitidosPng = new HashSet<string> { "image/jpeg", "image/png", "image/gif", "image/webp" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidosPng.Contains(arquivo.ContentType))
+                    {
+                        ModelState.AddModelError("files", $"Tipo de arquivo não permitido para conversão PNG: {arquivo.ContentType}");
+                        return View(sourceView);
+                    }
+                }
+            }
+            else if (outputFormat == "jpegconvert")
+            {
+                var tiposPermitidosJpeg = new HashSet<string> { "image/png", "image/gif", "image/webp" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidosJpeg.Contains(arquivo.ContentType))
+                    {
+                        ModelState.AddModelError("files", $"Tipo de arquivo não permitido para conversão JPEG: {arquivo.ContentType}");
                         return View(sourceView);
                     }
                 }
@@ -277,6 +363,18 @@ namespace GeraWebP.Controllers
                                     caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".jpeg");
                                     _logger.LogDebug("Iniciando compressão JPEG para {FileName}", arquivo.FileName);
                                     outputImage = await CompressJpeg(arquivo, qualidade);
+                                }
+                                else if (outputFormat == "png")
+                                {
+                                    caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".png");
+                                    _logger.LogDebug("Iniciando conversão PNG para {FileName}", arquivo.FileName);
+                                    outputImage = await ConvertToPng(arquivo, qualidade);
+                                }
+                                else if (outputFormat == "jpegconvert")
+                                {
+                                    caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".jpeg");
+                                    _logger.LogDebug("Iniciando conversão JPEG para {FileName}", arquivo.FileName);
+                                    outputImage = await ConvertToJpeg(arquivo, qualidade);
                                 }
                                 else // default to webp
                                 {
@@ -736,21 +834,128 @@ namespace GeraWebP.Controllers
             return output.ToArray();
         }
 
-        private async Task<byte[]> CompressPng(IFormFile file, int compressionLevel = 6)
+        private async Task<byte[]> ConvertToJpeg(IFormFile file, int qualidade)
         {
-            using var imageStream = file.OpenReadStream();
-            using var image = await Image.LoadAsync(imageStream);
-
-            using var output = new MemoryStream();
-            var encoder = new SixLabors.ImageSharp.Formats.Png.PngEncoder
+            string threadId = Thread.CurrentThread.ManagedThreadId.ToString();
+            try
             {
-                CompressionLevel = (SixLabors.ImageSharp.Formats.Png.PngCompressionLevel)compressionLevel,
-                ColorType = SixLabors.ImageSharp.Formats.Png.PngColorType.RgbWithAlpha, // Preservar transparência
-                TransparentColorMode = SixLabors.ImageSharp.Formats.Png.PngTransparentColorMode.Preserve
-            };
+                _logger.LogInformation("Thread {ThreadId} - Iniciando conversão JPEG do arquivo {FileName} (Tamanho: {FileSizeMB:F2}MB, Qualidade: {Quality})", 
+                    threadId, file.FileName, file.Length / (1024.0 * 1024.0), qualidade);
+                
+                // Carregar o arquivo em memória para evitar problemas de concorrência no stream
+                byte[] fileBytes;
+                await using (var imageStream = file.OpenReadStream())
+                {
+                    using var memoryStream = new MemoryStream();
+                    await imageStream.CopyToAsync(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                }
+                
+                _logger.LogDebug("Thread {ThreadId} - Arquivo {FileName} carregado em memória ({Bytes} bytes)", 
+                    threadId, file.FileName, fileBytes.Length);
+                
+                using var image = Image.Load(fileBytes);
+                
+                _logger.LogInformation("Thread {ThreadId} - Imagem carregada: {FileName} - Dimensões: {Width}x{Height}, Formato: {Format}", 
+                    threadId, file.FileName, image.Width, image.Height, image.Metadata.DecodedImageFormat?.Name ?? "Desconhecido");
+                
+                using var output = new MemoryStream();
+                
+                // Configurações do JPEG encoder baseadas na qualidade
+                var encoder = new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder
+                {
+                    Quality = qualidade
+                };
+                
+                await image.SaveAsJpegAsync(output, encoder);
+                var resultBytes = output.ToArray();
+                
+                _logger.LogInformation("Thread {ThreadId} - Conversão JPEG concluída para {FileName}. Tamanho final: {FinalSizeMB:F2}MB (Redução: {ReductionPercent:F1}%)", 
+                    threadId, file.FileName, 
+                    resultBytes.Length / (1024.0 * 1024.0),
+                    (1 - (double)resultBytes.Length / file.Length) * 100);
+                
+                return resultBytes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Thread {ThreadId} - Erro durante conversão JPEG do arquivo {FileName}: {ErrorMessage}. StackTrace: {StackTrace}", 
+                    threadId, file.FileName, ex.Message, ex.StackTrace);
+                throw; // Re-throw para ser capturado pelo middleware global
+            }
+        }
 
-            await image.SaveAsPngAsync(output, encoder);
-            return output.ToArray();
+        private async Task<byte[]> ConvertToPng(IFormFile file, int qualidade)
+        {
+            string threadId = Thread.CurrentThread.ManagedThreadId.ToString();
+            try
+            {
+                _logger.LogInformation("Thread {ThreadId} - Iniciando conversão PNG do arquivo {FileName} (Tamanho: {FileSizeMB:F2}MB, Qualidade: {Quality})", 
+                    threadId, file.FileName, file.Length / (1024.0 * 1024.0), qualidade);
+                
+                // Carregar o arquivo em memória para evitar problemas de concorrência no stream
+                byte[] fileBytes;
+                await using (var imageStream = file.OpenReadStream())
+                {
+                    using var memoryStream = new MemoryStream();
+                    await imageStream.CopyToAsync(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                }
+                
+                _logger.LogDebug("Thread {ThreadId} - Arquivo {FileName} carregado em memória ({Bytes} bytes)", 
+                    threadId, file.FileName, fileBytes.Length);
+                
+                using var image = Image.Load(fileBytes);
+                
+                _logger.LogInformation("Thread {ThreadId} - Imagem carregada: {FileName} - Dimensões: {Width}x{Height}, Formato: {Format}", 
+                    threadId, file.FileName, image.Width, image.Height, image.Metadata.DecodedImageFormat?.Name ?? "Desconhecido");
+                
+                using var output = new MemoryStream();
+                
+                // Configurações do PNG encoder baseadas na qualidade
+                SixLabors.ImageSharp.Formats.Png.PngEncoder encoder;
+                
+                if (qualidade < 70)
+                {
+                    // Para qualidade menor, usar compressão mais agressiva
+                    encoder = new SixLabors.ImageSharp.Formats.Png.PngEncoder
+                    {
+                        CompressionLevel = SixLabors.ImageSharp.Formats.Png.PngCompressionLevel.BestCompression,
+                        FilterMethod = SixLabors.ImageSharp.Formats.Png.PngFilterMethod.Adaptive,
+                        BitDepth = SixLabors.ImageSharp.Formats.Png.PngBitDepth.Bit8,
+                        ColorType = SixLabors.ImageSharp.Formats.Png.PngColorType.RgbWithAlpha,
+                        InterlaceMethod = SixLabors.ImageSharp.Formats.Png.PngInterlaceMode.None
+                    };
+                }
+                else
+                {
+                    // Para qualidade alta, manter melhor qualidade
+                    encoder = new SixLabors.ImageSharp.Formats.Png.PngEncoder
+                    {
+                        CompressionLevel = SixLabors.ImageSharp.Formats.Png.PngCompressionLevel.DefaultCompression,
+                        FilterMethod = SixLabors.ImageSharp.Formats.Png.PngFilterMethod.None,
+                        BitDepth = SixLabors.ImageSharp.Formats.Png.PngBitDepth.Bit8,
+                        ColorType = SixLabors.ImageSharp.Formats.Png.PngColorType.RgbWithAlpha,
+                        InterlaceMethod = SixLabors.ImageSharp.Formats.Png.PngInterlaceMode.None
+                    };
+                }
+                
+                await image.SaveAsPngAsync(output, encoder);
+                var resultBytes = output.ToArray();
+                
+                _logger.LogInformation("Thread {ThreadId} - Conversão PNG concluída para {FileName}. Tamanho final: {FinalSizeMB:F2}MB (Redução: {ReductionPercent:F1}%)", 
+                    threadId, file.FileName, 
+                    resultBytes.Length / (1024.0 * 1024.0),
+                    (1 - (double)resultBytes.Length / file.Length) * 100);
+                
+                return resultBytes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Thread {ThreadId} - Erro durante conversão PNG do arquivo {FileName}: {ErrorMessage}. StackTrace: {StackTrace}", 
+                    threadId, file.FileName, ex.Message, ex.StackTrace);
+                throw; // Re-throw para ser capturado pelo middleware global
+            }
         }
 
         private static WebPOptimizationProfile DeterminarPerfilOtimizacao(double tamanhoMB, int qualidadeBase)
@@ -926,240 +1131,188 @@ namespace GeraWebP.Controllers
             return View("CompressorJpeg");
         }
 
-        [HttpGet("comprimir-png")]
+        [HttpGet("converter-para-jpeg")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult ComprimirPng()
+        public IActionResult ConverterParaJpeg(string? culture = null)
         {
-            // Adicionar headers anti-cache específicos para evitar problemas de cache
+            // Se culture vier da rota, usá-la
+            if (string.IsNullOrEmpty(culture))
+            {
+                culture = RouteData.Values["culture"]?.ToString();
+            }
+            
+            // Adicionar headers anti-cache específicos
             Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
             Response.Headers.Append("Pragma", "no-cache");
             Response.Headers.Append("Expires", "0");
             Response.Headers.Append("Content-Type", "text/html; charset=utf-8");
             
-            ViewData["Title"] = "Comprimir PNG Online Gratuito";
-            ViewData["Description"] = "Comprima e otimize suas imagens PNG online gratuitamente. Reduza o tamanho de arquivos PNG mantendo transparência e a melhor qualidade para web.";
-            ViewData["Keywords"] = "comprimir png, otimizar png, reduzir tamanho png, compressor de imagem png, png transparência";
+            SetCultureContentJpeg(culture ?? "pt");
             
-            _logger.LogInformation("GET - Acesso à página comprimir-png");
+            _logger.LogInformation("GET - Acesso à página converter-para-jpeg. Culture: {Culture}", culture ?? "pt");
             
-            return View("CompressorPng");
+            return View("ConverterParaJpeg");
         }
 
-        [HttpPost("comprimir-jpeg")]
+        [HttpPost("converter-para-jpeg")]
         [RequestSizeLimit(104857600)] // 100MB
         [RequestFormLimits(
             MultipartBodyLengthLimit = 104857600,
             ValueLengthLimit = 104857600,
             MultipartHeadersLengthLimit = 104857600)]
-        public async Task<IActionResult> ComprimirJpegPost(List<IFormFile>? arquivos, int qualidade = 75)
+        public async Task<IActionResult> ConverterParaJpegPost(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            return await Converter(arquivos, qualidade, "jpegconvert", "ConverterParaJpeg");
+        }
+
+        [HttpGet("converter-para-png")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ConverterParaPng(string? culture = null)
+        {
+            // Se culture vier da rota, usá-la
+            if (string.IsNullOrEmpty(culture))
+            {
+                culture = RouteData.Values["culture"]?.ToString();
+            }
+            
+            // Adicionar headers anti-cache específicos
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
+            Response.Headers.Append("Content-Type", "text/html; charset=utf-8");
+            
+            SetCultureContentPng(culture ?? "pt");
+            
+            _logger.LogInformation("GET - Acesso à página converter-para-png. Culture: {Culture}", culture ?? "pt");
+            
+            return View("ConverterParaPng");
+        }
+
+        [HttpPost("converter-para-png")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ConverterParaPngPost(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            return await Converter(arquivos, qualidade, "png", "ConverterParaPng");
+        }
+
+        [HttpPost("api/converter-para-png")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ConverterParaPngApi(List<IFormFile>? arquivos, int qualidade = 75)
         {
             try
             {
-                _logger.LogInformation("POST - Iniciando compressão de arquivos JPEG. Quantidade: {Count}, Qualidade: {Quality}",
+                _logger.LogInformation("API PNG - Iniciando conversão de arquivos. Quantidade: {Count}, Qualidade: {Quality}", 
                     arquivos?.Count ?? 0, qualidade);
-
+                
                 if (arquivos == null || arquivos.Count == 0)
                 {
-                    _logger.LogWarning("POST - Tentativa de compressão sem arquivos selecionados");
-                    ModelState.AddModelError("files", "Por favor, selecione um ou mais arquivos.");
-                    return View("CompressorJpeg");
+                    _logger.LogWarning("API - Tentativa de conversão PNG sem arquivos selecionados");
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Por favor, selecione um ou mais arquivos."
+                    });
                 }
 
                 // Validar tipos de arquivo
-                var tiposPermitidos = new HashSet<string> { "image/jpeg" };
+                var tiposPermitidos = new HashSet<string> { "image/jpeg", "image/png", "image/gif", "image/webp" };
                 foreach (var arquivo in arquivos)
                 {
                     if (!tiposPermitidos.Contains(arquivo.ContentType))
                     {
-                        ModelState.AddModelError("files", $"Tipo de arquivo não permitido: {arquivo.ContentType}. Apenas JPEG é suportado.");
-                        return View("CompressorJpeg");
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"Tipo de arquivo não permitido para conversão PNG: {arquivo.ContentType}"
+                        });
                     }
                 }
 
                 // Validar tamanho total dos arquivos (100MB máximo)
                 const long maxTotalSize = 100 * 1024 * 1024; // 100MB
+                const long maxFileSize = 100 * 1024 * 1024;  // 100MB por arquivo
+
                 long totalSize = arquivos.Sum(f => f.Length);
                 if (totalSize > maxTotalSize)
                 {
                     var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
-                    ModelState.AddModelError("files", $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB.");
-                    return View("CompressorJpeg");
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB. Por favor, selecione menos arquivos ou arquivos menores."
+                    });
+                }
+
+                // Validar tamanho individual dos arquivos
+                foreach (var arquivo in arquivos)
+                {
+                    if (arquivo.Length > maxFileSize)
+                    {
+                        var fileMB = Math.Round(arquivo.Length / (1024.0 * 1024.0), 1);
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"Arquivo '{arquivo.FileName}' ({fileMB}MB) excede o limite de 100MB por arquivo."
+                        });
+                    }
                 }
 
                 var sessionId = Guid.NewGuid().ToString();
                 var caminhoUpload = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaUploads, sessionId);
                 var caminhoConvertido = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
 
-                Directory.CreateDirectory(caminhoUpload);
-                Directory.CreateDirectory(caminhoConvertido);
+                if (!Directory.Exists(caminhoUpload))
+                {
+                    Directory.CreateDirectory(caminhoUpload);
+                }
+
+                if (!Directory.Exists(caminhoConvertido))
+                {
+                    Directory.CreateDirectory(caminhoConvertido);
+                }
 
                 int totalFiles = arquivos.Count;
                 int arquivosProcessados = 0;
 
                 List<Task> tasks = [];
-                var semaphore = new SemaphoreSlim(Environment.ProcessorCount > 2 ? 3 : 1, Environment.ProcessorCount > 2 ? 3 : 1);
-
                 foreach (var arquivo in arquivos)
                 {
                     var task = Task.Run(async () =>
                     {
-                        await semaphore.WaitAsync();
-                        try
+                        if (arquivo.Length > 0)
                         {
-                            if (arquivo.Length > 0)
+                            var caminhoOriginal = Path.Combine(caminhoUpload, arquivo.FileName);
+                            var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
+
+                            var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".png");
+
+                            using (var fileStream = new FileStream(caminhoOriginal, FileMode.Create))
                             {
-                                var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
-                                var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".jpeg");
-
-                                byte[] jpegImage = await CompressJpeg(arquivo, qualidade);
-                                await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, jpegImage);
-
-                                Interlocked.Increment(ref arquivosProcessados);
-                                int progress = (int)((float)arquivosProcessados / totalFiles * 100);
-
-                                try 
-                                {
-                                    await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
-                                }
-                                catch (Exception hubEx)
-                                {
-                                    _logger.LogWarning(hubEx, "Erro ao enviar progresso via SignalR para {FileName}", arquivo.FileName);
-                                }
-
-                                _logger.LogInformation("Arquivo {FileName} comprimido com sucesso. Progresso: {Progress}%", 
-                                    arquivo.FileName, progress);
+                                await arquivo.CopyToAsync(fileStream);
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Erro ao comprimir arquivo {FileName}", arquivo.FileName);
-                            throw;
-                        }
-                        finally
-                        {
-                            semaphore.Release();
-                        }
-                    });
-                    tasks.Add(task);
-                }
 
-                await Task.WhenAll(tasks);
+                            byte[] pngImage = await ConvertToPng(arquivo, qualidade);
+                            await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, pngImage);
 
-                IncrementarContadorGlobal(arquivos.Count);
-
-                ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
-                ViewData["Title"] = "Compressão JPEG Concluída";
-                
-                _logger.LogInformation("Compressão JPEG concluída com sucesso para {TotalFiles} arquivos", arquivos.Count);
-                
-                return View("CompressorJpeg");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erro na compressão de arquivos JPEG");
-                ModelState.AddModelError("", "Erro interno na compressão: " + ex.Message);
-                return View("CompressorJpeg");
-            }
-        }
-
-        [HttpPost("comprimir-png")]
-        [RequestSizeLimit(104857600)] // 100MB
-        [RequestFormLimits(
-            MultipartBodyLengthLimit = 104857600,
-            ValueLengthLimit = 104857600,
-            MultipartHeadersLengthLimit = 104857600)]
-        public async Task<IActionResult> ComprimirPngPost(List<IFormFile>? arquivos, int qualidade = 75)
-        {
-            try
-            {
-                _logger.LogInformation("POST - Iniciando compressão de arquivos PNG. Quantidade: {Count}, Qualidade: {Quality}",
-                    arquivos?.Count ?? 0, qualidade);
-
-                if (arquivos == null || arquivos.Count == 0)
-                {
-                    _logger.LogWarning("POST - Tentativa de compressão sem arquivos selecionados");
-                    ModelState.AddModelError("files", "Por favor, selecione um ou mais arquivos.");
-                    return View("CompressorPng");
-                }
-
-                // Validar tipos de arquivo
-                var tiposPermitidos = new HashSet<string> { "image/png" };
-                foreach (var arquivo in arquivos)
-                {
-                    if (!tiposPermitidos.Contains(arquivo.ContentType))
-                    {
-                        ModelState.AddModelError("files", $"Tipo de arquivo não permitido: {arquivo.ContentType}. Apenas PNG é suportado.");
-                        return View("CompressorPng");
-                    }
-                }
-
-                // Validar tamanho total dos arquivos (100MB máximo)
-                const long maxTotalSize = 100 * 1024 * 1024; // 100MB
-                long totalSize = arquivos.Sum(f => f.Length);
-                if (totalSize > maxTotalSize)
-                {
-                    var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
-                    ModelState.AddModelError("files", $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB.");
-                    return View("CompressorPng");
-                }
-
-                var sessionId = Guid.NewGuid().ToString();
-                var caminhoUpload = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaUploads, sessionId);
-                var caminhoConvertido = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
-
-                Directory.CreateDirectory(caminhoUpload);
-                Directory.CreateDirectory(caminhoConvertido);
-
-                // Usar semáforo para controlar concorrência (máximo 4 processamentos simultâneos)
-                using var semaphore = new SemaphoreSlim(4, 4);
-                List<Task> tasks = [];
-
-                int progress = 0;
-                int total = arquivos.Count;
-
-                foreach (var arquivo in arquivos)
-                {
-                    var task = Task.Run(async () =>
-                    {
-                        await semaphore.WaitAsync();
-                        try
-                        {
-                            using var progressScope = _logger.BeginScope(new Dictionary<string, object>
-                            {
-                                ["FileName"] = arquivo.FileName,
-                                ["SessionId"] = sessionId
-                            });
-
-                            _logger.LogInformation("Iniciando compressão PNG do arquivo {FileName}", arquivo.FileName);
-
-                            // Comprimir PNG mantendo formato PNG e transparência
-                            var compressionLevel = Math.Max(1, Math.Min(9, 10 - (qualidade / 10))); // Converter qualidade 0-100 para compression level 1-9
-                            var imagemComprimida = await CompressPng(arquivo, compressionLevel);
+                            arquivosProcessados++;
+                            int progress = (int)((float)arquivosProcessados / totalFiles * 100);
                             
-                            // Salvar arquivo comprimido com extensão .png
-                            var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName) + ".png";
-                            var caminhoArquivo = Path.Combine(caminhoConvertido, nomeArquivo);
-                            await System.IO.File.WriteAllBytesAsync(caminhoArquivo, imagemComprimida);
-
-                            // Calcular e reportar progresso
-                            var currentProgress = Interlocked.Increment(ref progress);
-                            var progressPercent = (int)((double)currentProgress / total * 100);
-
-                            if (_progressHub != null)
+                            try 
                             {
-                                await _progressHub.Clients.All.SendAsync("UpdateProgress", sessionId, progressPercent);
-                                _logger.LogInformation("Arquivo {FileName} comprimido com sucesso. Progresso: {Progress}%", 
-                                    arquivo.FileName, progress);
+                                await _progressHub.Clients.All.SendAsync("ReceiveProgress", progress);
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Erro ao comprimir arquivo {FileName}", arquivo.FileName);
-                            throw;
-                        }
-                        finally
-                        {
-                            semaphore.Release();
+                            catch (Exception hubEx)
+                            {
+                                _logger.LogWarning(hubEx, "Erro ao enviar progresso via SignalR para {FileName}", arquivo.FileName);
+                            }
                         }
                     });
                     tasks.Add(task);
@@ -1169,18 +1322,25 @@ namespace GeraWebP.Controllers
 
                 IncrementarContadorGlobal(arquivos.Count);
 
-                ViewBag.DownloadLink = Url.Action("DownloadFiles", new { sessionId })!;
-                ViewData["Title"] = "Compressão PNG Concluída";
-                
-                _logger.LogInformation("Compressão PNG concluída com sucesso para {TotalFiles} arquivos", arquivos.Count);
-                
-                return View("CompressorPng");
+                var downloadLink = Url.Action("DownloadFiles", new { sessionId });
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Conversão para PNG concluída com sucesso!",
+                    downloadLink = downloadLink,
+                    sessionId = sessionId,
+                    filesCount = arquivos.Count
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro na compressão de arquivos PNG");
-                ModelState.AddModelError("", "Erro interno na compressão: " + ex.Message);
-                return View("CompressorPng");
+                _logger.LogError(ex, "Erro na conversão de arquivos para PNG");
+                return Json(new
+                {
+                    success = false,
+                    message = "Erro interno na conversão: " + ex.Message
+                });
             }
         }
 
@@ -1221,58 +1381,38 @@ namespace GeraWebP.Controllers
             return View("Privacidad");
         }
 
-        // Rotas para páginas de compressão JPEG em inglês e espanhol
-        [HttpGet("en/compress-jpeg")]
+        // Rotas PNG específicas para idiomas
+        [HttpGet("en/convert-to-png")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult ComprimirJpegEnglish()
+        public IActionResult ConvertToPngEnglish()
         {
-            SetCultureContent("en");
-            ViewData["Title"] = "Compress JPEG Online Free - Reduce Image Size";
-            ViewData["Description"] = "Free JPEG compressor online. Reduce JPEG file size while maintaining excellent quality. Batch compression up to 100MB. No watermarks, fast processing.";
-            ViewData["Keywords"] = "compress jpeg, optimize jpeg, reduce jpeg size, jpeg compressor, jpg optimizer, image compression";
-            
-            _logger.LogInformation("GET - Acesso à página compress-jpeg (English)");
-            return View("CompressorJpegEnglish");
+            SetCultureContentPng("en");
+            return View("ConverterParaPngEnglish");
         }
 
-        [HttpGet("es/comprimir-jpeg")]
+        [HttpGet("es/convertir-a-png")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult ComprimirJpegSpanish()
+        public IActionResult ConvertirAPngSpanish()
         {
-            SetCultureContent("es");
-            ViewData["Title"] = "Comprimir JPEG Online Gratis - Reducir Tamaño de Imágenes";
-            ViewData["Description"] = "Compresor JPEG gratis online. Reduce el tamaño de archivos JPEG manteniendo excelente calidad. Compresión por lotes hasta 100MB. Sin marcas de agua.";
-            ViewData["Keywords"] = "comprimir jpeg, optimizar jpeg, reducir tamaño jpeg, compresor de imagen jpeg, optimizador jpg";
-            
-            _logger.LogInformation("GET - Acesso à página comprimir-jpeg (Spanish)");
-            return View("CompressorJpegSpanish");
+            SetCultureContentPng("es");
+            return View("ConverterParaPngSpanish");
         }
 
-        // Rotas para páginas de compressão PNG em inglês e espanhol
-        [HttpGet("en/compress-png")]
+        // Rotas JPEG específicas para idiomas
+        [HttpGet("en/convert-to-jpeg")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult ComprimirPngEnglish()
+        public IActionResult ConvertToJpegEnglish()
         {
-            SetCultureContent("en");
-            ViewData["Title"] = "Compress PNG Online Free - Preserve Transparency";
-            ViewData["Description"] = "Free PNG compressor online. Reduce PNG file size while preserving transparency and alpha channel. Perfect for logos and icons. Batch processing available.";
-            ViewData["Keywords"] = "compress png, optimize png, reduce png size, png compressor, png transparency, image compression";
-            
-            _logger.LogInformation("GET - Acesso à página compress-png (English)");
-            return View("CompressorPngEnglish");
+            SetCultureContentJpeg("en");
+            return View("ConverterParaJpegEnglish");
         }
 
-        [HttpGet("es/comprimir-png")]
+        [HttpGet("es/convertir-a-jpeg")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult ComprimirPngSpanish()
+        public IActionResult ConvertirAJpegSpanish()
         {
-            SetCultureContent("es");
-            ViewData["Title"] = "Comprimir PNG Online Gratis - Preservar Transparência";
-            ViewData["Description"] = "Compresor PNG gratis online. Reduce el tamaño de archivos PNG preservando transparencia y canal alfa. Perfecto para logos e iconos. Procesamiento por lotes.";
-            ViewData["Keywords"] = "comprimir png, optimizar png, reducir tamaño png, compresor de imagen png, transparencia png";
-            
-            _logger.LogInformation("GET - Acesso à página comprimir-png (Spanish)");
-            return View("CompressorPngSpanish");
+            SetCultureContentJpeg("es");
+            return View("ConverterParaJpegSpanish");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

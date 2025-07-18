@@ -20,6 +20,8 @@
             ConversionsSubtitle = "Convierte cualquier formato a WebP y reduce hasta 90% el tamaño",
             CompressionsTitle = "Compresores de Imagen",
             CompressionsSubtitle = "Optimiza tus imágenes manteniendo la máxima calidad",
+            ConvertersTitle = "Convertidores de Formato",
+            ConvertersSubtitle = "Convierte entre diferentes formatos de imagen",
             
             JpgToWebP = new { Title = "JPG a WebP", Desc = "Optimización ideal para fotos" },
             PngToWebP = new { Title = "PNG a WebP", Desc = "Mantiene transparencia" },
@@ -28,6 +30,9 @@
             CompressJpeg = new { Title = "Comprimir JPEG", Desc = "Optimiza JPEGs para web" },
             CompressPng = new { Title = "Comprimir PNG", Desc = "Preserva transparencia" },
             
+            ConvertToPng = new { Title = "Convertir a PNG", Desc = "Transparencia perfecta" },
+            ConvertToJpeg = new { Title = "Convertir a JPEG", Desc = "Compresión universal" },
+            
             Result = new { Title = "WebP Optimizado", Desc = "Hasta 90% más pequeño" }
         },
         "en" => new {
@@ -35,6 +40,8 @@
             ConversionsSubtitle = "Convert any format to WebP and reduce file size by up to 90%",
             CompressionsTitle = "Image Compressors",
             CompressionsSubtitle = "Optimize your images while maintaining maximum quality",
+            ConvertersTitle = "Format Converters",
+            ConvertersSubtitle = "Convert between different image formats",
             
             JpgToWebP = new { Title = "JPG to WebP", Desc = "Optimal optimization for photos" },
             PngToWebP = new { Title = "PNG to WebP", Desc = "Keeps transparency" },
@@ -43,6 +50,9 @@
             CompressJpeg = new { Title = "Compress JPEG", Desc = "Optimize JPEGs for web" },
             CompressPng = new { Title = "Compress PNG", Desc = "Preserves transparency" },
             
+            ConvertToPng = new { Title = "Convert to PNG", Desc = "Perfect transparency" },
+            ConvertToJpeg = new { Title = "Convert to JPEG", Desc = "Universal compression" },
+            
             Result = new { Title = "Optimized WebP", Desc = "Up to 90% smaller" }
         },
         _ => new {
@@ -50,6 +60,8 @@
             ConversionsSubtitle = "Converta qualquer formato para WebP e reduza até 90% o tamanho",
             CompressionsTitle = "Compressores de Imagem",
             CompressionsSubtitle = "Otimize suas imagens mantendo a máxima qualidade",
+            ConvertersTitle = "Conversores de Formato",
+            ConvertersSubtitle = "Converta entre diferentes formatos de imagem",
             
             JpgToWebP = new { Title = "JPG para WebP", Desc = "Otimização ideal para fotos" },
             PngToWebP = new { Title = "PNG para WebP", Desc = "Mantém transparência" },
@@ -57,6 +69,9 @@
             
             CompressJpeg = new { Title = "Comprimir JPEG", Desc = "Otimize JPEGs para web" },
             CompressPng = new { Title = "Comprimir PNG", Desc = "Preserva transparência" },
+            
+            ConvertToPng = new { Title = "Converter para PNG", Desc = "Transparência perfeita" },
+            ConvertToJpeg = new { Title = "Converter para JPEG", Desc = "Compressão universal" },
             
             Result = new { Title = "WebP Otimizado", Desc = "Até 90% menor" }
         }
@@ -177,6 +192,48 @@
     </div>
 </section>
 
+<!-- 🔄 Conversores de Formato -->
+<section class="tools-section converter-tools" aria-labelledby="converters-title">
+    <div class="tools-header">
+        <h2 id="converters-title" class="section-title">@texts.ConvertersTitle</h2>
+        <p class="section-subtitle">@texts.ConvertersSubtitle</p>
+    </div>
+    
+    <div class="tools-grid converter-grid">
+        <!-- Converter para PNG -->
+        <a href="@GetLocalizedUrl("/converter-para-png", language ?? "")" class="tool-card-link">
+            <div class="tool-card converter-card">
+                <div class="tool-icon png-converter">
+                    <i data-feather="layers"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>@texts.ConvertToPng.Title</h3>
+                    <p>@texts.ConvertToPng.Desc</p>
+                </div>
+                <div class="format-indicator">
+                    <span class="format-badge">PNG</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Converter para JPEG -->
+        <a href="@GetLocalizedUrl("/converter-para-jpeg", language ?? "")" class="tool-card-link">
+            <div class="tool-card converter-card">
+                <div class="tool-icon jpeg-converter">
+                    <i data-feather="image"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>@texts.ConvertToJpeg.Title</h3>
+                    <p>@texts.ConvertToJpeg.Desc</p>
+                </div>
+                <div class="format-indicator">
+                    <span class="format-badge jpeg-badge">JPEG</span>
+                </div>
+            </div>
+        </a>
+    </div>
+</section>
+
 <style>
 /* 🎨 Estilos da Grid de Ferramentas */
 .tools-section {
@@ -218,6 +275,11 @@
 .compression-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     max-width: 700px;
+}
+
+.converter-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    max-width: 400px;
 }
 
 .tool-card-link {
@@ -273,6 +335,8 @@
 .tool-icon.webp { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
 .tool-icon.jpeg-comp { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
 .tool-icon.png-comp { background: linear-gradient(135deg, #a8edea, #fed6e3); color: white; }
+.tool-icon.png-converter { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+.tool-icon.jpeg-converter { background: linear-gradient(135deg, #ff6b35, #ff8e53); color: white; }
 
 .tool-content h3 {
     font-size: 1.3rem;
@@ -333,6 +397,26 @@
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
+}
+
+/* Indicadores de formato */
+.format-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.format-badge {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.format-badge.jpeg-badge {
+    background: linear-gradient(135deg, #ff6b35, #ff8e53);
 }
 
 /* Responsivo */
