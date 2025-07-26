@@ -86,3 +86,7 @@ Código Central
 
 ## Licença
 Este software é de propriedade exclusiva da Código Central e seu uso é estritamente limitado a aplicações internas e comerciais da empresa. Para mais detalhes, consulte o arquivo `LICENSE.md`.
+
+
+
+teste traefik
