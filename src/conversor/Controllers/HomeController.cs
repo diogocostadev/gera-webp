@@ -749,6 +749,106 @@ namespace GeraWebP.Controllers
             }
         }
 
+        [HttpPost("api/comprimir-png")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ComprimirPngApi(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            try
+            {
+                _logger.LogInformation("API PNG - Iniciando compressão de arquivos. Quantidade: {Count}, Qualidade: {Quality}, UserAgent: {UserAgent}",
+                    arquivos?.Count ?? 0, qualidade, Request.Headers.UserAgent.ToString());
+
+                if (arquivos == null || arquivos.Count == 0)
+                {
+                    _logger.LogWarning("API - Tentativa de compressão sem arquivos selecionados");
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Por favor, selecione um ou mais arquivos."
+                    });
+                }
+
+                // Validar tipos de arquivo
+                var tiposPermitidos = new HashSet<string> { "image/png" };
+                foreach (var arquivo in arquivos)
+                {
+                    if (!tiposPermitidos.Contains(arquivo.ContentType))
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"Tipo de arquivo não permitido: {arquivo.ContentType}. Apenas PNG é suportado."
+                        });
+                    }
+                }
+
+                // Validar tamanho total dos arquivos (100MB máximo)
+                const long maxTotalSize = 100 * 1024 * 1024; // 100MB
+                long totalSize = arquivos.Sum(f => f.Length);
+                if (totalSize > maxTotalSize)
+                {
+                    var totalMB = Math.Round(totalSize / (1024.0 * 1024.0), 1);
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Tamanho total dos arquivos ({totalMB}MB) excede o limite de 100MB."
+                    });
+                }
+
+                var sessionId = Guid.NewGuid().ToString();
+                var caminhoUpload = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaUploads, sessionId);
+                var caminhoConvertido = Path.Combine(Directory.GetCurrentDirectory(), PastaRaiz, PastaConvertidos, sessionId);
+
+                Directory.CreateDirectory(caminhoUpload);
+                Directory.CreateDirectory(caminhoConvertido);
+
+                List<Task> tasks = [];
+                foreach (var arquivo in arquivos)
+                {
+                    var task = Task.Run(async () =>
+                    {
+                        if (arquivo.Length > 0)
+                        {
+                            var nomeArquivo = Path.GetFileNameWithoutExtension(arquivo.FileName);
+                            var caminhoCompletoConvertido = Path.Combine(caminhoConvertido, nomeArquivo + ".png");
+
+                            byte[] pngImage = await ConvertToPng(arquivo, qualidade);
+                            await System.IO.File.WriteAllBytesAsync(caminhoCompletoConvertido, pngImage);
+                        }
+                    });
+                    tasks.Add(task);
+                }
+
+                await Task.WhenAll(tasks);
+
+                IncrementarContadorGlobal(arquivos.Count);
+
+                var downloadLink = Url.Action("DownloadFiles", new { sessionId });
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Compressão concluída com sucesso!",
+                    downloadLink = downloadLink,
+                    sessionId = sessionId,
+                    filesCount = arquivos.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro na compressão de arquivos PNG");
+                return Json(new
+                {
+                    success = false,
+                    message = "Erro interno na compressão: " + ex.Message
+                });
+            }
+        }
+
         private async Task<byte[]> ConvertToWebP(IFormFile file, int qualidade)
         {
             string threadId = Thread.CurrentThread.ManagedThreadId.ToString();
@@ -1129,6 +1229,36 @@ namespace GeraWebP.Controllers
             _logger.LogInformation("GET - Acesso à página comprimir-jpeg");
             
             return View("CompressorJpeg");
+        }
+
+        [HttpGet("comprimir-png")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ComprimirPng()
+        {
+            // Adicionar headers anti-cache específicos para evitar problemas de cache
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
+            Response.Headers.Append("Content-Type", "text/html; charset=utf-8");
+            
+            ViewData["Title"] = "Comprimir PNG Online Gratuito";
+            ViewData["Description"] = "Comprima e otimize suas imagens PNG online gratuitamente. Reduza o tamanho de arquivos PNG mantendo a transparência e qualidade para web.";
+            ViewData["Keywords"] = "comprimir png, otimizar png, reduzir tamanho png, compressor de imagem png";
+            
+            _logger.LogInformation("GET - Acesso à página comprimir-png");
+            
+            return View("CompressorPng");
+        }
+
+        [HttpPost("comprimir-png")]
+        [RequestSizeLimit(104857600)] // 100MB
+        [RequestFormLimits(
+            MultipartBodyLengthLimit = 104857600,
+            ValueLengthLimit = 104857600,
+            MultipartHeadersLengthLimit = 104857600)]
+        public async Task<IActionResult> ComprimirPngPost(List<IFormFile>? arquivos, int qualidade = 75)
+        {
+            return await Converter(arquivos, qualidade, "png", "CompressorPng");
         }
 
         [HttpGet("converter-para-jpeg")]
